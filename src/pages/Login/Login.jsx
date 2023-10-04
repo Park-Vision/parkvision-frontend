@@ -11,6 +11,7 @@ import Typography from '@mui/material/Typography';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
+import pvlogo from "../../assets/pv_transparent.png";
 
 // use @mui/icons-material
 import SearchIcon from '@mui/icons-material/Search';
@@ -23,15 +24,15 @@ export default function Login() {
                     justifyContent: 'center', // Center horizontally
                     alignItems: 'center',     // Center vertically
                     height: '100vh',          // Set a minimum height for centering
-         }}>
+            }}>
             <Grid item  >
-                <Card>
-                <CardMedia
-                    component="img"
-                    height="300"
-                    image="https://source.unsplash.com/random"
-                    alt="random"
-                />
+                    <Card>
+                        <CardMedia  
+                            component="img"
+                            height="300"
+                            image={pvlogo}
+                            alt="random"
+                        />
                 <CardContent>
                     <Typography gutterBottom variant="h5" component="div">
                     Logowanie
@@ -51,9 +52,17 @@ export default function Login() {
                         variant="outlined"
                         fullWidth
                         margin="normal"
+                        type='password'
                         />
-                        <Button variant="contained" fullWidth>
+                                    <Button variant="contained" fullWidth
+                                    margin="normal"
+                                    >
                         Zaloguj się
+                        </Button>
+                                    <Button fullWidth
+                                    margin="normal"
+                                    >
+                            Reset hasła
                         </Button>
                     </form>
                     </Typography>
