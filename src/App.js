@@ -1,25 +1,14 @@
-import pvlogo from "../src/assets/pv_transparent.png";
 import "./App.css";
+import Header from "./components/AppBar";
+import Home from "./pages/Home/Home";
+import Login from "./pages/Login/Login";
 
 function App() {
     return (
         <div className='App'>
-            <header className='App-header'>
-                <img
-                    src={pvlogo}
-                    className='App-logo'
-                    alt='logo'
-                />
-                <p>Welcome to ParkVision!</p>
-                <a
-                    className='App-link'
-                    href='https://reactjs.org'
-                    target='_blank'
-                    rel='noopener noreferrer'
-                >
-                    Learn React
-                </a>
-            </header>
+            {/* <Header /> */}
+            {/* <Home /> */}
+            <Login />
         </div>
     );
 }
