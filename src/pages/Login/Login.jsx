@@ -14,9 +14,16 @@ import CardMedia from '@mui/material/CardMedia';
 import pvlogo from "../../assets/pv_transparent.png";
 
 // use @mui/icons-material
-import SearchIcon from '@mui/icons-material/Search';
 
 export default function Login() {
+
+    // console.log(process.env.REACT_APP_BACKEND_URL + "/reservations")
+    //
+    // fetch(process.env.REACT_APP_BACKEND_URL + "/reservations")
+    //     .then(response => response.json())
+    //     .then(data => console.log(data))
+    //     .catch(error => console.error(error));
+
     return (
         <Container maxWidth="lg">
             <Box sx={{ 
