@@ -12,8 +12,10 @@ import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
+import {Link} from "@mui/material";
 
 const pages = ['Strona główna', 'Rezerwuj', 'Kontakt', 'O nas'];
+const links = ['/', '/reservations', '/contact', '/about'];
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
 
 function ResponsiveAppBar() {
@@ -87,10 +89,12 @@ function ResponsiveAppBar() {
                 display: { xs: 'block', md: 'none' },
               }}
             >
-              {pages.map((page) => (
-                <MenuItem key={page} onClick={handleCloseNavMenu}>
-                  <Typography textAlign="center">{page}</Typography>
-                </MenuItem>
+              {pages.map((page, index) => (
+                  <MenuItem key={page} onClick={handleCloseNavMenu}>
+                      <Link href={links[index]} style={{ textDecoration: 'none' }}>
+                          <Typography textAlign="center">{page}</Typography>
+                      </Link>
+                  </MenuItem>
               ))}
             </Menu>
           </Box>
@@ -114,13 +118,14 @@ function ResponsiveAppBar() {
             ParkVision
           </Typography>
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-            {pages.map((page) => (
+            {pages.map((page, index) => (
               <Button
                 key={page}
                 onClick={handleCloseNavMenu}
-                sx={{ my: 2, color: 'white', display: 'block' }}
-              >
-                {page}
+                sx={{ my: 2, color: 'white', display: 'block' }}>
+                  <Link href={links[index]} style={{ textDecoration: 'none', color: 'inherit' }}>
+                      {page}
+                  </Link>
               </Button>
             ))}
           </Box>
