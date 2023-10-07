@@ -19,8 +19,9 @@ class CarService{
         return await axios.post(process.env.REACT_APP_BACKEND_URL + urlConst + '/', carData)
     }
 
-    async updateCar(carId, carData){
-        return await axios.put(process.env.REACT_APP_BACKEND_URL + urlConst + '/' + carId, carData)
+    async updateCar(carData){
+        return await axios.put(process.env.REACT_APP_BACKEND_URL + urlConst, carData)
     }
 
 }
+export default new CarService();

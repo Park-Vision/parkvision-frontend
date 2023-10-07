@@ -1,5 +1,4 @@
 import "./App.css";
-import Header from "./components/AppBar";
 import Home from "./pages/Home/Home";
 import Login from "./pages/Login/Login";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
@@ -8,6 +7,7 @@ import {BrowserRouter, Route, Routes} from "react-router-dom";
 import Reservations from "./pages/Reservations/Reservations";
 import About from "./pages/About/About";
 import Contact from "./pages/Contact/Contact";
+import Car from "./pages/Car/Car";
 
 function App() {
     const theme = createTheme({
@@ -38,6 +38,7 @@ function App() {
                             <Route exact path={'/reservations'} element={<Reservations/>}/>
                             <Route exact path={'/about'} element={<About/>}/>
                             <Route exact path={'/contact'} element={<Contact/>}/>
+                            <Route exact path={'/cars'} element={<Car/>}/>
                         </Routes>
                 </div>
             </ThemeProvider>
