@@ -17,12 +17,12 @@ import pvlogo from "../../assets/pv_transparent.png";
 
 export default function Login() {
 
-    // console.log(process.env.REACT_APP_BACKEND_URL + "/reservations")
-    //
-    // fetch(process.env.REACT_APP_BACKEND_URL + "/reservations")
-    //     .then(response => response.json())
-    //     .then(data => console.log(data))
-    //     .catch(error => console.error(error));
+    console.log(process.env.REACT_APP_BACKEND_URL + "/cars")
+
+    fetch(process.env.REACT_APP_BACKEND_URL + "/cars")
+        .then(response => response.json())
+        .then(data => console.log(data))
+        .catch(error => console.error(error));
 
     return (
         <Container maxWidth="lg">
