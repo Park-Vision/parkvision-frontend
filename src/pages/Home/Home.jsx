@@ -1,5 +1,5 @@
 // generate a home page thah will be under header component in app.js. Set a search field with button and list of movies
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 
 // use @mui/material
 import Container from '@mui/material/Container';
@@ -14,41 +14,25 @@ import CardMedia from '@mui/material/CardMedia';
 
 // use @mui/icons-material
 import SearchIcon from '@mui/icons-material/Search';
-
-const parkingList = [
-  {
-    id: 1,
-    name: 'Parking Lot A',
-    description: 'Covered parking with security',
-    address: '123 Main St, City, Country',
-    costRate: 5.0,
-    openHours: '9:00 AM - 8:00 PM'
-  },
-  {
-    id: 2,
-    name: 'Parking Lot B',
-    description: 'Outdoor parking near the mall',
-    address: '456 Elm St, City, Country',
-    costRate: 3.5,
-    openHours: '24/7'
-  },
-  {
-    id: 3,
-    name: 'Parking Garage C',
-    description: 'Multi-level parking structure',
-    address: '789 Oak St, City, Country',
-    costRate: 7.5,
-    openHours: '7:00 AM - 10:00 PM'
-  }
-];
+import {useDispatch, useSelector} from "react-redux";
+import {getCars} from "../../actions/carActions";
+import {getParkings} from "../../actions/parkingActions";
+import {Router} from "react-router-dom";
 
 export default function Home() {
-    const [search, setSearch] = useState('');
-    const [parkings, setParkings] = useState(parkingList);
-    
+    const parkings = useSelector(state => state.parkingReducer)
+    const dispatch = useDispatch()
+
+
+    useEffect(() => {
+        dispatch(getParkings())
+    }, []);
+
     const handleChange = (event) => {
-        setSearch(event.target.value);
     };
+
+    const handleClick = (event) => {
+    }
     
     const handleSubmit = (event) => {
         console.log('search', event);
@@ -74,7 +58,7 @@ export default function Home() {
                     id="input-with-icon-grid"
                     label="Zacznij pisać nazwę parkingu"
                     variant="standard"
-                    value={search}
+                    // value={}
                     onChange={handleChange}
                 />
                 </Grid>
@@ -83,7 +67,7 @@ export default function Home() {
                     variant="contained"
                     color="primary"
                     type="submit"
-                    disabled={!search}
+                    // disabled={}
                 >
                     Szukaj
                 </Button>
@@ -99,20 +83,20 @@ export default function Home() {
                     display: 'flex',
                     flexDirection: 'column',
                     }}
+                    onClick={handleClick}
                 >
                     <CardMedia
                     component="img"
-                    // image={parking.img}
+                    image={parking.img}
                     alt={parking.name}
                     />
                     <CardContent sx={{ flexGrow: 1 }}>
                     <Typography gutterBottom variant="h5" component="h2">
-                        {parking.address}
+                        {parking.name}
                     </Typography>
-                    <Typography gutterBottom variant="h5" component="h2">
-                        {parking.costRate}
-                    </Typography>
-                    <Typography>{parking.openHours}</Typography>
+                    <Typography>Adress: {parking.address}</Typography>
+                    <Typography>$/h: {parking.costRate}</Typography>
+                    <Typography>Open hours: {parking.openHours}</Typography>
                     </CardContent>
                 </Card>
                 </Grid>

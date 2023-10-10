@@ -8,6 +8,7 @@ import Reservations from "./pages/Reservations/Reservations";
 import About from "./pages/About/About";
 import Contact from "./pages/Contact/Contact";
 import Car from "./pages/Car/Car";
+import ParkingDetails from "./pages/Home/ParkingDetails";
 
 function App() {
     const theme = createTheme({
@@ -19,9 +20,9 @@ function App() {
                 contrastText: "#fff",
             },
             primary: {
-                light: "#ffcf33",
+                light: "#5ede3f",
                 main: "#2e7d32",
-                dark: "#ff8f00",
+                dark: "#225024",
                 contrastText: "#fff",
             },
         },
@@ -39,6 +40,7 @@ function App() {
                             <Route exact path={'/about'} element={<About/>}/>
                             <Route exact path={'/contact'} element={<Contact/>}/>
                             <Route exact path={'/cars'} element={<Car/>}/>
+                            <Route exact path={'/parking/:id'} element={<ParkingDetails/>}/>
                         </Routes>
                 </div>
             </ThemeProvider>
