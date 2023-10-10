@@ -20,7 +20,7 @@ import {getParkings} from "../../actions/parkingActions";
 import {Router} from "react-router-dom";
 
 export default function Home() {
-    const parkings = useSelector(state => state.parkingReducer)
+    const parkings = useSelector(state => state.parkingReducer.parkings)
     const dispatch = useDispatch()
 
 
