@@ -35,12 +35,12 @@ function App() {
                     <AppBar />
                         <Routes>
                             <Route exact path={'/'} element={<Home/>}/>
-                            <Route exact path={'/login'} element={<Login/>}/>
-                            <Route exact path={'/reservations'} element={<Reservations/>}/>
-                            <Route exact path={'/about'} element={<About/>}/>
-                            <Route exact path={'/contact'} element={<Contact/>}/>
-                            <Route exact path={'/cars'} element={<Car/>}/>
-                            <Route exact path={'/parking/:id'} element={<ParkingDetails/>}/>
+                            <Route path={'/login'} element={<Login/>}/>
+                            <Route path={'/reservations'} element={<Reservations/>}/>
+                            <Route path={'/about'} element={<About/>}/>
+                            <Route path={'/contact'} element={<Contact/>}/>
+                            <Route path={'/cars'} element={<Car/>}/>
+                            <Route path={'/parking/:parkingId'} element={<ParkingDetails/>}/>
                         </Routes>
                 </div>
             </ThemeProvider>

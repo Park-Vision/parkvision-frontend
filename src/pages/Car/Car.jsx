@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import {useDispatch, useSelector} from "react-redux";
 import {addCar, getCars, getCar, deleteCar, updateCar} from "../../actions/carActions"
+import {getParking} from "../../actions/parkingActions";
 
 function Car() {
     const cars = useSelector(state => state.carReducer)

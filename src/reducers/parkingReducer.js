@@ -1,32 +1,44 @@
 import {ADD_PARKING, GET_PARKING, GET_PARKINGS, DELETE_PARKING, UPDATE_PARKING} from "../actions/types"
 
-const initialState = [];
+const initialState = {
+    parkings: [],
+    parking: {}
+};
 
-const parkingReducer = (parkings = initialState, action) => {
+const parkingReducer = (state = initialState, action) => {
     const {type, payload} = action
 
     switch (type){
         case ADD_PARKING:
-            return [...parkings, payload];
+            return {
+                ...state,
+                parkings: [...state.parkings, action.value],
+                parking: {}
+            }
         case GET_PARKINGS:
-            return payload;
+            return {
+                ...state,
+                parkings: action.value
+            }
         case UPDATE_PARKING:
-            return parkings.map((parking) => {
-                if (parking.id === payload.id){
-                    return {
-                        ...parkings,
-                        ...payload
-                    }
-                } else {
-                    return parking
-                }
-            });
+            const parking = action.value
+            return {
+                ...state,
+                parkings: state.parkings.map(item => item.id === parking.id ? parking : item ),
+                parking: {}
+            }
         case DELETE_PARKING:
-            return parkings.filter(({id}) => id !== payload.id);
+            return {
+                ...state,
+                parkings: state.parkings.filter(item => item.id !== parseInt(action.value))
+            }
         case GET_PARKING:
-            return parkings.filter(({id}) => id === payload.id);
+            return {
+                ...state,
+                parking: action.value
+            }
         default:
-            return parkings;
+            return state;
     }
 }
 
