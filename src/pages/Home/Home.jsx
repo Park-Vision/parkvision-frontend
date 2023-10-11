@@ -17,7 +17,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import {useDispatch, useSelector} from "react-redux";
 import {getCars} from "../../actions/carActions";
 import {getParkings} from "../../actions/parkingActions";
-import {Router} from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 
 export default function Home() {
     const parkings = useSelector(state => state.parkingReducer.parkings)
@@ -31,7 +31,9 @@ export default function Home() {
     const handleChange = (event) => {
     };
 
+    let navigate = useNavigate();
     const handleClick = (event) => {
+        navigate(`/parking/${event}`);
     }
     
     const handleSubmit = (event) => {
@@ -43,7 +45,7 @@ export default function Home() {
     };
     
     return (
-        <Container maxWidth="md">
+        <Container maxWidth="lg">
         <Box sx={{ my: 4 }}>
             <Typography variant="h4" component="h1" gutterBottom>
             Wyszukaj parking
@@ -74,16 +76,16 @@ export default function Home() {
                 </Grid>
             </Grid>
             </form>
-            <Grid container spacing={4} sx={{ mt: 4 }}>
+            <Grid container spacing={4} sx={{ mt: 4 }} >
             {parkings.map((parking) => (
-                <Grid item key={parking.id} xs={12} sm={6} md={4}>
+                <Grid item key={parking.id} xs={12} sm={12} md={12}>
                 <Card
                     sx={{
                     height: '100%',
                     display: 'flex',
                     flexDirection: 'column',
                     }}
-                    onClick={handleClick}
+                    onClick={() => handleClick(parking.id)}
                 >
                     <CardMedia
                     component="img"
