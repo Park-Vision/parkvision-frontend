@@ -6,7 +6,7 @@ const initialState = {
 };
 
 const parkingReducer = (state = initialState, action) => {
-    const {type, payload} = action
+    const {type} = action
 
     switch (type){
         case ADD_PARKING:

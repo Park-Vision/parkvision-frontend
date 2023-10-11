@@ -1,33 +1,45 @@
 import {ADD_RESERVATION, DELETE_RESERVATION, GET_RESERVATION,
     UPDATE_RESERVATION, GET_RESERVATIONS} from "../actions/types"
 
-const initialState = [];
+const initialState = {
+    reservations: [],
+    reservation: {}
+};
 
-const reservationReducer = (reservations = initialState, action) => {
-    const {type, payload} = action
+const reservationReducer = (state = initialState, action) => {
+    const {type} = action
 
     switch (type){
         case ADD_RESERVATION:
-            return [...reservations, payload];
+            return {
+                ...state,
+                reservations: [...state.reservation, action.value],
+                reservation: {}
+            }
         case GET_RESERVATIONS:
-            return payload;
+            return {
+                ...state,
+                reservations: action.value
+            }
         case UPDATE_RESERVATION:
-            return reservations.map((reservation) => {
-                if (reservation.id === payload.id){
-                    return {
-                        ...reservations,
-                        ...payload
-                    }
-                } else {
-                    return reservation
-                }
-            });
+            const reservation = action.value
+            return {
+                ...state,
+                reservations: state.reservations.map(item => item.id === reservation.id ? reservation : item ),
+                reservation: {}
+            }
         case DELETE_RESERVATION:
-            return reservations.filter(({id}) => id !== payload.id);
+            return {
+                ...state,
+                reservations: state.reservations.filter(item => item.id !== parseInt(action.value))
+            }
         case GET_RESERVATION:
-            return reservations.filter(({id}) => id === payload.id);
+            return {
+                ...state,
+                reservation: action.value
+            }
         default:
-            return reservations;
+            return state;
     }
 }
 

@@ -8,7 +8,6 @@ class ParkingService {
     }
 
     async getParkingById(parkingId) {
-        console.log(process.env.REACT_APP_BACKEND_URL + urlConst + "/" + parkingId)
         return await axios.get(process.env.REACT_APP_BACKEND_URL + urlConst + "/" + parkingId);
     }
 

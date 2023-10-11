@@ -7,7 +7,7 @@ import {BrowserRouter, Route, Routes} from "react-router-dom";
 import Reservations from "./pages/Reservations/Reservations";
 import About from "./pages/About/About";
 import Contact from "./pages/Contact/Contact";
-import Car from "./pages/Car/Car";
+import CarPage from "./pages/Car/CarPage";
 import ParkingDetails from "./pages/Home/ParkingDetails";
 
 function App() {
@@ -39,7 +39,7 @@ function App() {
                             <Route path={'/reservations'} element={<Reservations/>}/>
                             <Route path={'/about'} element={<About/>}/>
                             <Route path={'/contact'} element={<Contact/>}/>
-                            <Route path={'/cars'} element={<Car/>}/>
+                            <Route path={'/cars'} element={<CarPage/>}/>
                             <Route path={'/parking/:parkingId'} element={<ParkingDetails/>}/>
                         </Routes>
                 </div>

@@ -1,35 +1,50 @@
 import {ADD_PARKING_SPOT, DELETE_PARKING_SPOT_SOFT, DELETE_PARKING_SPOT_HARD,
     UPDATE_PARKING_SPOT, GET_PARKING_SPOTS, GET_PARKING_SPOT} from "../actions/types"
 
-const initialState = [];
+const initialState = {
+    parkingSpots: [],
+    parkingSpot: {}
+};
 
-const parkingSpotReducer = (parkingSpots = initialState, action) => {
-    const {type, payload} = action
+const parkingSpotReducer = (state = initialState, action) => {
+    const {type} = action
 
     switch (type){
         case ADD_PARKING_SPOT:
-            return [...parkingSpots, payload];
+            return {
+                ...state,
+                parkingSpots: [...state.parkingSpots, action.value],
+                parkingSpot: {}
+            }
         case GET_PARKING_SPOTS:
-            return payload;
+            return {
+                ...state,
+                parkingSpots: action.value
+            }
         case UPDATE_PARKING_SPOT:
-            return parkingSpots.map((parkingSpot) => {
-                if (parkingSpot.id === payload.id){
-                    return {
-                        ...parkingSpots,
-                        ...payload
-                    }
-                } else {
-                    return parkingSpot
-                }
-            });
+            const parkingSpot = action.value
+            return {
+                ...state,
+                parkingSpots: state.parkingSpots.map(item => item.id === parkingSpot.id ? parkingSpot : item ),
+                parkingSpot: {}
+            }
         case DELETE_PARKING_SPOT_SOFT:
-            return parkingSpots.filter(({id}) => id !== payload.id);
+            return {
+                ...state,
+                parkingSpots: state.parkingSpots.filter(item => item.id !== parseInt(action.value))
+            }
         case DELETE_PARKING_SPOT_HARD:
-            return parkingSpots.filter(({id}) => id !== payload.id);
+            return {
+                ...state,
+                parkingSpots: state.parkingSpots.filter(item => item.id !== parseInt(action.value))
+            }
         case GET_PARKING_SPOT:
-            return parkingSpots.filter(({id}) => id === payload.id);
+            return {
+                ...state,
+                parkingSpot: action.value
+            }
         default:
-            return parkingSpots;
+            return state;
     }
 }
 

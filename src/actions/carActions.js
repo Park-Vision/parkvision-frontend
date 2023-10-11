@@ -6,7 +6,7 @@ export const addCar = (carData) => async (dispatch) => {
         const response = await CarService.addCar(carData)
         dispatch({
             type: ADD_CAR,
-            payload: response.data
+            value: response.data
         })
         return Promise.resolve(response.data)
     } catch (error){
@@ -18,7 +18,7 @@ export const getCars = () => async (dispatch) => {
         const response = await CarService.getCars()
         dispatch({
             type: GET_CARS,
-            payload: response.data
+            value: response.data
         })
         return Promise.resolve(response.data)
     } catch (error){
@@ -30,7 +30,7 @@ export const getCar = (carId) => async (dispatch) => {
         const response = await CarService.getCarById(carId)
         dispatch({
             type: GET_CAR,
-            payload: response.data
+            value: response.data
         })
         return Promise.resolve(response.data)
     } catch (error){
@@ -42,7 +42,7 @@ export const deleteCar = (carId) => async (dispatch) => {
         const response = await CarService.deleteCarById(carId)
         dispatch({
             type: DELETE_CAR,
-            payload: carId
+            value: carId
         })
         return Promise.resolve(response.data)
     } catch (error){
@@ -54,7 +54,7 @@ export const updateCar = (carData) => async (dispatch) => {
         const response = await CarService.updateCar(carData)
         dispatch({
             type: UPDATE_CAR,
-            payload: carData
+            value: carData
         })
         return Promise.resolve(response.data)
     } catch (error){

@@ -7,7 +7,7 @@ export const addParkingSpot = (parkingSpotData) => async (dispatch) => {
         const response = await ParkingSpotService.createParkingSpot(parkingSpotData)
         dispatch({
             type: ADD_PARKING_SPOT,
-            payload: response.data
+            value: response.data
         })
         return Promise.resolve(response.data)
     } catch (error){
@@ -19,7 +19,7 @@ export const getParkingSpots = () => async (dispatch) => {
         const response = await ParkingSpotService.getParkingSpots()
         dispatch({
             type: GET_PARKING_SPOTS,
-            payload: response.data
+            value: response.data
         })
         return Promise.resolve(response.data)
     } catch (error){
@@ -31,7 +31,7 @@ export const getParkingSpot = (parkingSpotId) => async (dispatch) => {
         const response = await ParkingSpotService.getParkingSpotById(parkingSpotId)
         dispatch({
             type: GET_PARKING_SPOT,
-            payload: response.data
+            value: response.data
         })
         return Promise.resolve(response.data)
     } catch (error){
@@ -43,7 +43,7 @@ export const deleteParkingSpotSoft = (parkingSpotId) => async (dispatch) => {
         const response = await ParkingSpotService.softDeleteParkingSpotById(parkingSpotId)
         dispatch({
             type: DELETE_PARKING_SPOT_SOFT,
-            payload: parkingSpotId
+            value: parkingSpotId
         })
         return Promise.resolve(response.data)
     } catch (error){
@@ -55,7 +55,7 @@ export const deleteParkingSpotHard = (parkingSpotId) => async (dispatch) => {
         const response = await ParkingSpotService.hardDeleteParkingSpotById(parkingSpotId)
         dispatch({
             type: DELETE_PARKING_SPOT_HARD,
-            payload: parkingSpotId
+            value: parkingSpotId
         })
         return Promise.resolve(response.data)
     } catch (error){
@@ -67,7 +67,7 @@ export const updateParkingSpot = (parkingSpotData) => async (dispatch) => {
         const response = await ParkingSpotService.updateParkingSpot(parkingSpotData)
         dispatch({
             type: UPDATE_PARKING_SPOT,
-            payload: parkingSpotData
+            value: parkingSpotData
         })
         return Promise.resolve(response.data)
     } catch (error){

@@ -1,32 +1,44 @@
 import {ADD_CAR, DELETE_CAR, UPDATE_CAR, GET_CARS, GET_CAR} from "../actions/types"
 
-const initialState = [];
+const initialState = {
+    cars: [],
+    car: {}
+};
 
-const carReducer = (cars = initialState, action) => {
-    const {type, payload} = action
+const carReducer = (state = initialState, action) => {
+    const {type} = action
 
     switch (type){
         case ADD_CAR:
-            return [...cars, payload];
+            return {
+                ...state,
+                cars: [...state.cars, action.value],
+                car: {}
+            }
         case GET_CARS:
-            return payload;
+            return {
+                ...state,
+                cars: action.value
+            }
         case UPDATE_CAR:
-            return cars.map((car) => {
-                if (car.id === payload.id){
-                    return {
-                        ...cars,
-                        ...payload
-                    }
-                } else {
-                    return car
-                }
-            });
+            const car = action.value
+            return {
+                ...state,
+                cars: state.cars.map(item => item.id === car.id ? car : item ),
+                car: {}
+            }
         case DELETE_CAR:
-            return cars.filter(({id}) => id !== payload.id);
+            return {
+                ...state,
+                cars: state.cars.filter(item => item.id !== parseInt(action.value))
+            }
         case GET_CAR:
-            return cars.filter(({id}) => id === payload.id);
+            return {
+                ...state,
+                car: action.value
+            }
         default:
-            return cars;
+            return state;
     }
 }
 
