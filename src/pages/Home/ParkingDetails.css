@@ -1,0 +1,10 @@
+.map-container {
+    height: 90%;
+}
+
+/* Set the height for mobile screens to 40% of the viewport height */
+@media (max-width: 901px) {
+    .map-container {
+        height: 40vh;
+    }
+}

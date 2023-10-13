@@ -9,6 +9,7 @@ import About from "./pages/About/About";
 import Contact from "./pages/Contact/Contact";
 import CarPage from "./pages/Car/CarPage";
 import ParkingDetails from "./pages/Home/ParkingDetails";
+import Toolbar from "@mui/material/Toolbar";
 
 function App() {
     const theme = createTheme({
@@ -31,8 +32,9 @@ function App() {
     return (
         <BrowserRouter>
             <ThemeProvider theme={theme}>
-                <div className='App'>
-                    <AppBar />
+                    <AppBar/>
+                    <Toolbar />
+                    <div className="home">
                         <Routes>
                             <Route exact path={'/'} element={<Home/>}/>
                             <Route path={'/login'} element={<Login/>}/>
@@ -42,7 +44,8 @@ function App() {
                             <Route path={'/cars'} element={<CarPage/>}/>
                             <Route path={'/parking/:parkingId'} element={<ParkingDetails/>}/>
                         </Routes>
-                </div>
+                    </div>
+
             </ThemeProvider>
         </BrowserRouter>
     );

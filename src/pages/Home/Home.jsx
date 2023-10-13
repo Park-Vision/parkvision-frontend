@@ -103,6 +103,32 @@ export default function Home() {
                 </Card>
                 </Grid>
             ))}
+                {parkings.map((parking) => (
+                    <Grid item key={parking.id} xs={12} sm={12} md={12}>
+                        <Card
+                            sx={{
+                                height: '100%',
+                                display: 'flex',
+                                flexDirection: 'column',
+                            }}
+                            onClick={() => handleClick(parking.id)}
+                        >
+                            <CardMedia
+                                component="img"
+                                image={parking.img}
+                                alt={parking.name}
+                            />
+                            <CardContent sx={{ flexGrow: 1 }}>
+                                <Typography gutterBottom variant="h5" component="h2">
+                                    {parking.name}
+                                </Typography>
+                                <Typography>Adress: {parking.address}</Typography>
+                                <Typography>$/h: {parking.costRate}</Typography>
+                                <Typography>Open hours: {parking.openHours}</Typography>
+                            </CardContent>
+                        </Card>
+                    </Grid>
+                ))}
             </Grid>
         </Box>
         </Container>

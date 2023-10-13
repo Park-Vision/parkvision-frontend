@@ -26,5 +26,9 @@ class ParkingSpotService {
     async hardDeleteParkingSpotById(parkingSpotId) {
         return await axios.delete(process.env.REACT_APP_BACKEND_URL + urlConst + "/hard/" + parkingSpotId);
     }
+
+    async getParkingSpotsByParkingId(parkingId) {
+        return await axios.get(process.env.REACT_APP_BACKEND_URL + urlConst + "/parking/" + parkingId);
+    }
 }
 export default new ParkingSpotService();

@@ -26,6 +26,19 @@ export const getParkingSpots = () => async (dispatch) => {
         return Promise.reject(error)
     }
 }
+
+export const getParkingSpotsByParkingId = (parkingId) => async (dispatch) => {
+    try {
+        const response = await ParkingSpotService.getParkingSpotsByParkingId(parkingId)
+        dispatch({
+            type: GET_PARKING_SPOTS,
+            value: response.data
+        })
+        return Promise.resolve(response.data)
+    } catch (error){
+        return Promise.reject(error)
+    }
+}
 export const getParkingSpot = (parkingSpotId) => async (dispatch) => {
     try {
         const response = await ParkingSpotService.getParkingSpotById(parkingSpotId)
