@@ -1,5 +1,5 @@
 .map-container {
-    height: 90%;
+    height: 100%;
 }
 
 /* Set the height for mobile screens to 40% of the viewport height */
@@ -7,4 +7,15 @@
     .map-container {
         height: 40vh;
     }
+}
+
+@media (min-width: 901px) {
+    .reserve {
+        overflow: scroll;
+        height: calc(100vh - 120px);
+    }
+}
+
+.reserve{
+
 }

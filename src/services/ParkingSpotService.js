@@ -30,5 +30,9 @@ class ParkingSpotService {
     async getParkingSpotsByParkingId(parkingId) {
         return await axios.get(process.env.REACT_APP_BACKEND_URL + urlConst + "/parking/" + parkingId);
     }
+
+    async getFreeParkingSpotsByParkingId(parkingId, start, end) {
+        return await axios.get(process.env.REACT_APP_BACKEND_URL + urlConst + "/parking/" + parkingId + "/free", { params: { startDate: start, endDate: end } });
+    }
 }
 export default new ParkingSpotService();

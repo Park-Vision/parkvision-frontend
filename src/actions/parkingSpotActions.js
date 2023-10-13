@@ -1,5 +1,13 @@
-import {ADD_PARKING_SPOT, DELETE_PARKING_SPOT_SOFT, DELETE_PARKING_SPOT_HARD,
-    UPDATE_PARKING_SPOT, GET_PARKING_SPOTS, GET_PARKING_SPOT} from "./types"
+import {
+    ADD_PARKING_SPOT,
+    DELETE_PARKING_SPOT_SOFT,
+    DELETE_PARKING_SPOT_HARD,
+    UPDATE_PARKING_SPOT,
+    GET_PARKING_SPOTS,
+    GET_PARKING_SPOT,
+    GET_PARKING_SPOTS_BY_PARKING_ID,
+    GET_FREE_PARKING_SPOTS_BY_PARKING_ID
+} from "./types"
 import ParkingSpotService from "../services/ParkingSpotService"
 
 export const addParkingSpot = (parkingSpotData) => async (dispatch) => {
@@ -31,7 +39,20 @@ export const getParkingSpotsByParkingId = (parkingId) => async (dispatch) => {
     try {
         const response = await ParkingSpotService.getParkingSpotsByParkingId(parkingId)
         dispatch({
-            type: GET_PARKING_SPOTS,
+            type: GET_PARKING_SPOTS_BY_PARKING_ID,
+            value: response.data
+        })
+        return Promise.resolve(response.data)
+    } catch (error){
+        return Promise.reject(error)
+    }
+}
+
+export const getFreeParkingSpotsByParkingId = (parkingId, start, end) => async (dispatch) => {
+    try {
+        const response = await ParkingSpotService.getFreeParkingSpotsByParkingId(parkingId, start, end);
+        dispatch({
+            type: GET_FREE_PARKING_SPOTS_BY_PARKING_ID,
             value: response.data
         })
         return Promise.resolve(response.data)

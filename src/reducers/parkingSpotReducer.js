@@ -1,8 +1,9 @@
 import {ADD_PARKING_SPOT, DELETE_PARKING_SPOT_SOFT, DELETE_PARKING_SPOT_HARD,
-    UPDATE_PARKING_SPOT, GET_PARKING_SPOTS, GET_PARKING_SPOT} from "../actions/types"
+    UPDATE_PARKING_SPOT, GET_PARKING_SPOTS, GET_PARKING_SPOT, GET_PARKING_SPOTS_BY_PARKING_ID, GET_FREE_PARKING_SPOTS_BY_PARKING_ID} from "../actions/types"
 
 const initialState = {
     parkingSpots: [],
+    freeParkingSpots: [],
     parkingSpot: {}
 };
 
@@ -20,6 +21,16 @@ const parkingSpotReducer = (state = initialState, action) => {
             return {
                 ...state,
                 parkingSpots: action.value
+            }
+        case GET_PARKING_SPOTS_BY_PARKING_ID:
+            return {
+                ...state,
+                parkingSpots: action.value
+            }
+        case GET_FREE_PARKING_SPOTS_BY_PARKING_ID:
+            return {
+                ...state,
+                freeParkingSpots: action.value
             }
         case UPDATE_PARKING_SPOT:
             const parkingSpot = action.value

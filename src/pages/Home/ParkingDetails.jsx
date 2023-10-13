@@ -1,9 +1,6 @@
 import React, {useDebugValue, useEffect, useRef} from "react";
 import {useDispatch, useSelector} from "react-redux";
-import {getCars} from "../../actions/carActions";
 import {getParking} from "../../actions/parkingActions";
-import Card from "@mui/material/Card";
-import CardMedia from "@mui/material/CardMedia";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
 import {useParams} from "react-router-dom";
@@ -23,7 +20,9 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs from 'dayjs';
 
 import {MapContainer, Marker, Polygon, Popup, TileLayer, FeatureGroup, MapControl} from 'react-leaflet'
-import {getParkingSpotsByParkingId} from "../../actions/parkingSpotActions";
+import {getFreeParkingSpotsByParkingId, getParkingSpotsByParkingId} from "../../actions/parkingSpotActions";
+import Button from "@mui/material/Button";
+import TextField from "@mui/material/TextField";
 
 delete L.Icon.Default.prototype._getIconUrl;
 
@@ -38,15 +37,20 @@ L.Icon.Default.mergeOptions({
 
 function ParkingDetails(props) {
     const {parkingId} = useParams()
-    console.log(parkingId)
     const dispatch = useDispatch()
 
-    const [value, setValue] = React.useState(dayjs('2022-04-17'));
+    const [startDay, setStartDay] = React.useState(dayjs());
+    const [endDay, setEndDay] = React.useState(dayjs());
+    const [startTime, setStartTime] = React.useState(dayjs());
+    const [endTime, setEndTime] = React.useState(dayjs())
 
 
     const parking = useSelector(state => state.parkingReducer.parking)
 
     const parkingSpots = useSelector(state => state.parkingSpotReducer)
+    const freeParkingSpots = useSelector(state => state.parkingSpotReducer.freeParkingSpots)
+    const [parkingSpot, setParkingSpot] = React.useState(null);
+
 
     useEffect(() => {
         dispatch(getParking(parkingId))
@@ -55,11 +59,42 @@ function ParkingDetails(props) {
 
     const mapRef = useRef(null);
 
+    const startOpenHour = 6;
+    const endOpenHour = 22;
+    const shouldDisableTime = (value, view) => {
+        const hour = value.hour();
+        if (view === 'hours') {
+            return hour < startOpenHour || hour > endOpenHour;
+        }
+        return false;
+    };
 
     const _created = (e) => {
         console.log(e.layer.toGeoJSON());
     }
 
+
+    const handleClick = (event) => {
+        console.log(startDay.toDate().toISOString());
+        console.log(startTime.toDate().toISOString());
+
+        const start = startDay.toDate().toISOString().split('T')[0] + 'T' + startTime.toDate().toISOString().split('T')[1];
+
+        console.log(endDay.toDate().toISOString());
+        console.log(endTime.toDate().toISOString());
+
+        const end = endDay.toDate().toISOString().split('T')[0] + 'T' + endTime.toDate().toISOString().split('T')[1];
+        console.log(start);
+        console.log(end);
+
+        dispatch(getFreeParkingSpotsByParkingId(parkingId, start, end));
+
+    }
+
+    const handleClickOnFreeParkingSpot = (event) => {
+        console.log('click on free parking spot', event);
+        setParkingSpot(event);
+    }
     return (
         <Container maxWidth="xl" style={{ height: "97%"}}>
             <Box sx={{ my: 4, height: '100%'}}>
@@ -67,10 +102,10 @@ function ParkingDetails(props) {
             {/* Map Section */}
             <Grid item xs={12} md={8}>
                 <div className="map-container">
-                    {parking &&(
+                    {parking.latitude && parking.longitude ? (
                         <MapContainer
                             style={{ width: '100%', height: '100%' }}
-                            center={[51.11844650799615, 16.990214186484888]}
+                            center={[parking.latitude, parking.longitude]}
                             zoom={20}
                             scrollWheelZoom={true}
                             whenCreated={(map) => (mapRef.current = map)}
@@ -101,14 +136,28 @@ function ParkingDetails(props) {
                                         featureGroup: mapRef.current?.leafletElement
                                     }}
                                 />
-                                {parkingSpots.parkingSpots.map((parkingSpot, index) => (
+                                {parkingSpots.parkingSpots.filter(spot => !freeParkingSpots.map(spot => spot.id).includes(spot.id)).map((parkingSpot, index) => (
                                         <Polygon
                                             positions={parkingSpot.pointsDTO.map((point) => [
                                                 point.latitude,
                                                 point.longitude,
                                             ])}
-                                            color="blue"
+                                            color="red"
                                         />
+                                ))}
+                                {freeParkingSpots.map((parkingSpot, index) => (
+                                    <Polygon
+                                        positions={parkingSpot.pointsDTO.map((point) => [
+                                            point.latitude,
+                                            point.longitude,
+                                        ])}
+                                        color="green"
+                                        eventHandlers={{
+                                            click: (event) => {
+                                                handleClickOnFreeParkingSpot(parkingSpot)
+                                            }
+                                        } }
+                                    />
                                 ))}
                             </FeatureGroup>
 
@@ -121,12 +170,14 @@ function ParkingDetails(props) {
 
 
                         </MapContainer>
+                    ) : (
+                        <p>Loading map...</p>
                     )}
                 </div>
 
             </Grid>
-            <Grid item xs={12} md={4}>
-                <Paper>
+            <Grid item xs={12} md={4} >
+                <Paper className='reserve'>
                     <CardContent >
                         <Typography variant="h4">{parking.name}</Typography>
                         <Typography variant='p'>{parking.description}</Typography>
@@ -134,17 +185,56 @@ function ParkingDetails(props) {
                         <Typography>$/h: {parking.costRate}</Typography>
                         <Typography>Open hours: {parking.openHours}</Typography>
                     </CardContent>
-                </Paper>
-                <Paper>
                     <CardContent >
                         <Typography variant="h5">Select date and time:</Typography>
-                        <LocalizationProvider dateAdapter={AdapterDayjs}>
-                            <DateCalendar />
-                            <DateCalendar />
-                            <DigitalClock />
-                            <DigitalClock />
-                        </LocalizationProvider>
+                        <Grid container>
+                            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                <Grid item xs={9}>
+                                    <DateCalendar value={startDay} onChange={(newValue) => setStartDay(newValue)}/>
 
+                                </Grid>
+                                <Grid item xs={3}>
+                                    <DigitalClock
+                                        ampm={false}
+                                        timeStep={15}
+                                        skipDisabled
+                                        shouldDisableTime={shouldDisableTime}
+                                        value={startTime} onChange={(newValue) => setStartTime(newValue)}
+                                    />
+
+                                </Grid>
+                            </LocalizationProvider>
+                        </Grid>
+                        <Grid container >
+                            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                <Grid item xs={9}>
+                                    <DateCalendar value={endDay} onChange={(newValue) => setEndDay(newValue)} />
+
+                                </Grid>
+                                <Grid item xs={3}>
+                                    <DigitalClock
+                                        ampm={false}
+                                        timeStep={15}
+                                        skipDisabled
+                                        shouldDisableTime={shouldDisableTime}
+                                        value={endTime} onChange={(newValue) => setEndTime(newValue)}
+
+                                    />
+                                </Grid>
+                            </LocalizationProvider>
+                        </Grid>
+                        <Grid container>
+                            <Button onClick={handleClick}>
+                                Search
+                            </Button>
+                        </Grid>
+                        <Grid container>
+                            <Typography variant="h5">Chosen parking spot:</Typography>
+                            <Typography variant="h6">{parkingSpot?.id}</Typography>
+                        </Grid>
+                        <Grid container>
+                            <TextField id="outlined-basic" label="Outlined" variant="outlined" />
+                        </Grid>
                     </CardContent>
                 </Paper>
             </Grid>
