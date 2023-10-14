@@ -13,7 +13,7 @@ const reservationReducer = (state = initialState, action) => {
         case ADD_RESERVATION:
             return {
                 ...state,
-                reservations: [...state.reservation, action.value],
+                reservations: [...state.reservations, action.value],
                 reservation: {}
             }
         case GET_RESERVATIONS:

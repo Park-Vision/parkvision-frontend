@@ -93,12 +93,12 @@ export default function Home() {
                     alt={parking.name}
                     />
                     <CardContent sx={{ flexGrow: 1 }}>
-                    <Typography gutterBottom variant="h5" component="h2">
-                        {parking.name}
-                    </Typography>
-                    <Typography>Adress: {parking.address}</Typography>
-                    <Typography>$/h: {parking.costRate}</Typography>
-                    <Typography>Open hours: {parking.openHours}</Typography>
+                        <Typography gutterBottom variant="h5" component="h2">
+                            {parking.name}
+                        </Typography>
+                        <Typography>Address:{parking.street},{parking.zipCode} {parking.city}</Typography>
+                        <Typography>Open hours: {parking.openHours}</Typography>
+                        <Typography>$/h: {parking.costRate}</Typography>
                     </CardContent>
                 </Card>
                 </Grid>

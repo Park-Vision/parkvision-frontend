@@ -23,6 +23,7 @@ import {MapContainer, Marker, Polygon, Popup, TileLayer, FeatureGroup, MapContro
 import {getFreeParkingSpotsByParkingId, getParkingSpotsByParkingId} from "../../actions/parkingSpotActions";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
+import {addReservation} from "../../actions/reservationActions";
 
 delete L.Icon.Default.prototype._getIconUrl;
 
@@ -43,14 +44,15 @@ function ParkingDetails(props) {
     const [endDay, setEndDay] = React.useState(dayjs());
     const [startTime, setStartTime] = React.useState(dayjs());
     const [endTime, setEndTime] = React.useState(dayjs())
+    const [start, setStart] = React.useState(null);
+    const [end, setEnd] = React.useState(null);
 
-
-    const parking = useSelector(state => state.parkingReducer.parking)
-
-    const parkingSpots = useSelector(state => state.parkingSpotReducer)
-    const freeParkingSpots = useSelector(state => state.parkingSpotReducer.freeParkingSpots)
+    const parking = useSelector(state => state.parkingReducer.parking);
+    const reservationReducer = useSelector(state => state.reservationReducer);
+    const parkingSpots = useSelector(state => state.parkingSpotReducer);
+    const freeParkingSpots = useSelector(state => state.parkingSpotReducer.freeParkingSpots);
     const [parkingSpot, setParkingSpot] = React.useState(null);
-
+    const [registrationNumber, setRegistrationNumber] = React.useState("");
 
     useEffect(() => {
         dispatch(getParking(parkingId))
@@ -79,11 +81,13 @@ function ParkingDetails(props) {
         console.log(startTime.toDate().toISOString());
 
         const start = startDay.toDate().toISOString().split('T')[0] + 'T' + startTime.toDate().toISOString().split('T')[1];
+        setStart(start);
 
         console.log(endDay.toDate().toISOString());
         console.log(endTime.toDate().toISOString());
 
         const end = endDay.toDate().toISOString().split('T')[0] + 'T' + endTime.toDate().toISOString().split('T')[1];
+        setEnd(end);
         console.log(start);
         console.log(end);
 
@@ -95,12 +99,31 @@ function ParkingDetails(props) {
         console.log('click on free parking spot', event);
         setParkingSpot(event);
     }
+
+    const handleCreateReservation = (event) => {
+        console.log('create reservation', event);
+        const newReservation = {
+            "startDate": start,
+            "endDate": end,
+            "registrationNumber": registrationNumber,
+            "userDTO": {
+                "id": 1
+            },
+            "parkingSpotDTO": {
+                "id": parkingSpot.id
+            }
+        }
+        console.log(newReservation);
+
+        dispatch(addReservation(newReservation))
+    }
+
     return (
         <Container maxWidth="xl" style={{ height: "97%"}}>
             <Box sx={{ my: 4, height: '100%'}}>
             <Grid container spacing={2} style={{ height: "100%"}}>
             {/* Map Section */}
-            <Grid item xs={12} md={8}>
+            <Grid item xs={12} lg={8}>
                 <div className="map-container">
                     {parking.latitude && parking.longitude ? (
                         <MapContainer
@@ -176,7 +199,7 @@ function ParkingDetails(props) {
                 </div>
 
             </Grid>
-            <Grid item xs={12} md={4} >
+            <Grid item xs={12} lg={4} >
                 <Paper className='reserve'>
                     <CardContent >
                         <Typography variant="h4">{parking.name}</Typography>
@@ -187,13 +210,13 @@ function ParkingDetails(props) {
                     </CardContent>
                     <CardContent >
                         <Typography variant="h5">Select date and time:</Typography>
-                        <Grid container>
+                        <Grid container spacing={3}>
                             <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                <Grid item xs={9}>
+                                <Grid item xs={8}>
                                     <DateCalendar value={startDay} onChange={(newValue) => setStartDay(newValue)}/>
 
                                 </Grid>
-                                <Grid item xs={3}>
+                                <Grid item xs={4}>
                                     <DigitalClock
                                         ampm={false}
                                         timeStep={15}
@@ -205,13 +228,13 @@ function ParkingDetails(props) {
                                 </Grid>
                             </LocalizationProvider>
                         </Grid>
-                        <Grid container >
+                        <Grid container spacing={3} >
                             <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                <Grid item xs={9}>
+                                <Grid item xs={8}>
                                     <DateCalendar value={endDay} onChange={(newValue) => setEndDay(newValue)} />
 
                                 </Grid>
-                                <Grid item xs={3}>
+                                <Grid item xs={4}>
                                     <DigitalClock
                                         ampm={false}
                                         timeStep={15}
@@ -233,7 +256,12 @@ function ParkingDetails(props) {
                             <Typography variant="h6">{parkingSpot?.id}</Typography>
                         </Grid>
                         <Grid container>
-                            <TextField id="outlined-basic" label="Outlined" variant="outlined" />
+                            <TextField value={registrationNumber} onChange={(newValue) => setRegistrationNumber(newValue.target.value)} id="outlined-basic" label="Nr rejestracyjny" variant="outlined" />
+                        </Grid>
+                        <Grid container>
+                            <Button onClick={handleCreateReservation}>
+                                Reserve
+                            </Button>
                         </Grid>
                     </CardContent>
                 </Paper>

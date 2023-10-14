@@ -11,7 +11,8 @@
 
 @media (min-width: 901px) {
     .reserve {
-        overflow: scroll;
+        overflow-x: hidden;
+        overflow-y: auto;
         height: calc(100vh - 120px);
     }
 }

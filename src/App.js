@@ -33,7 +33,7 @@ function App() {
         <BrowserRouter>
             <ThemeProvider theme={theme}>
                     <AppBar/>
-                    <Toolbar />
+                    <Toolbar/>
                     <div className="home">
                         <Routes>
                             <Route exact path={'/'} element={<Home/>}/>
@@ -45,7 +45,6 @@ function App() {
                             <Route path={'/parking/:parkingId'} element={<ParkingDetails/>}/>
                         </Routes>
                     </div>
-
             </ThemeProvider>
         </BrowserRouter>
     );
