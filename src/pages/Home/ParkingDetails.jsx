@@ -204,7 +204,7 @@ function ParkingDetails(props) {
                     <CardContent >
                         <Typography variant="h4">{parking.name}</Typography>
                         <Typography variant='p'>{parking.description}</Typography>
-                        <Typography variant='h6'>Adress: {parking.address}</Typography>
+                        <Typography variant='h6'>Address: {parking.address}</Typography>
                         <Typography>$/h: {parking.costRate}</Typography>
                         <Typography>Open hours: {parking.openHours}</Typography>
                     </CardContent>

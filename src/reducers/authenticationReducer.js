@@ -1,4 +1,4 @@
-import {REGISTER_SUCCESS, REGISTER_USER, REGISTER_FAIL, LOGIN_FAIL, LOGIN_SUCCESS, LOGOUT} from "../actions/types"
+import {REGISTER_SUCCESS, REGISTER_FAIL, LOGIN_FAIL, LOGIN_SUCCESS, LOGOUT} from "../actions/types"
 
 const user = JSON.parse(localStorage.getItem("user"))
 const initialState = user

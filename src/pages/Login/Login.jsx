@@ -14,15 +14,20 @@ import CardMedia from '@mui/material/CardMedia';
 import pvlogo from "../../assets/pv_transparent.png";
 
 // use @mui/icons-material
+import { connect } from "react-redux";
+import { login } from "../../actions/parkingActions";
+
+export const required = (value) => {
+    if (!value) {
+        return (
+            <div className="alert alert-danger" role="alert">
+                This field is required!
+            </div>
+        );
+    }
+};
 
 export default function Login() {
-
-    console.log(process.env.REACT_APP_BACKEND_URL + "/cars")
-
-    fetch(process.env.REACT_APP_BACKEND_URL + "/cars")
-        .then(response => response.json())
-        .then(data => console.log(data))
-        .catch(error => console.error(error));
 
     return (
         <Container maxWidth="lg">
@@ -42,20 +47,20 @@ export default function Login() {
                         />
                 <CardContent>
                     <Typography gutterBottom variant="h5" component="div">
-                    Logowanie
+                    Login
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
                     <form>
                         <TextField
                         id="outlined-basic"
-                        label="Login"
+                        label="Email address"
                         variant="outlined"
                         fullWidth
                         margin="normal"
                         />
                         <TextField
                         id="outlined-basic"
-                        label="Hasło"
+                        label="Password"
                         variant="outlined"
                         fullWidth
                         margin="normal"
@@ -64,12 +69,12 @@ export default function Login() {
                                     <Button variant="contained" fullWidth
                                     margin="normal"
                                     >
-                        Zaloguj się
+                        Login
                         </Button>
                                     <Button fullWidth
                                     margin="normal"
                                     >
-                            Reset hasła
+                            Password reset
                         </Button>
                     </form>
                     </Typography>
