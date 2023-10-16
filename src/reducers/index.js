@@ -6,6 +6,7 @@ import parkingSpotReducer from "./parkingSpotReducer"
 import pointReducer from "./pointReducer"
 import reservationReducer from "./reservationReducer"
 import userReducer from "./userReducer"
+import authenticationReducer from "./authenticationReducer.js"
 
 
 export default combineReducers({
@@ -15,6 +16,6 @@ export default combineReducers({
     parkingSpotReducer,
     pointReducer,
     reservationReducer,
-    userReducer
-
+    userReducer,
+    authenticationReducer
 });
