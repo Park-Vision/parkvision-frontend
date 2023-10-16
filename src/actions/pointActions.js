@@ -6,7 +6,7 @@ export const addPoint = (pointData) => async (dispatch) => {
         const response = await PointService.createPoint(pointData)
         dispatch({
             type: ADD_POINT,
-            payload: response.data
+            value: response.data
         })
         return Promise.resolve(response.data)
     } catch (error){
@@ -18,7 +18,7 @@ export const getPoints = () => async (dispatch) => {
         const response = await PointService.getPoints()
         dispatch({
             type: GET_POINTS,
-            payload: response.data
+            value: response.data
         })
         return Promise.resolve(response.data)
     } catch (error){
@@ -30,7 +30,7 @@ export const getPoint = (pointId) => async (dispatch) => {
         const response = await PointService.getPointById(pointId)
         dispatch({
             type: GET_POINT,
-            payload: response.data
+            value: response.data
         })
         return Promise.resolve(response.data)
     } catch (error){
@@ -42,7 +42,7 @@ export const deletePoint = (pointId) => async (dispatch) => {
         const response = await PointService.deletePointById(pointId)
         dispatch({
             type: DELETE_POINT,
-            payload: pointId
+            value: pointId
         })
         return Promise.resolve(response.data)
     } catch (error){
@@ -54,7 +54,7 @@ export const updatePoint = (pointData) => async (dispatch) => {
         const response = await PointService.updatePoint(pointData)
         dispatch({
             type: UPDATE_POINT,
-            payload: pointData
+            value: pointData
         })
         return Promise.resolve(response.data)
     } catch (error){

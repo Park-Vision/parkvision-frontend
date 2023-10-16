@@ -7,7 +7,7 @@ export const addUser = (userData) => async (dispatch) => {
         const response = await UserService.createUser(userData)
         dispatch({
             type: ADD_USER,
-            payload: response.data
+            value: response.data
         })
         return Promise.resolve(response.data)
     } catch (error){
@@ -19,7 +19,7 @@ export const getUsers = () => async (dispatch) => {
         const response = await UserService.getUsers()
         dispatch({
             type: GET_USERS,
-            payload: response.data
+            value: response.data
         })
         return Promise.resolve(response.data)
     } catch (error){
@@ -31,7 +31,7 @@ export const getUser = (userId) => async (dispatch) => {
         const response = await UserService.getUserById(userId)
         dispatch({
             type: GET_USER,
-            payload: response.data
+            value: response.data
         })
         return Promise.resolve(response.data)
     } catch (error){
@@ -43,7 +43,7 @@ export const deleteUser = (userId) => async (dispatch) => {
         const response = await UserService.deleteUserById(userId)
         dispatch({
             type: DELETE_USER,
-            payload: userId
+            value: userId
         })
         return Promise.resolve(response.data)
     } catch (error){
@@ -55,7 +55,7 @@ export const updateUser = (userData) => async (dispatch) => {
         const response = await UserService.updateUser(userData)
         dispatch({
             type: UPDATE_USER,
-            payload: userData
+            value: userData
         })
         return Promise.resolve(response.data)
     } catch (error){
@@ -67,7 +67,7 @@ export const authenticateUser = (userData) => async (dispatch) => {
         const response = await UserService.authenticateUser(userData)
         dispatch({
             type: AUTHENTICATE_USER,
-            payload: response.data
+            value: response.data
         })
         return Promise.resolve(response.data)
     } catch (error){
@@ -79,7 +79,7 @@ export const registerUser = (userData) => async (dispatch) => {
         const response = await UserService.registerUser(userData)
         dispatch({
             type: REGISTER_USER,
-            payload: response.data
+            value: response.data
         })
         return Promise.resolve(response.data)
     } catch (error){

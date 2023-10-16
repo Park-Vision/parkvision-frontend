@@ -6,7 +6,7 @@ export const addDrone = (droneData) => async (dispatch) => {
         const response = await DroneService.createDrone(droneData)
         dispatch({
             type: ADD_DRONE,
-            payload: response.data
+            value: response.data
         })
         return Promise.resolve(response.data)
     } catch (error){
@@ -18,7 +18,7 @@ export const getDrones = () => async (dispatch) => {
         const response = await DroneService.getDrones()
         dispatch({
             type: GET_DRONES,
-            payload: response.data
+            value: response.data
         })
         return Promise.resolve(response.data)
     } catch (error){
@@ -30,7 +30,7 @@ export const getDrone = (droneId) => async (dispatch) => {
         const response = await DroneService.getDroneById(droneId)
         dispatch({
             type: GET_DRONE,
-            payload: response.data
+            value: response.data
         })
         return Promise.resolve(response.data)
     } catch (error){
@@ -42,7 +42,7 @@ export const deleteDrone = (droneId) => async (dispatch) => {
         const response = await DroneService.deleteDroneById(droneId)
         dispatch({
             type: DELETE_DRONE,
-            payload: droneId
+            value: droneId
         })
         return Promise.resolve(response.data)
     } catch (error){
@@ -54,7 +54,7 @@ export const updateDrone = (droneData) => async (dispatch) => {
         const response = await DroneService.updateDrone(droneData)
         dispatch({
             type: UPDATE_DRONE,
-            payload: droneData
+            value: droneData
         })
         return Promise.resolve(response.data)
     } catch (error){

@@ -7,7 +7,9 @@ import {BrowserRouter, Route, Routes} from "react-router-dom";
 import Reservations from "./pages/Reservations/Reservations";
 import About from "./pages/About/About";
 import Contact from "./pages/Contact/Contact";
-import Car from "./pages/Car/Car";
+import CarPage from "./pages/Car/CarPage";
+import ParkingDetails from "./pages/Home/ParkingDetails";
+import Toolbar from "@mui/material/Toolbar";
 
 function App() {
     const theme = createTheme({
@@ -19,9 +21,9 @@ function App() {
                 contrastText: "#fff",
             },
             primary: {
-                light: "#ffcf33",
+                light: "#5ede3f",
                 main: "#2e7d32",
-                dark: "#ff8f00",
+                dark: "#225024",
                 contrastText: "#fff",
             },
         },
@@ -30,17 +32,19 @@ function App() {
     return (
         <BrowserRouter>
             <ThemeProvider theme={theme}>
-                <div className='App'>
-                    <AppBar />
+                    <AppBar/>
+                    <Toolbar/>
+                    <div className="home">
                         <Routes>
                             <Route exact path={'/'} element={<Home/>}/>
-                            <Route exact path={'/login'} element={<Login/>}/>
-                            <Route exact path={'/reservations'} element={<Reservations/>}/>
-                            <Route exact path={'/about'} element={<About/>}/>
-                            <Route exact path={'/contact'} element={<Contact/>}/>
-                            <Route exact path={'/cars'} element={<Car/>}/>
+                            <Route path={'/login'} element={<Login/>}/>
+                            <Route path={'/reservations'} element={<Reservations/>}/>
+                            <Route path={'/about'} element={<About/>}/>
+                            <Route path={'/contact'} element={<Contact/>}/>
+                            <Route path={'/cars'} element={<CarPage/>}/>
+                            <Route path={'/parking/:parkingId'} element={<ParkingDetails/>}/>
                         </Routes>
-                </div>
+                    </div>
             </ThemeProvider>
         </BrowserRouter>
     );

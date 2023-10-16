@@ -1,32 +1,44 @@
 import {ADD_DRONE, GET_DRONE, DELETE_DRONE, GET_DRONES, UPDATE_DRONE} from "../actions/types"
 
-const initialState = [];
+const initialState = {
+    drones: [],
+    drone: {}
+};
 
-const droneReducer = (drones = initialState, action) => {
-    const {type, payload} = action
+const droneReducer = (state = initialState, action) => {
+    const {type} = action
 
     switch (type){
         case ADD_DRONE:
-            return [...drones, payload];
+            return {
+                ...state,
+                drones: [...state.drones, action.value],
+                drone: {}
+            }
         case GET_DRONES:
-            return payload;
+            return {
+                ...state,
+                drones: action.value
+            }
         case UPDATE_DRONE:
-            return drones.map((drone) => {
-                if (drone.id === payload.id){
-                    return {
-                        ...drones,
-                        ...payload
-                    }
-                } else {
-                    return drone
-                }
-            });
+            const drone = action.value
+            return {
+                ...state,
+                drones: state.drones.map(item => item.id === drone.id ? drone : item ),
+                drone: {}
+            }
         case DELETE_DRONE:
-            return drones.filter(({id}) => id !== payload.id);
+            return {
+                ...state,
+                drones: state.drones.filter(item => item.id !== parseInt(action.value))
+            }
         case GET_DRONE:
-            return drones.filter(({id}) => id === payload.id);
+            return {
+                ...state,
+                drone: action.value
+            }
         default:
-            return drones;
+            return state;
     }
 }
 

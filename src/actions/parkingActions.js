@@ -6,7 +6,7 @@ export const addParking = (parkingData) => async (dispatch) => {
         const response = await ParkingService.createParking(parkingData)
         dispatch({
             type: ADD_PARKING,
-            payload: response.data
+            value: response.data
         })
         return Promise.resolve(response.data)
     } catch (error){
@@ -18,7 +18,7 @@ export const getParkings = () => async (dispatch) => {
         const response = await ParkingService.getParkings()
         dispatch({
             type: GET_PARKINGS,
-            payload: response.data
+            value: response.data
         })
         return Promise.resolve(response.data)
     } catch (error){
@@ -30,7 +30,7 @@ export const getParking = (parkingId) => async (dispatch) => {
         const response = await ParkingService.getParkingById(parkingId)
         dispatch({
             type: GET_PARKING,
-            payload: response.data
+            value: response.data
         })
         return Promise.resolve(response.data)
     } catch (error){
@@ -42,7 +42,7 @@ export const deleteParking = (parkingId) => async (dispatch) => {
         const response = await ParkingService.deleteParkingById(parkingId)
         dispatch({
             type: DELETE_PARKING,
-            payload: parkingId
+            value: parkingId
         })
         return Promise.resolve(response.data)
     } catch (error){
@@ -54,7 +54,7 @@ export const updateParking = (parkingData) => async (dispatch) => {
         const response = await ParkingService.updateParking(parkingData)
         dispatch({
             type: UPDATE_PARKING,
-            payload: parkingData
+            value: parkingData
         })
         return Promise.resolve(response.data)
     } catch (error){

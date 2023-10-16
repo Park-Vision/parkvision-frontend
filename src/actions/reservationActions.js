@@ -7,7 +7,7 @@ export const addReservation = (reservationData) => async (dispatch) => {
         const response = await ReservationService.createReservation(reservationData)
         dispatch({
             type: ADD_RESERVATION,
-            payload: response.data
+            value: response.data
         })
         return Promise.resolve(response.data)
     } catch (error){
@@ -19,7 +19,7 @@ export const getReservations = () => async (dispatch) => {
         const response = await ReservationService.getReservations()
         dispatch({
             type: GET_RESERVATIONS,
-            payload: response.data
+            value: response.data
         })
         return Promise.resolve(response.data)
     } catch (error){
@@ -31,7 +31,7 @@ export const getReservation = (reservationId) => async (dispatch) => {
         const response = await ReservationService.getReservationById(reservationId)
         dispatch({
             type: GET_RESERVATION,
-            payload: response.data
+            value: response.data
         })
         return Promise.resolve(response.data)
     } catch (error){
@@ -43,7 +43,7 @@ export const deleteReservation = (reservationId) => async (dispatch) => {
         const response = await ReservationService.deleteReservationById(reservationId)
         dispatch({
             type: DELETE_RESERVATION,
-            payload: reservationId
+            value: reservationId
         })
         return Promise.resolve(response.data)
     } catch (error){
@@ -55,7 +55,7 @@ export const updateReservation = (reservationData) => async (dispatch) => {
         const response = await ReservationService.updateReservation(reservationData)
         dispatch({
             type: UPDATE_RESERVATION,
-            payload: reservationData
+            value: reservationData
         })
         return Promise.resolve(response.data)
     } catch (error){
