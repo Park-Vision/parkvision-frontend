@@ -1,4 +1,4 @@
-import {ADD_CAR, DELETE_CAR, UPDATE_CAR, GET_CARS, GET_CAR} from "./types"
+import {ADD_CAR, DELETE_CAR, UPDATE_CAR, GET_CARS, GET_CAR, GET_USER_CARS} from "./types"
 import CarService from "../services/CarService"
 
 export const addCar = (carData) => async (dispatch) => {
@@ -30,6 +30,18 @@ export const getCar = (carId) => async (dispatch) => {
         const response = await CarService.getCarById(carId)
         dispatch({
             type: GET_CAR,
+            value: response.data
+        })
+        return Promise.resolve(response.data)
+    } catch (error){
+        return Promise.reject(error)
+    }
+}
+export const getUserCars = (userId) => async (dispatch) => {
+    try {
+        const response = await CarService.getUserCars(userId)
+        dispatch({
+            type: GET_USER_CARS,
             value: response.data
         })
         return Promise.resolve(response.data)
