@@ -22,7 +22,7 @@ export const login = (email, password) => (dispatch) => {
     try {
         const response = AuthenticationService.login(email, password)
         dispatch({
-            type: REGISTER_SUCCESS,
+            type: LOGIN_SUCCESS,
             value: response.data
         })
         return Promise.resolve(response.data)

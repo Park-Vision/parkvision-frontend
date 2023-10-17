@@ -6,10 +6,13 @@ const user = "user"
 class AuthenticationService {
     login(email, password){
         return axios
-            .post(process.env.REACT_APP_BACKEND_URL + urlConst + "/authenticate", {username: email, password})
+            .post(process.env.REACT_APP_BACKEND_URL + urlConst + "/authenticate",
+                {email: email,
+                    password: password})
             .then((response) => {
-                if (response.data.accessToken){
+                if (response.data.token){
                     localStorage.setItem(user, JSON.stringify(response.data))
+                    console.log(localStorage.getItem(user))
                 }
                 return response.data
             })
@@ -21,7 +24,10 @@ class AuthenticationService {
 
     register(email, firstName, lastName, password){
         return axios.post(process.env.REACT_APP_BACKEND_URL + urlConst + "/register",
-            {email, firstName, lastName, password})
+            {email: email,
+                firstName: firstName,
+                lastName: lastName,
+                password: password})
 
     }
 }

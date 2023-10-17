@@ -13,21 +13,66 @@ import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import pvlogo from "../../assets/pv_transparent.png";
 
-// use @mui/icons-material
-import { connect } from "react-redux";
-import { login } from "../../actions/parkingActions";
 
-export const required = (value) => {
-    if (!value) {
-        return (
-            <div className="alert alert-danger" role="alert">
-                This field is required!
-            </div>
-        );
+import {useDispatch} from "react-redux";
+import {login} from "../../actions/authenticationActions";
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import {useNavigate} from "react-router-dom";
+
+
+export default function Login(props) {
+
+    const [email, setEmail] = React.useState()
+    const [password, setPassword] = React.useState()
+    const dispatch = useDispatch()
+    const navigate = useNavigate()
+
+
+    const handleEmail = (event) => {
+        const emailValue = event.target.value;
+        const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
+        if (emailRegex.test(emailValue)) {
+            setEmail(emailValue);
+        }
+    };
+
+    const handlePassword = (event) => {
+        const passwordValue = event.target.value;
+        // if (passwordValue.size > 8){
+        //     setPassword(passwordValue);
+        // }
+        setPassword(passwordValue)
+    };
+
+    const handleRegister = () => {
+        navigate("/register");
     }
-};
 
-export default function Login() {
+
+    const handleLogin = (e) => {
+        e.preventDefault()
+        console.log('Email:', email);
+        console.log('Password:', password);
+        if (email !== undefined && password !== undefined){
+            dispatch(login(email, password))
+                .then(response => {
+                    if (response.status === 200) {
+                        console.log('Success');
+                        setEmail("")
+                        setPassword("")
+                    } else {
+                        console.log('Login failed');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        } else {
+            toast.error('Please enter valid email and password');
+        }
+
+    };
 
     return (
         <Container maxWidth="lg">
@@ -50,33 +95,36 @@ export default function Login() {
                     Login
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
-                    <form>
-                        <TextField
-                        id="outlined-basic"
-                        label="Email address"
-                        variant="outlined"
-                        fullWidth
-                        margin="normal"
-                        />
-                        <TextField
-                        id="outlined-basic"
-                        label="Password"
-                        variant="outlined"
-                        fullWidth
-                        margin="normal"
-                        type='password'
-                        />
-                                    <Button variant="contained" fullWidth
-                                    margin="normal"
-                                    >
-                        Login
-                        </Button>
-                                    <Button fullWidth
-                                    margin="normal"
-                                    >
-                            Password reset
-                        </Button>
-                    </form>
+                        <form onSubmit={handleLogin}>
+                            <TextField
+                                id="outlined-basic"
+                                label="Email address"
+                                variant="outlined"
+                                fullWidth
+                                margin="normal"
+                                required={true}
+                                onChange={handleEmail}
+                            />
+                            <TextField
+                                id="outlined-basic"
+                                label="Password"
+                                variant="outlined"
+                                fullWidth
+                                margin="normal"
+                                type="password"
+                                required={true}
+                                onChange={handlePassword}
+                            />
+                            <Button type="submit" variant="contained" fullWidth margin="normal" >
+                                Login
+                            </Button>
+                            <Button fullWidth margin="normal">
+                                Password reset
+                            </Button>
+                            <Button variant="contained" fullWidth margin="normal" onClick={handleRegister()}>
+                                Register
+                            </Button>
+                        </form>
                     </Typography>
                 </CardContent>
                 </Card>

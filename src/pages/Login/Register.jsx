@@ -10,10 +10,69 @@ import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import {required} from "./Login";
+import {useDispatch} from "react-redux";
+import {register} from "../../actions/authenticationActions";
+import {toast} from "react-toastify";
 
 
 
 export default function Register(){
+    const [email, setEmail] = React.useState()
+    const [firstName, setFirstName] = React.useState()
+    const [lastName, setLastName] = React.useState()
+    const [password, setPassword] = React.useState()
+    const dispatch = useDispatch()
+
+    const handleEmail = (event) => {
+        const emailValue = event.target.value
+        const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i
+        if (emailRegex.test(emailValue)) {
+            setEmail(emailValue)
+        }
+    };
+    const handleFirstName = (event) => {
+        const firstNameValue = event.target.value
+        if (firstNameValue.length > 0){
+            setFirstName(firstNameValue)
+        }
+    }
+
+    const handleLastName = (event) => {
+        const lastNameValue = event.target.value
+        if (lastNameValue.length > 0){
+            setLastName(lastNameValue)
+        }
+    }
+
+    const handlePassword = (event) => {
+        const passwordValue = event.target.value
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
+        if (passwordRegex.test(passwordValue)) {
+            setPassword(passwordValue);
+        }
+    }
+
+    const handleRegister = (event) => {
+        event.preventDefault()
+        console.log('Email:', email);
+        console.log('First:', firstName);
+        console.log('Last:', lastName);
+        console.log('Password:', password);
+        if (email !== undefined && firstName !== undefined && lastName !== undefined && password !== undefined){
+            dispatch(register(email, firstName, lastName, password))
+            setEmail(undefined)
+            setFirstName(undefined)
+            setLastName(undefined)
+            setPassword(undefined)
+        } else {
+            toast.error('Please enter valid data');
+
+        }
+
+    }
+
+
+
     return (
         <Container maxWidth="lg">
             <Box sx={{
@@ -37,13 +96,15 @@ export default function Register(){
                                 Register
                             </Typography>
                             <Typography variant="body2" color="text.secondary">
-                                <form>
+                                <form onSubmit={handleRegister}>
                                     <TextField
                                         id="outlined-basic"
-                                        label="Login"
+                                        label="Email address"
                                         variant="outlined"
                                         fullWidth
                                         margin="normal"
+                                        required={true}
+                                        onChange={handleEmail}
                                     />
                                     <TextField
                                         id="outlined-basic"
@@ -51,6 +112,8 @@ export default function Register(){
                                         variant="outlined"
                                         fullWidth
                                         margin="normal"
+                                        required={true}
+                                        onChange={handleFirstName}
                                     />
                                     <TextField
                                         id="outlined-basic"
@@ -58,19 +121,24 @@ export default function Register(){
                                         variant="outlined"
                                         fullWidth
                                         margin="normal"
+                                        required={true}
+                                        onChange={handleLastName}
                                     />
                                     <TextField
                                         id="outlined-basic"
-                                        label="Hasło"
+                                        label="Password"
                                         variant="outlined"
                                         fullWidth
                                         margin="normal"
-                                        type='password'
+                                        type="password"
+                                        required={true}
+                                        onChange={handlePassword}
                                     />
-                                    <Button variant="contained" fullWidth
-                                            margin="normal"
-                                    >
+                                    <Button type="submit" variant="contained" fullWidth margin="normal" >
                                         Register
+                                    </Button>
+                                    <Button fullWidth margin="normal">
+                                        Login
                                     </Button>
                                 </form>
                             </Typography>
