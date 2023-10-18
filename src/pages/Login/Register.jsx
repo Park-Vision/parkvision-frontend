@@ -9,10 +9,10 @@ import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
-import {required} from "./Login";
 import {useDispatch} from "react-redux";
 import {register} from "../../actions/authenticationActions";
 import {toast} from "react-toastify";
+import {useNavigate} from "react-router-dom";
 
 
 
@@ -21,7 +21,10 @@ export default function Register(){
     const [firstName, setFirstName] = React.useState()
     const [lastName, setLastName] = React.useState()
     const [password, setPassword] = React.useState()
+    const [passwordRepeat, setPasswordRepeat] = React.useState()
     const dispatch = useDispatch()
+    const navigate = useNavigate()
+
 
     const handleEmail = (event) => {
         const emailValue = event.target.value
@@ -52,23 +55,36 @@ export default function Register(){
         }
     }
 
+    const handlePasswordRepeat = (event) => {
+        const passwordValue = event.target.value
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
+        if (passwordRegex.test(passwordValue) && passwordValue === password) {
+            setPasswordRepeat(passwordValue);
+        }
+    }
+
     const handleRegister = (event) => {
         event.preventDefault()
         console.log('Email:', email);
         console.log('First:', firstName);
         console.log('Last:', lastName);
         console.log('Password:', password);
-        if (email !== undefined && firstName !== undefined && lastName !== undefined && password !== undefined){
+        if (email !== undefined && firstName !== undefined && lastName !== undefined
+            && password !== undefined && passwordRepeat !== undefined){
             dispatch(register(email, firstName, lastName, password))
             setEmail(undefined)
             setFirstName(undefined)
             setLastName(undefined)
             setPassword(undefined)
+            setPasswordRepeat(undefined)
         } else {
             toast.error('Please enter valid data');
 
         }
 
+    }
+    const handleLoginRedirection = () => {
+        navigate("/login");
     }
 
 
@@ -134,10 +150,20 @@ export default function Register(){
                                         required={true}
                                         onChange={handlePassword}
                                     />
+                                    <TextField
+                                        id="outlined-basic"
+                                        label="Repeat password"
+                                        variant="outlined"
+                                        fullWidth
+                                        margin="normal"
+                                        type="password"
+                                        required={true}
+                                        onChange={handlePasswordRepeat}
+                                    />
                                     <Button type="submit" variant="contained" fullWidth margin="normal" >
                                         Register
                                     </Button>
-                                    <Button fullWidth margin="normal">
+                                    <Button fullWidth margin="normal" onClick={() => handleLoginRedirection()}>
                                         Login
                                     </Button>
                                 </form>

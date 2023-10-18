@@ -18,7 +18,7 @@ import {useDispatch} from "react-redux";
 import {login} from "../../actions/authenticationActions";
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import {useNavigate} from "react-router-dom";
+import { useNavigate } from 'react-router-dom';
 
 
 export default function Login(props) {
@@ -27,7 +27,6 @@ export default function Login(props) {
     const [password, setPassword] = React.useState()
     const dispatch = useDispatch()
     const navigate = useNavigate()
-
 
     const handleEmail = (event) => {
         const emailValue = event.target.value;
@@ -39,10 +38,9 @@ export default function Login(props) {
 
     const handlePassword = (event) => {
         const passwordValue = event.target.value;
-        // if (passwordValue.size > 8){
-        //     setPassword(passwordValue);
-        // }
-        setPassword(passwordValue)
+        if (passwordValue.size > 0){
+            setPassword(passwordValue);
+        }
     };
 
     const handleRegister = () => {
@@ -61,6 +59,7 @@ export default function Login(props) {
                         console.log('Success');
                         setEmail("")
                         setPassword("")
+                        navigate("/")
                     } else {
                         console.log('Login failed');
                     }
@@ -121,7 +120,7 @@ export default function Login(props) {
                             <Button fullWidth margin="normal">
                                 Password reset
                             </Button>
-                            <Button variant="contained" fullWidth margin="normal" onClick={handleRegister()}>
+                            <Button variant="contained" fullWidth margin="normal" onClick={() => handleRegister()}>
                                 Register
                             </Button>
                         </form>
