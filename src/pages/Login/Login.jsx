@@ -38,9 +38,7 @@ export default function Login(props) {
 
     const handlePassword = (event) => {
         const passwordValue = event.target.value;
-        if (passwordValue.size > 0){
-            setPassword(passwordValue);
-        }
+        setPassword(passwordValue)
     };
 
     const handleRegister = () => {
