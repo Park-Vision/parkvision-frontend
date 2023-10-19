@@ -21,6 +21,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom';
 
 
+
 export default function Login(props) {
 
     const [email, setEmail] = React.useState()
@@ -57,7 +58,6 @@ export default function Login(props) {
                         console.log('Success');
                         setEmail("")
                         setPassword("")
-                        navigate("/")
                     } else {
                         console.log('Login failed');
                     }
@@ -70,6 +70,10 @@ export default function Login(props) {
         }
 
     };
+
+    const navigateToHome = () => {
+        navigate('/')
+    }
 
     return (
         <Container maxWidth="lg">

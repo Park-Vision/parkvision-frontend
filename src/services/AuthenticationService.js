@@ -20,6 +20,7 @@ class AuthenticationService {
 
     logout(){
         localStorage.removeItem(user)
+        console.log("Logout sucessful ls: " + localStorage.getItem(user))
     }
 
     register(email, firstName, lastName, password){

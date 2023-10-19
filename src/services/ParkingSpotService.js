@@ -17,7 +17,8 @@ class ParkingSpotService {
     }
 
     async updateParkingSpot(parkingSpotData) {
-        return await axios.put(process.env.REACT_APP_BACKEND_URL + urlConst + "/", parkingSpotData, { headers: authHeader() });
+        return await axios.put(process.env.REACT_APP_BACKEND_URL + urlConst + "/", parkingSpotData,
+            { headers: authHeader() });
     }
 
     async softDeleteParkingSpotById(parkingSpotId) {
@@ -33,7 +34,8 @@ class ParkingSpotService {
     }
 
     async getFreeParkingSpotsByParkingId(parkingId, start, end) {
-        return await axios.get(process.env.REACT_APP_BACKEND_URL + urlConst + "/parking/" + parkingId + "/free", { params: { startDate: start, endDate: end }, headers: authHeader() });
+        return await axios.get(process.env.REACT_APP_BACKEND_URL + urlConst + "/parking/" + parkingId + "/free",
+            { params: { startDate: start, endDate: end }, headers: authHeader() });
     }
 }
 export default new ParkingSpotService();
