@@ -10,6 +10,7 @@ import Contact from "./pages/Contact/Contact";
 import CarPage from "./pages/Car/CarPage";
 import ParkingDetails from "./pages/Home/ParkingDetails";
 import Toolbar from "@mui/material/Toolbar";
+import Register from "./pages/Login/Register";
 
 function App() {
     const theme = createTheme({
@@ -38,6 +39,7 @@ function App() {
                         <Routes>
                             <Route exact path={'/'} element={<Home/>}/>
                             <Route path={'/login'} element={<Login/>}/>
+                            <Route path={'/register'} element={<Register/>}/>
                             <Route path={'/reservations'} element={<Reservations/>}/>
                             <Route path={'/about'} element={<About/>}/>
                             <Route path={'/contact'} element={<Contact/>}/>

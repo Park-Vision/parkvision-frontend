@@ -6,6 +6,7 @@ import Typography from "@mui/material/Typography";
 import {useParams} from "react-router-dom";
 import {FormControl, InputLabel, Paper, Select} from "@mui/material";
 import Grid from "@mui/material/Grid";
+
 import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
 import L from "leaflet";
@@ -230,11 +231,11 @@ function ParkingDetails(props) {
                         <Typography variant="h5">Select date and time:</Typography>
                         <Grid container spacing={3}>
                             <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                <Grid item xs={8}>
+                                <Grid item xs={12} sm={8}>
                                     <DateCalendar value={startDay} onChange={(newValue) => setStartDay(newValue)}/>
 
                                 </Grid>
-                                <Grid item xs={4}>
+                                <Grid item xs={12} sm={4}>
                                     <DigitalClock
                                         ampm={false}
                                         timeStep={15}
@@ -248,11 +249,10 @@ function ParkingDetails(props) {
                         </Grid>
                         <Grid container spacing={3} >
                             <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                <Grid item xs={8}>
+                                <Grid xs={12} sm={8}>
                                     <DateCalendar value={endDay} onChange={(newValue) => setEndDay(newValue)} />
-
                                 </Grid>
-                                <Grid item xs={4}>
+                                <Grid item xs={4} sm={4}>
                                     <DigitalClock
                                         ampm={false}
                                         timeStep={15}
