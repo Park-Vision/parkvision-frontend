@@ -10,6 +10,10 @@ class CarService{
         return await axios.get(process.env.REACT_APP_BACKEND_URL + urlConst, { headers: authHeader() })
     }
 
+    async getUserCars(userId){
+        return await axios.get(process.env.REACT_APP_BACKEND_URL + urlConst + '/client/')
+    }
+
     async getCarById(carId){
         return await axios.get(process.env.REACT_APP_BACKEND_URL + urlConst + '/' + carId, { headers: authHeader() })
     }

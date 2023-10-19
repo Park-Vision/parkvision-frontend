@@ -4,7 +4,7 @@ import {getParking} from "../../actions/parkingActions";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
 import {useParams} from "react-router-dom";
-import {Paper} from "@mui/material";
+import {FormControl, InputLabel, Paper, Select} from "@mui/material";
 import Grid from "@mui/material/Grid";
 
 import Container from '@mui/material/Container';
@@ -23,8 +23,11 @@ import dayjs from 'dayjs';
 import {MapContainer, Marker, Polygon, Popup, TileLayer, FeatureGroup, MapControl} from 'react-leaflet'
 import {getFreeParkingSpotsByParkingId, getParkingSpotsByParkingId} from "../../actions/parkingSpotActions";
 import Button from "@mui/material/Button";
+import CircularProgress from '@mui/material/CircularProgress';
 import TextField from "@mui/material/TextField";
 import {addReservation} from "../../actions/reservationActions";
+import MenuItem from "@mui/material/MenuItem";
+import {getCars, getUserCars} from "../../actions/carActions";
 
 delete L.Icon.Default.prototype._getIconUrl;
 
@@ -52,12 +55,15 @@ function ParkingDetails(props) {
     const reservationReducer = useSelector(state => state.reservationReducer);
     const parkingSpots = useSelector(state => state.parkingSpotReducer);
     const freeParkingSpots = useSelector(state => state.parkingSpotReducer.freeParkingSpots);
+    const cars = useSelector(state => state.carReducer);
     const [parkingSpot, setParkingSpot] = React.useState(null);
     const [registrationNumber, setRegistrationNumber] = React.useState("");
+    const [selectedCar, setSelectedCar] = React.useState("none");
 
     useEffect(() => {
         dispatch(getParking(parkingId))
         dispatch(getParkingSpotsByParkingId(parkingId))
+        dispatch(getCars())
     }, []);
 
     const mapRef = useRef(null);
@@ -71,6 +77,11 @@ function ParkingDetails(props) {
         }
         return false;
     };
+
+    const changeCarSelection = (e) => {
+        setSelectedCar(e.target.value);
+        setRegistrationNumber(e.target.value.registrationNumber);
+    }
 
     const _created = (e) => {
         console.log(e.layer.toGeoJSON());
@@ -93,12 +104,16 @@ function ParkingDetails(props) {
         console.log(end);
 
         dispatch(getFreeParkingSpotsByParkingId(parkingId, start, end));
-
     }
 
     const handleClickOnFreeParkingSpot = (event) => {
         console.log('click on free parking spot', event);
         setParkingSpot(event);
+    }
+
+    const handleRegistrationTextFieldChange = (event) => {
+        setRegistrationNumber(event);
+        setSelectedCar("none");
     }
 
     const handleCreateReservation = (event) => {
@@ -195,7 +210,10 @@ function ParkingDetails(props) {
 
                         </MapContainer>
                     ) : (
-                        <p>Loading map...</p>
+                        <Box sx={{ display: 'flex', "align-content": 'center', "justify-content":'center', "flex-direction":'row', "flex-wrap":'wrap' }}
+                             style={{ width: '100%', height: '100%' }}>
+                            <CircularProgress />
+                        </Box>
                     )}
                 </div>
 
@@ -205,11 +223,11 @@ function ParkingDetails(props) {
                     <CardContent >
                         <Typography variant="h4">{parking.name}</Typography>
                         <Typography variant='p'>{parking.description}</Typography>
-                        <Typography variant='h6'>Address: {parking.address}</Typography>
+                        <Typography>Address:{parking.street},{parking.zipCode} {parking.city}</Typography>
                         <Typography>$/h: {parking.costRate}</Typography>
                         <Typography>Open hours: {parking.openHours}</Typography>
                     </CardContent>
-                    <CardContent >
+                    <CardContent>
                         <Typography variant="h5">Select date and time:</Typography>
                         <Grid container spacing={3}>
                             <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -247,7 +265,7 @@ function ParkingDetails(props) {
                             </LocalizationProvider>
                         </Grid>
                         <Grid container>
-                            <Button onClick={handleClick}>
+                            <Button variant="outlined" onClick={handleClick} fullWidth>
                                 Search
                             </Button>
                         </Grid>
@@ -256,10 +274,33 @@ function ParkingDetails(props) {
                             <Typography variant="h6">{parkingSpot?.id}</Typography>
                         </Grid>
                         <Grid container>
-                            <TextField value={registrationNumber} onChange={(newValue) => setRegistrationNumber(newValue.target.value)} id="outlined-basic" label="Nr rejestracyjny" variant="outlined" />
+                            <TextField sx={{ m: 1 }} fullWidth
+                                value={registrationNumber}
+                                onChange={(newValue) => handleRegistrationTextFieldChange(newValue.target.value)}
+                                id="outlined-basic"
+                                label="Type your registration number"
+                                variant="outlined" />
                         </Grid>
+                        { cars.cars.length > 0 ? (
                         <Grid container>
-                            <Button onClick={handleCreateReservation}>
+                            <FormControl sx={{ m: 1 }} fullWidth>
+                                <InputLabel id="demo-multiple-name-label">Select your car</InputLabel>
+                                <Select
+                                    labelId="demo-multiple-name-label"
+                                    id="demo-multiple-name"
+                                    value={selectedCar}
+                                    onChange={changeCarSelection}
+                                    label="Select your car"
+                                >
+                                    {cars.cars.map((car) => (
+                                        <MenuItem value={car}>{car.brand},{car.registrationNumber}</MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
+                        </Grid>
+                        ):(<div></div>)}
+                        <Grid container>
+                            <Button variant="contained" onClick={handleCreateReservation} fullWidth>
                                 Reserve
                             </Button>
                         </Grid>

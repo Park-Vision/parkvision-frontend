@@ -21,6 +21,7 @@ import {useNavigate} from "react-router-dom";
 
 export default function Home() {
     const parkings = useSelector(state => state.parkingReducer.parkings)
+    useSelector(state => state.parkingReducer.parking = {})
     const dispatch = useDispatch()
 
 
@@ -38,10 +39,6 @@ export default function Home() {
     
     const handleSubmit = (event) => {
         console.log('search', event);
-        // event.preventDefault();
-        // fetch(`http://www.omdbapi.com/?s=${search}&apikey=1c9c3b8c`)
-        // .then((response) => response.json())
-        // .then((data) => setParkings(data.Search));
     };
     
     return (

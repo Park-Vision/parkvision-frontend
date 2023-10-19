@@ -1,4 +1,4 @@
-import {ADD_CAR, DELETE_CAR, UPDATE_CAR, GET_CARS, GET_CAR} from "../actions/types"
+import {ADD_CAR, DELETE_CAR, UPDATE_CAR, GET_CARS, GET_CAR, GET_USER_CARS} from "../actions/types"
 
 const initialState = {
     cars: [],
@@ -16,6 +16,11 @@ const carReducer = (state = initialState, action) => {
                 car: {}
             }
         case GET_CARS:
+            return {
+                ...state,
+                cars: action.value
+            }
+        case GET_USER_CARS:
             return {
                 ...state,
                 cars: action.value

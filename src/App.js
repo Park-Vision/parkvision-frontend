@@ -23,7 +23,7 @@ function App() {
             },
             primary: {
                 light: "#5ede3f",
-                main: "#2e7d32",
+                main: "#3d8c62",
                 dark: "#225024",
                 contrastText: "#fff",
             },
