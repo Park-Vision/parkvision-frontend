@@ -19,7 +19,7 @@ const reservationReducer = (state = initialState, action) => {
             return {
                 ...state,
                 reservations: [...state.reservations, action.value],
-                reservation: {},
+                reservation: action.value,
             };
         case GET_RESERVATIONS:
             return {

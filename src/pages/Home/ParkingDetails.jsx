@@ -1,4 +1,4 @@
-import React, { useDebugValue, useEffect, useRef } from "react";
+import React, {useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getParking } from "../../actions/parkingActions";
 import CardContent from "@mui/material/CardContent";
@@ -37,6 +37,7 @@ import {
     GET_PARKING_SPOT,
     GET_FREE_PARKING_SPOTS_BY_PARKING_ID,
 } from "../../actions/types";
+import { toast } from "react-toastify";
 
 delete L.Icon.Default.prototype._getIconUrl;
 
@@ -56,10 +57,11 @@ function ParkingDetails(props) {
 
     const [startDay, setStartDay] = React.useState(dayjs());
     const [endDay, setEndDay] = React.useState(dayjs());
-    const [startTime, setStartTime] = React.useState(dayjs());
-    const [endTime, setEndTime] = React.useState(dayjs());
+    const [startTime, setStartTime] = React.useState(dayjs().set("minute", dayjs().minute() - (dayjs().minute() % 15)).set("second", 0).set("millisecond", 0));
+    const [endTime, setEndTime] = React.useState(startTime.add(15, "minute"));
     const [start, setStart] = React.useState(null);
     const [end, setEnd] = React.useState(null);
+    const [user, setUser] = React.useState(null);
 
     const parking = useSelector((state) => state.parkingReducer.parking);
     const reservationReducer = useSelector((state) => state.reservationReducer);
@@ -73,8 +75,24 @@ function ParkingDetails(props) {
     useEffect(() => {
         dispatch(getParking(parkingId));
         dispatch(getParkingSpotsByParkingId(parkingId));
-        dispatch(getCars());
+        handleSearch(endTime);
+        setUser(getUserFromToken());
     }, []);
+
+    const getUserFromToken = () => {
+        const user = JSON.parse(localStorage.getItem("user"));
+        if (!user) {
+            return null;
+        }
+        const token = user.token;
+        if (token) {
+            const decodedToken = JSON.parse(atob(token.split(".")[1]));
+            dispatch(getUserCars());
+            console.log(decodedToken);
+            return decodedToken;
+        }
+        return null;
+    };
 
     const mapRef = useRef(null);
 
@@ -97,11 +115,16 @@ function ParkingDetails(props) {
         console.log(e.layer.toGeoJSON());
     };
 
+    const handleSetEndTime = (newValue) => {
+        setEndTime(newValue);
+        handleSearch(newValue); 
+    }
+
     const handleSearch = (event) => {
         const start =
             startDay.toDate().toISOString().split("T")[0] + "T" + startTime.toDate().toISOString().split("T")[1];
         setStart(start);
-        const end = endDay.toDate().toISOString().split("T")[0] + "T" + endTime.toDate().toISOString().split("T")[1];
+        const end = endDay.toDate().toISOString().split("T")[0] + "T" + event.toDate().toISOString().split("T")[1];
         setEnd(end);
 
         dispatch(getFreeParkingSpotsByParkingId(parkingId, start, end));
@@ -137,13 +160,17 @@ function ParkingDetails(props) {
     };
 
     const handleCreateReservation = (event) => {
-        console.log("create reservation", event);
+        if (!user) {
+            toast.error("You must be logged in to make a reservation");
+            return;
+        }
+
         const newReservation = {
             startDate: start,
             endDate: end,
             registrationNumber: registrationNumber,
             userDTO: {
-                id: 1,
+                id: user.userId,
             },
             parkingSpotDTO: {
                 id: parkingSpot.id,
@@ -303,16 +330,16 @@ function ParkingDetails(props) {
                                 <Typography>$/h: {parking.costRate}</Typography>
                                 <Typography>Open hours: {parking.openHours}</Typography>
                             </CardContent>
-                            <CardContent>
-                                <Typography variant='h5'>Select date and time:</Typography>
+                            <CardContent spacing={2}>
+                                    <Typography variant='h6'>Select start date and time:</Typography>
+
                                 <Grid
                                     container
                                     spacing={3}
                                 >
                                     <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                        <Grid
-                                            item
-                                            xs={12} sm={8}
+                                        <Grid  
+                                            item xs={12} sm={8} lg={9}
                                         >
                                             <DateCalendar
                                                 value={startDay}
@@ -320,8 +347,7 @@ function ParkingDetails(props) {
                                             />
                                         </Grid>
                                         <Grid
-                                            item
-                                            xs={12} sm={4}
+                                           item xs={12} sm={4} lg={3}
                                         >
                                             <DigitalClock
                                                 ampm={false}
@@ -334,14 +360,14 @@ function ParkingDetails(props) {
                                         </Grid>
                                     </LocalizationProvider>
                                 </Grid>
+                                    <Typography variant='h6'>Select end date and time:</Typography>
                                 <Grid
                                     container
                                     spacing={3}
                                 >
                                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                                         <Grid
-                                            item
-                                            xs={12} sm={8}
+                                            item xs={12} sm={8} lg={9}
                                         >
                                             <DateCalendar
                                                 value={endDay}
@@ -349,8 +375,7 @@ function ParkingDetails(props) {
                                             />
                                         </Grid>
                                         <Grid
-                                            item
-                                            xs={4} sm={4}
+                                            item xs={12} sm={4} lg={3}
                                         >
                                             <DigitalClock
                                                 ampm={false}
@@ -358,7 +383,7 @@ function ParkingDetails(props) {
                                                 skipDisabled
                                                 shouldDisableTime={shouldDisableTime}
                                                 value={endTime}
-                                                onChange={(newValue) => setEndTime(newValue)}
+                                                onChange={(newValue) => { handleSetEndTime(newValue)} }
                                             />
                                         </Grid>
                                     </LocalizationProvider>

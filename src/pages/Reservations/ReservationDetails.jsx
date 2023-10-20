@@ -1,20 +1,27 @@
-import {useLocation, useNavigate} from 'react-router-dom';
-import { Container, Box, Typography, Paper, CardContent, TextField, CircularProgress, Button } from '@mui/material';
+import { useNavigate} from 'react-router-dom';
+import { Container, Box, Typography, Paper, CardContent, TextField, Button } from '@mui/material';
 import { useDispatch, useSelector } from "react-redux";
-import { useEffect, useRef } from 'react';
-import { MapContainer, TileLayer, FeatureGroup, Polygon, useMap, useMapEvents, Popup } from 'react-leaflet';
+import { MapContainer, TileLayer, FeatureGroup, Polygon, Popup } from 'react-leaflet';
+import { addReservation } from '../../actions/reservationActions';
+import {toast} from "react-toastify";
 
 export default function ReservationDetails(props) {
     const navigate = useNavigate();
-    const location = useLocation();
     const reservation = useSelector(state => state.reservationReducer.reservation);
     const parking = useSelector(state => state.parkingReducer.parking);
     const parkingSpotReducer = useSelector(state => state.parkingSpotReducer);
 
     const dispatch = useDispatch()
 
-    const handleClick = (event) => {
-        console.log('search', event);
+    const handleReseveClick = (event) => {
+        dispatch(addReservation(reservation))
+        toast.success('reservation created');
+        navigate('/');
+    };
+
+    const handleEditClick = (event) => {
+        // navigate back
+        navigate('/parking/' + parking.id);
     };
 
     // useEffect(() => {
@@ -39,7 +46,7 @@ export default function ReservationDetails(props) {
                         <MapContainer
                             style={{ width: '100%', height: '100%' }}
                             center={[parkingSpotReducer.parkingSpot.pointsDTO[0].latitude, parkingSpotReducer.parkingSpot.pointsDTO[0].longitude]}
-                            zoom={20}
+                            zoom={21}
                             scrollWheelZoom={true}
                         >
                             <FeatureGroup>
@@ -113,10 +120,10 @@ export default function ReservationDetails(props) {
                                     readOnly: true,
                                 }}
                         />
-                        <Button sx={{ m: 1 }} variant="contained" onClick={handleClick} fullWidth>
+                        <Button sx={{ m: 1 }} variant="contained" onClick={handleReseveClick} fullWidth>
                             Reserve
                         </Button>
-                        <Button sx={{ m: 1 }} variant="outlined" onClick={handleClick} fullWidth>
+                        <Button sx={{ m: 1 }} variant="outlined" onClick={handleEditClick} fullWidth>
                             Edit
                         </Button>
                         
