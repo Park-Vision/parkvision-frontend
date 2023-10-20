@@ -74,8 +74,8 @@ export default function Home() {
             </Grid>
             </form>
             <Grid container spacing={4} sx={{ mt: 4 }} >
-            {parkings.map((parking) => (
-                <Grid item key={parking.id} xs={12} sm={12} md={12}>
+            {parkings.map((parking, index) => (
+                <Grid item key={index} xs={12} sm={12} md={12}>
                 <Card
                     sx={{
                     height: '100%',

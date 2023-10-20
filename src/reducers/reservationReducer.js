@@ -1,46 +1,51 @@
-import {ADD_RESERVATION, DELETE_RESERVATION, GET_RESERVATION,
-    UPDATE_RESERVATION, GET_RESERVATIONS} from "../actions/types"
+import {
+    ADD_RESERVATION,
+    DELETE_RESERVATION,
+    GET_RESERVATION,
+    UPDATE_RESERVATION,
+    GET_RESERVATIONS,
+} from "../actions/types";
 
 const initialState = {
     reservations: [],
-    reservation: {}
+    reservation: {},
 };
 
 const reservationReducer = (state = initialState, action) => {
-    const {type} = action
+    const { type } = action;
 
-    switch (type){
+    switch (type) {
         case ADD_RESERVATION:
             return {
                 ...state,
                 reservations: [...state.reservations, action.value],
-                reservation: {}
-            }
+                reservation: action.value,
+            };
         case GET_RESERVATIONS:
             return {
                 ...state,
-                reservations: action.value
-            }
+                reservations: action.value,
+            };
         case UPDATE_RESERVATION:
-            const reservation = action.value
+            const reservation = action.value;
             return {
                 ...state,
-                reservations: state.reservations.map(item => item.id === reservation.id ? reservation : item ),
-                reservation: {}
-            }
+                reservations: state.reservations.map((item) => (item.id === reservation.id ? reservation : item)),
+                reservation: {},
+            };
         case DELETE_RESERVATION:
             return {
                 ...state,
-                reservations: state.reservations.filter(item => item.id !== parseInt(action.value))
-            }
+                reservations: state.reservations.filter((item) => item.id !== parseInt(action.value)),
+            };
         case GET_RESERVATION:
             return {
                 ...state,
-                reservation: action.value
-            }
+                reservation: action.value,
+            };
         default:
             return state;
     }
-}
+};
 
 export default reservationReducer;

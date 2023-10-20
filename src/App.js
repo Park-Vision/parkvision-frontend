@@ -11,6 +11,7 @@ import CarPage from "./pages/Car/CarPage";
 import ParkingDetails from "./pages/Home/ParkingDetails";
 import Toolbar from "@mui/material/Toolbar";
 import Register from "./pages/Login/Register";
+import ReservationDetails from "./pages/Reservations/ReservationDetails";
 
 function App() {
     const theme = createTheme({
@@ -45,6 +46,7 @@ function App() {
                             <Route path={'/contact'} element={<Contact/>}/>
                             <Route path={'/cars'} element={<CarPage/>}/>
                             <Route path={'/parking/:parkingId'} element={<ParkingDetails/>}/>
+                            <Route path={"/reservation-details"} element={<ReservationDetails />}/>
                         </Routes>
                     </div>
             </ThemeProvider>
