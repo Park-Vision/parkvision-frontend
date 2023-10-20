@@ -4,7 +4,6 @@ import authHeader from "./AuthenticationHeader";
 const urlConst = "/cars";
 class CarService {
     async getCars() {
-        console.log(authHeader());
         return await axios.get(process.env.REACT_APP_BACKEND_URL + urlConst, { headers: authHeader() });
     }
 

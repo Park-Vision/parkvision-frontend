@@ -61,7 +61,6 @@ function ParkingDetails(props) {
     const [endTime, setEndTime] = React.useState(startTime.add(15, "minute"));
     const [start, setStart] = React.useState(null);
     const [end, setEnd] = React.useState(null);
-    const [user, setUser] = React.useState(null);
 
     const parking = useSelector((state) => state.parkingReducer.parking);
     const reservationReducer = useSelector((state) => state.reservationReducer);
@@ -71,28 +70,15 @@ function ParkingDetails(props) {
     const cars = useSelector((state) => state.carReducer);
     const [registrationNumber, setRegistrationNumber] = React.useState("");
     const [selectedCar, setSelectedCar] = React.useState("none");
+    const authenticationReducer = useSelector((state) => state.authenticationReducer);
 
     useEffect(() => {
         dispatch(getParking(parkingId));
         dispatch(getParkingSpotsByParkingId(parkingId));
         handleSearch(endTime);
-        setUser(getUserFromToken());
+        dispatch(getUserCars());
     }, []);
 
-    const getUserFromToken = () => {
-        const user = JSON.parse(localStorage.getItem("user"));
-        if (!user) {
-            return null;
-        }
-        const token = user.token;
-        if (token) {
-            const decodedToken = JSON.parse(atob(token.split(".")[1]));
-            dispatch(getUserCars());
-            console.log(decodedToken);
-            return decodedToken;
-        }
-        return null;
-    };
 
     const mapRef = useRef(null);
 
@@ -160,7 +146,7 @@ function ParkingDetails(props) {
     };
 
     const handleCreateReservation = (event) => {
-        if (!user) {
+        if (!authenticationReducer.decodedUser) {
             toast.error("You must be logged in to make a reservation");
             return;
         }
@@ -170,13 +156,12 @@ function ParkingDetails(props) {
             endDate: end,
             registrationNumber: registrationNumber,
             userDTO: {
-                id: user.userId,
+                id: authenticationReducer.decodedUser.userId,
             },
             parkingSpotDTO: {
                 id: parkingSpot.id,
             },
         };
-        console.log(newReservation);
         dispatch({
             type: GET_RESERVATION,
             value: newReservation,
@@ -424,7 +409,7 @@ function ParkingDetails(props) {
                                         variant='outlined'
                                     />
                                 </Grid>
-                                {cars.cars.length > 0 ? (
+                                {authenticationReducer.decodedUser && cars.cars.length > 0 ? (
                                     <Grid container>
                                         <FormControl
                                             sx={{ m: 1 }}

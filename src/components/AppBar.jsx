@@ -15,16 +15,18 @@ import AdbIcon from '@mui/icons-material/Adb';
 import {Link} from "@mui/material";
 import {useDispatch} from "react-redux";
 import {logout} from "../actions/authenticationActions";
+import { useNavigate } from 'react-router-dom';
 
 const pages = ['Strona główna', 'Rezerwuj', 'Kontakt', 'O nas'];
 const links = ['/', '/reservations', '/contact', '/about'];
-const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
+const settings = ['Profile', 'Account', 'Dashboard'];
 
 function ResponsiveAppBar() {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
   const dispatch = useDispatch()
 
+  const navigate = useNavigate()
 
     const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
@@ -40,6 +42,10 @@ function ResponsiveAppBar() {
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
   };
+
+    const handleLogin = () => {
+      navigate('/login');
+  }
 
   const handleLogout = () => {
       dispatch(logout())
@@ -103,11 +109,6 @@ function ResponsiveAppBar() {
                       </Link>
                   </MenuItem>
               ))}
-                <MenuItem onClick={handleCloseNavMenu}>
-                    <Link style={{ textDecoration: 'none' }}
-                          onClick={handleLogout}> Logout
-                    </Link>
-                </MenuItem>
             </Menu>
           </Box>
           <Typography
@@ -138,9 +139,6 @@ function ResponsiveAppBar() {
                   </Link>
               </Button>
             ))}
-              <Button sx={{ my: 2, color: 'white', display: 'block' }}
-              onClick={handleLogout}> Logout
-              </Button>
           </Box>
 
           <Box sx={{ flexGrow: 0 }}>
@@ -170,6 +168,17 @@ function ResponsiveAppBar() {
                   <Typography textAlign="center">{setting}</Typography>
                 </MenuItem>
               ))}
+                <MenuItem onClick={handleLogin}>
+                  <Link style={{ textDecoration: 'none' }}>
+                    Login
+                  </Link>
+                </MenuItem>
+                <MenuItem>
+                    <Link style={{ textDecoration: 'none' }}
+                          onClick={handleLogout}> Logout
+                    </Link>
+                </MenuItem>
+
             </Menu>
           </Box>
         </Toolbar>

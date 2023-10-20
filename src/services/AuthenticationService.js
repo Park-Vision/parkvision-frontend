@@ -4,15 +4,15 @@ const urlConst = "/auth";
 const user = "user";
 
 class AuthenticationService {
-    login(email, password) {
-        return axios
+    async login(email, password) {
+        return await axios
             .post(process.env.REACT_APP_BACKEND_URL + urlConst + "/authenticate", { email: email, password: password })
             .then((response) => {
                 if (response.data.token) {
                     localStorage.setItem(user, JSON.stringify(response.data));
                     console.log(localStorage.getItem(user));
                 }
-                return response.data;
+                return response;
             });
     }
 

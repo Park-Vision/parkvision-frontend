@@ -55,9 +55,10 @@ export default function Login(props) {
             dispatch(login(email, password))
                 .then(response => {
                     if (response.status === 200) {
-                        console.log('Success');
                         setEmail("")
                         setPassword("")
+                        toast.success('Login successful');
+                        navigate(-1);
                     } else {
                         console.log('Login failed');
                     }
