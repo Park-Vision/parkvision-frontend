@@ -13,9 +13,8 @@ const decodeToken = (token) => {
 };
 
 const user = JSON.parse(localStorage.getItem("user"));
-const decodedUser = decodeToken(user.token);
 const initialState = user
-    ? { isLoggedIn: true, user, decodedUser }
+    ? { isLoggedIn: true, user, decodedUser: decodeToken(user.token) }
     : { isLoggedIn: false, user: null, decodedUser: null };
 
 const authenticationReducer = (state = initialState, action) => {

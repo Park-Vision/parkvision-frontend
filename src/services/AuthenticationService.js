@@ -16,13 +16,13 @@ class AuthenticationService {
             });
     }
 
-    logout() {
-        localStorage.removeItem(user);
+    async logout() {
+        await localStorage.removeItem(user);
         console.log("Logout sucessful ls: " + localStorage.getItem(user));
     }
 
-    register(email, firstName, lastName, password) {
-        return axios.post(process.env.REACT_APP_BACKEND_URL + urlConst + "/register", {
+    async register(email, firstName, lastName, password) {
+        return await axios.post(process.env.REACT_APP_BACKEND_URL + urlConst + "/register", {
             email: email,
             firstName: firstName,
             lastName: lastName,

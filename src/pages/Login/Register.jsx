@@ -25,10 +25,11 @@ export default function Register(){
     const dispatch = useDispatch()
     const navigate = useNavigate()
 
+    const passwordRegex = /^(?=.*[A-Z])(?=.*\d).{8,}$/;
+    const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i
 
     const handleEmail = (event) => {
         const emailValue = event.target.value
-        const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i
         if (emailRegex.test(emailValue)) {
             setEmail(emailValue)
         }
@@ -49,7 +50,6 @@ export default function Register(){
 
     const handlePassword = (event) => {
         const passwordValue = event.target.value
-        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
         if (passwordRegex.test(passwordValue)) {
             setPassword(passwordValue);
         }
@@ -57,7 +57,6 @@ export default function Register(){
 
     const handlePasswordRepeat = (event) => {
         const passwordValue = event.target.value
-        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
         if (passwordRegex.test(passwordValue) && passwordValue === password) {
             setPasswordRepeat(passwordValue);
         }
