@@ -26,7 +26,6 @@ function ResponsiveAppBar() {
   const dispatch = useDispatch()
   const isLoggedIn = useSelector((state) => state.authenticationReducer.isLoggedIn);
 
-
   const navigate = useNavigate()
 
   const handleOpenNavMenu = (event) => {

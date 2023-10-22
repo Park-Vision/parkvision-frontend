@@ -1,5 +1,5 @@
 // generate login page with login, password and submit button
-import React from 'react';
+import React, {useEffect} from 'react';
 
 // use @mui/material
 import Container from '@mui/material/Container';
@@ -14,7 +14,7 @@ import CardMedia from '@mui/material/CardMedia';
 import pvlogo from "../../assets/pv_transparent.png";
 
 
-import {useDispatch} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {login} from "../../actions/authenticationActions";
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -22,16 +22,35 @@ import { useNavigate } from 'react-router-dom';
 
 
 
-export default function Login(props) {
+export default function Login() {
 
     const [email, setEmail] = React.useState()
     const [password, setPassword] = React.useState()
     const dispatch = useDispatch()
     const navigate = useNavigate()
+    const authenticationReducer = useSelector((state) => state.authenticationReducer);
+
+    const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            if (authenticationReducer && authenticationReducer.decodedUser) {
+                clearInterval(interval);
+                console.log(authenticationReducer.decodedUser);
+                if (authenticationReducer.decodedUser.role === "PARKING_MANAGER") {
+                    navigate('/management');
+                }
+                if (authenticationReducer.decodedUser.role === "USER") {
+                    navigate(-1);
+                }
+            }
+        }, 1000); // Check every second
+
+        return () => clearInterval(interval);
+    }, [authenticationReducer, navigate]);
 
     const handleEmail = (event) => {
         const emailValue = event.target.value;
-        const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
         if (emailRegex.test(emailValue)) {
             setEmail(emailValue);
         }
@@ -46,7 +65,6 @@ export default function Login(props) {
         navigate("/register");
     }
 
-
     const handleLogin = (e) => {
         e.preventDefault()
         console.log('Email:', email);
@@ -54,11 +72,11 @@ export default function Login(props) {
         if (email !== undefined && password !== undefined){
             dispatch(login(email, password))
                 .then(response => {
+                    console.log(response);
                     if (response.status === 200) {
-                        setEmail("")
-                        setPassword("")
+                        setEmail("");
+                        setPassword("");
                         toast.success('Login successful');
-                        navigate(-1);
                     } else {
                         console.log('Login failed');
                     }

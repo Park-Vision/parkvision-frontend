@@ -2,6 +2,7 @@ import { act } from "react-dom/test-utils";
 import { REGISTER_SUCCESS, REGISTER_FAIL, LOGIN_FAIL, LOGIN_SUCCESS, LOGOUT } from "../actions/types";
 
 const decodeToken = (token) => {
+    console.log(token)
     if (typeof token !== "string" || !token) {
         return null;
     }
