@@ -43,12 +43,14 @@ function ResponsiveAppBar() {
     setAnchorElUser(null);
   };
 
-    const handleLogin = () => {
-      navigate('/login');
+  const handleLogin = () => {
+    handleCloseUserMenu();
+    navigate('/login');
   }
 
   const handleLogout = () => {
-      dispatch(logout())
+    handleCloseUserMenu();
+    dispatch(logout())
   }
 
   return (
@@ -169,13 +171,12 @@ function ResponsiveAppBar() {
                 </MenuItem>
               ))}
                 <MenuItem onClick={handleLogin}>
-                  <Link style={{ textDecoration: 'none' }}>
+                <Link style={{ textDecoration: 'none' }}>
                     Login
                   </Link>
                 </MenuItem>
-                <MenuItem>
-                    <Link style={{ textDecoration: 'none' }}
-                          onClick={handleLogout}> Logout
+              <MenuItem onClick={handleLogout}>
+                    <Link style={{ textDecoration: 'none' }}> Logout
                     </Link>
                 </MenuItem>
 

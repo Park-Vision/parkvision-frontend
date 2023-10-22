@@ -25,9 +25,8 @@ import { getFreeParkingSpotsByParkingId, getParkingSpotsByParkingId } from "../.
 import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
 import TextField from "@mui/material/TextField";
-import { addReservation } from "../../actions/reservationActions";
 import MenuItem from "@mui/material/MenuItem";
-import { getCars, getUserCars } from "../../actions/carActions";
+import { getCar, getUserCars } from "../../actions/carActions";
 import {
     ADD_RESERVATION,
     DELETE_RESERVATION,
@@ -49,7 +48,6 @@ L.Icon.Default.mergeOptions({
     shadowUrl:
         "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.1/images/marker-shadow.png",
 });
-
 function ParkingDetails(props) {
     const { parkingId } = useParams();
     const dispatch = useDispatch();
@@ -68,17 +66,32 @@ function ParkingDetails(props) {
     const freeParkingSpots = useSelector((state) => state.parkingSpotReducer.freeParkingSpots);
     const parkingSpot = useSelector((state) => state.parkingSpotReducer.parkingSpot);
     const cars = useSelector((state) => state.carReducer);
-    const [registrationNumber, setRegistrationNumber] = React.useState("");
+    const [registrationNumber, setRegistrationNumber] = React.useState();
     const [selectedCar, setSelectedCar] = React.useState("none");
     const authenticationReducer = useSelector((state) => state.authenticationReducer);
+    const [disableEndDateTime, setDisableDateTime] = React.useState(true);
 
     useEffect(() => {
         dispatch(getParking(parkingId));
         dispatch(getParkingSpotsByParkingId(parkingId));
         handleSearch(endTime);
-        dispatch(getUserCars());
+        unsetParkingSpot();
+        tryGetUserCars();
     }, []);
 
+
+    const unsetParkingSpot = () => {
+        dispatch({
+            type: GET_PARKING_SPOT,
+            value: {},
+        });
+    };
+
+    const tryGetUserCars = () => {
+        if (authenticationReducer.decodedUser) {
+            dispatch(getUserCars());
+        }
+    };
 
     const mapRef = useRef(null);
 
@@ -94,7 +107,8 @@ function ParkingDetails(props) {
 
     const changeCarSelection = (e) => {
         setSelectedCar(e.target.value);
-        setRegistrationNumber(e.target.value.registrationNumber);
+        const registrationNumber = e.target.value.registrationNumber;
+        setRegistrationNumber(registrationNumber);
     };
 
     const _created = (e) => {
@@ -141,10 +155,10 @@ function ParkingDetails(props) {
     };
 
     const handleRegistrationTextFieldChange = (event) => {
-        setRegistrationNumber(event);
+        const registrationNumber = event.target.value;
+        setRegistrationNumber(registrationNumber);
         setSelectedCar("none");
-    };
-
+    }
     const handleCreateReservation = (event) => {
         if (!authenticationReducer.decodedUser) {
             toast.error("You must be logged in to make a reservation");
@@ -238,20 +252,24 @@ function ParkingDetails(props) {
                                                     color='red'
                                                 />
                                             ))}
-                                        {freeParkingSpots.map((spot, index) => (
-                                            <Polygon
-                                                positions={spot.pointsDTO.map((point) => [
-                                                    point.latitude,
-                                                    point.longitude,
-                                                ])}
-                                                color={spot.id === parkingSpots.parkingSpot.id ? "orange" : "green"}
-                                                eventHandlers={{
-                                                    click: (event) => {
+                                                {freeParkingSpots.map((spot, index) => (
+                                                spot.id !== parkingSpots.parkingSpot.id && (
+                                                    <Polygon
+                                                    key={index}
+                                                    positions={spot.pointsDTO.map((point) => [
+                                                        point.latitude,
+                                                        point.longitude,
+                                                    ])}
+                                                    color="green" // Set the color to green for excluded polygons
+                                                    eventHandlers={{
+                                                        click: (event) => {
                                                         handleClickOnFreeParkingSpot(spot);
-                                                    },
-                                                }}
-                                            />
-                                        ))}
+                                                        },
+                                                    }}
+                                                    />
+                                                )
+                                                ))}
+
                                     </FeatureGroup>
 
                                     <TileLayer
@@ -340,7 +358,7 @@ function ParkingDetails(props) {
                                                 skipDisabled
                                                 shouldDisableTime={shouldDisableTime}
                                                 value={startTime}
-                                                onChange={(newValue) => setStartTime(newValue)}
+                                                onChange={(newValue) => { setStartTime(newValue); setDisableDateTime(false); }}
                                             />
                                         </Grid>
                                     </LocalizationProvider>
@@ -357,6 +375,7 @@ function ParkingDetails(props) {
                                             <DateCalendar
                                                 value={endDay}
                                                 onChange={(newValue) => setEndDay(newValue)}
+                                                disabled={disableEndDateTime}
                                             />
                                         </Grid>
                                         <Grid
@@ -368,12 +387,13 @@ function ParkingDetails(props) {
                                                 skipDisabled
                                                 shouldDisableTime={shouldDisableTime}
                                                 value={endTime}
-                                                onChange={(newValue) => { handleSetEndTime(newValue)} }
+                                                onChange={(newValue) => { handleSetEndTime(newValue) }}
+                                                disabled={disableEndDateTime}
                                             />
                                         </Grid>
                                     </LocalizationProvider>
                                 </Grid>
-                                <Grid container>
+                                {/* <Grid container>
                                     <Button
                                         sx={{ m: 1 }}
                                         variant='outlined'
@@ -382,7 +402,7 @@ function ParkingDetails(props) {
                                     >
                                         Search
                                     </Button>
-                                </Grid>
+                                </Grid> */}
                                 <Grid container>
                                     <TextField
                                         sx={{ m: 1 }}
@@ -391,6 +411,8 @@ function ParkingDetails(props) {
                                         id='outlined-basic'
                                         label='Parking spot'
                                         variant='outlined'
+                                        placeholder="Click on a free parking spot on a map"
+                                        required={true}
                                         InputProps={{
                                             readOnly: true,
                                         }}
@@ -400,13 +422,12 @@ function ParkingDetails(props) {
                                     <TextField
                                         sx={{ m: 1 }}
                                         fullWidth
-                                        value={registrationNumber}
-                                        onChange={(newValue) =>
-                                            handleRegistrationTextFieldChange(newValue.target.value)
-                                        }
-                                        id='outlined-basic'
-                                        label='Type your registration number'
-                                        variant='outlined'
+                                        label="Registration number"
+                                        variant="outlined"
+                                        type="text"
+                                        required={true}
+                                        value={registrationNumber ?? ''}
+                                        onChange={handleRegistrationTextFieldChange}
                                     />
                                 </Grid>
                                 {authenticationReducer.decodedUser && cars.cars.length > 0 ? (

@@ -13,7 +13,7 @@ const decodeToken = (token) => {
 };
 
 const user = JSON.parse(localStorage.getItem("user"));
-const decodedUser = decodeToken(user.token);
+const decodedUser = decodeToken(user?.token);
 const initialState = user
     ? { isLoggedIn: true, user, decodedUser }
     : { isLoggedIn: false, user: null, decodedUser: null };

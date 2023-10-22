@@ -17,7 +17,9 @@ import SearchIcon from '@mui/icons-material/Search';
 import {useDispatch, useSelector} from "react-redux";
 import {getCars} from "../../actions/carActions";
 import {getParkings} from "../../actions/parkingActions";
-import {useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+
+import { MapContainer, TileLayer } from 'react-leaflet';
 
 export default function Home() {
     const parkings = useSelector(state => state.parkingReducer.parkings)
@@ -83,12 +85,26 @@ export default function Home() {
                     flexDirection: 'column',
                     }}
                     onClick={() => handleClick(parking.id)}
-                >
-                    <CardMedia
-                    component="img"
-                    image={parking.img}
-                    alt={parking.name}
-                    />
+                    >
+                    <div style={{ height: '400px'}}>
+                        {parking.id && (
+                        <MapContainer
+                            style={{ width: '100%', height: '100%' }}
+                            center={[parking.latitude, parking.longitude]}
+                            zoom={18}
+                            scrollWheelZoom={false}
+                            zoomControl={false}
+                            dragging={false}        
+                        >   
+
+                            <TileLayer
+                                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                                url="http://mt0.google.com/vt/lyrs=s&x={x}&y={y}&z={z}"
+                                    />
+
+                        </MapContainer>
+                    )}
+                    </div>
                     <CardContent sx={{ flexGrow: 1 }}>
                         <Typography gutterBottom variant="h5" component="h2">
                             {parking.name}
@@ -100,32 +116,6 @@ export default function Home() {
                 </Card>
                 </Grid>
             ))}
-                {parkings.map((parking) => (
-                    <Grid item key={parking.id} xs={12} sm={12} md={12}>
-                        <Card
-                            sx={{
-                                height: '100%',
-                                display: 'flex',
-                                flexDirection: 'column',
-                            }}
-                            onClick={() => handleClick(parking.id)}
-                        >
-                            <CardMedia
-                                component="img"
-                                image={parking.img}
-                                alt={parking.name}
-                            />
-                            <CardContent sx={{ flexGrow: 1 }}>
-                                <Typography gutterBottom variant="h5" component="h2">
-                                    {parking.name}
-                                </Typography>
-                                <Typography>Adress: {parking.address}</Typography>
-                                <Typography>$/h: {parking.costRate}</Typography>
-                                <Typography>Open hours: {parking.openHours}</Typography>
-                            </CardContent>
-                        </Card>
-                    </Grid>
-                ))}
             </Grid>
         </Box>
         </Container>
