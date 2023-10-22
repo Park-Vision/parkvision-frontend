@@ -3,11 +3,12 @@ import Home from "./pages/Home/Home";
 import Login from "./pages/Login/Login";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import AppBar from "./components/AppBar";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import {BrowserRouter, Route, Routes} from "react-router-dom";
 import Reservations from "./pages/Reservations/Reservations";
 import About from "./pages/About/About";
 import Contact from "./pages/Contact/Contact";
 import CarPage from "./pages/Car/CarPage";
+import Mission from "./pages/Mission/Mission";
 import ParkingDetails from "./pages/Home/ParkingDetails";
 import Toolbar from "@mui/material/Toolbar";
 import Register from "./pages/Login/Register";
@@ -57,6 +58,7 @@ function App() {
                     <Toolbar />
                     <div className='home'>
                         <Routes>
+                            <Route path={'/mission'} element={<Mission/>}/>
                             <Route
                                 exact
                                 path={"/"}
