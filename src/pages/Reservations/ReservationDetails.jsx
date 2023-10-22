@@ -14,8 +14,20 @@ export default function ReservationDetails(props) {
     const dispatch = useDispatch()
 
     const handleReseveClick = (event) => {
-        dispatch(addReservation(reservation))
-        toast.success('reservation created');
+        debugger;
+        try {
+            dispatch(addReservation(reservation))
+            toast.success('reservation created');
+
+        }
+        catch (e) {
+            console.log(e);
+            toast.error('coflict!');
+        }
+        dispatch({
+            type: 'GET_PARKING_SPOT',
+            value: {}
+        })
         navigate('/');
     };
 
