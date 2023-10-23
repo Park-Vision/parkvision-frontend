@@ -2,20 +2,18 @@ import {useSelector} from "react-redux";
 import {useNavigate} from "react-router-dom";
 import Home from "../Home/Home";
 
-export default function ManagerProfile() {
+export default function UserProfile() {
     const authenticationReducer = useSelector((state) => state.authenticationReducer);
     const navigate = useNavigate()
 
     if (!authenticationReducer.decodedUser ||
-        authenticationReducer.decodedUser.role !== "PARKING_MANAGER") {
+        authenticationReducer.decodedUser.role !== "USER") {
         navigate('/');
         return <Home />;
     }
 
-
-
     return (
-        <h1> MANAGER PROFILE </h1>
+        <h1> USER PROFILE </h1>
     )
 
 }

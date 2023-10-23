@@ -13,6 +13,7 @@ import Toolbar from "@mui/material/Toolbar";
 import Register from "./pages/Login/Register";
 import ReservationDetails from "./pages/Reservations/ReservationDetails";
 import ManagerProfile from "./pages/ParkingManagement/ManagerProfile";
+import UserProfile from "./pages/User/UserProfile";
 
 function App() {
     const theme = createTheme({
@@ -49,6 +50,7 @@ function App() {
                             <Route path={'/parking/:parkingId'} element={<ParkingDetails/>}/>
                             <Route path={"/reservation-details"} element={<ReservationDetails />}/>
                             <Route path={"/management"} element={<ManagerProfile />}/>
+                            <Route path={"/profile"} element={<UserProfile />}/>
                         </Routes>
                     </div>
             </ThemeProvider>
