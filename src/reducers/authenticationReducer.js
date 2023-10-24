@@ -1,21 +1,10 @@
 import { act } from "react-dom/test-utils";
 import { REGISTER_SUCCESS, REGISTER_FAIL, LOGIN_FAIL, LOGIN_SUCCESS, LOGOUT } from "../actions/types";
-
-const decodeToken = (token) => {
-    if (typeof token !== "string" || !token) {
-        return null;
-    }
-    const tokenParts = token.split(".");
-    if (tokenParts.length !== 3) {
-        return null;
-    }
-    return JSON.parse(atob(tokenParts[1]));
-};
+import decodeToken from "../utils/decodeToken";
 
 const user = JSON.parse(localStorage.getItem("user"));
-const decodedUser = decodeToken(user?.token);
 const initialState = user
-    ? { isLoggedIn: true, user, decodedUser }
+    ? { isLoggedIn: true, user, decodedUser: decodeToken(user.token) }
     : { isLoggedIn: false, user: null, decodedUser: null };
 
 const authenticationReducer = (state = initialState, action) => {

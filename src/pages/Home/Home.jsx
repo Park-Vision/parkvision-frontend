@@ -25,6 +25,7 @@ export default function Home() {
     const parkings = useSelector(state => state.parkingReducer.parkings)
     useSelector(state => state.parkingReducer.parking = {})
     const dispatch = useDispatch()
+    const authenticationReducer = useSelector((state) => state.authenticationReducer);
 
 
     useEffect(() => {

@@ -11,9 +11,8 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
-import AdbIcon from '@mui/icons-material/Adb';
 import {Link} from "@mui/material";
-import {useDispatch} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {logout} from "../actions/authenticationActions";
 import { useNavigate } from 'react-router-dom';
 
@@ -25,10 +24,11 @@ function ResponsiveAppBar() {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
   const dispatch = useDispatch()
+  const isLoggedIn = useSelector((state) => state.authenticationReducer.isLoggedIn);
 
   const navigate = useNavigate()
 
-    const handleOpenNavMenu = (event) => {
+  const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
   };
   const handleOpenUserMenu = (event) => {
@@ -43,14 +43,15 @@ function ResponsiveAppBar() {
     setAnchorElUser(null);
   };
 
-  const handleLogin = () => {
-    handleCloseUserMenu();
-    navigate('/login');
+    const handleLogin = () => {
+      navigate('/login');
+      console.log(isLoggedIn)
   }
 
   const handleLogout = () => {
-    handleCloseUserMenu();
-    dispatch(logout())
+      dispatch(logout())
+      navigate('/');
+      console.log(isLoggedIn)
   }
 
   return (
@@ -111,6 +112,21 @@ function ResponsiveAppBar() {
                       </Link>
                   </MenuItem>
               ))}
+                {!isLoggedIn ? (
+                    <MenuItem onClick={handleCloseNavMenu}>
+                        <Link style={{ textDecoration: 'none' }} onClick={handleLogin}>
+                            Login
+                        </Link>
+                    </MenuItem>
+                ) : (
+                    <MenuItem onClick={handleCloseNavMenu}>
+                        <Link style={{ textDecoration: 'none' }} onClick={handleLogout} >
+                            Logout
+                        </Link>
+                    </MenuItem>
+                )}
+
+
             </Menu>
           </Box>
           <Typography
@@ -141,47 +157,56 @@ function ResponsiveAppBar() {
                   </Link>
               </Button>
             ))}
+              {!isLoggedIn ? (
+                  <Button
+                      onClick={handleCloseNavMenu}
+                      sx={{ my: 2, color: 'white', display: 'block' }}>
+                      <Link href={'/login'} style={{ textDecoration: 'none', color: 'inherit' }}>
+                          Login
+                      </Link>
+                  </Button>
+              ) : (
+                  <Button
+                      onClick={handleLogout}
+                      sx={{ my: 2, color: 'white', display: 'block' }}>
+                      <Link href={'/'} style={{ textDecoration: 'none', color: 'inherit' }}>
+                          Logout
+                      </Link>
+                  </Button>
+              )}
           </Box>
 
-          <Box sx={{ flexGrow: 0 }}>
-            <Tooltip title="Open settings">
-              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
-              </IconButton>
-            </Tooltip>
-            <Menu
-              sx={{ mt: '45px' }}
-              id="menu-appbar"
-              anchorEl={anchorElUser}
-              anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-              open={Boolean(anchorElUser)}
-              onClose={handleCloseUserMenu}
-            >
-              {settings.map((setting) => (
-                <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                  <Typography textAlign="center">{setting}</Typography>
-                </MenuItem>
-              ))}
-                <MenuItem onClick={handleLogin}>
-                <Link style={{ textDecoration: 'none' }}>
-                    Login
-                  </Link>
-                </MenuItem>
-              <MenuItem onClick={handleLogout}>
-                    <Link style={{ textDecoration: 'none' }}> Logout
-                    </Link>
-                </MenuItem>
-
-            </Menu>
-          </Box>
+            {isLoggedIn && (
+                <Box sx={{ flexGrow: 0 }}>
+                    <Tooltip title="Open settings">
+                        <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                            <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+                        </IconButton>
+                    </Tooltip>
+                    <Menu
+                        sx={{ mt: '45px' }}
+                        id="menu-appbar"
+                        anchorEl={anchorElUser}
+                        anchorOrigin={{
+                            vertical: 'top',
+                            horizontal: 'right',
+                        }}
+                        keepMounted
+                        transformOrigin={{
+                            vertical: 'top',
+                            horizontal: 'right',
+                        }}
+                        open={Boolean(anchorElUser)}
+                        onClose={handleCloseUserMenu}
+                    >
+                        {settings.map((setting) => (
+                            <MenuItem key={setting} onClick={handleCloseUserMenu}>
+                                <Typography textAlign="center">{setting}</Typography>
+                            </MenuItem>
+                        ))}
+                    </Menu>
+                </Box>
+            )}
         </Toolbar>
       </Container>
     </AppBar>

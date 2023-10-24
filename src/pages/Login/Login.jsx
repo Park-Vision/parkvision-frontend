@@ -1,5 +1,5 @@
 // generate login page with login, password and submit button
-import React from 'react';
+import React, {useEffect} from 'react';
 
 // use @mui/material
 import Container from '@mui/material/Container';
@@ -14,60 +14,63 @@ import CardMedia from '@mui/material/CardMedia';
 import pvlogo from "../../assets/pv_transparent.png";
 
 
-import {useDispatch} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {login} from "../../actions/authenticationActions";
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom';
+import {validateEmail, validatePassword} from "./validation";
+import decodeToken from "../../utils/decodeToken";
 
 
+export default function Login() {
 
-export default function Login(props) {
-
-    const [email, setEmail] = React.useState()
-    const [password, setPassword] = React.useState()
+    const [email, setEmail] = React.useState("")
+    const [password, setPassword] = React.useState("")
     const dispatch = useDispatch()
     const navigate = useNavigate()
 
     const handleEmail = (event) => {
-        const emailValue = event.target.value;
-        const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
-        if (emailRegex.test(emailValue)) {
-            setEmail(emailValue);
-        }
+        setEmail(event.target.value);
     };
 
     const handlePassword = (event) => {
-        const passwordValue = event.target.value;
-        setPassword(passwordValue)
+        setPassword(event.target.value);
     };
 
     const handleRegister = () => {
         navigate("/register");
     }
 
-
     const handleLogin = (e) => {
         e.preventDefault()
         console.log('Email:', email);
         console.log('Password:', password);
-        if (email !== undefined && password !== undefined){
+        if (!validateEmail(email) || !validatePassword(password)){
+            toast.info('Please enter valid email and password');
+        } else {
             dispatch(login(email, password))
                 .then(response => {
+                    console.log(response);
                     if (response.status === 200) {
-                        setEmail("")
-                        setPassword("")
+                        setEmail("");
+                        setPassword("");
                         toast.success('Login successful');
-                        navigate(-1);
+                        const decodedUser = decodeToken(response.data.token);
+                        if (decodedUser.role === "PARKING_MANAGER") {
+                            navigate('/management');
+                        }
+                        if (decodedUser.role === "USER") {
+                            navigate('/');
+                        }
                     } else {
                         console.log('Login failed');
                     }
                 })
                 .catch(error => {
                     console.error('Error:', error);
+                    toast.error('Please enter valid email and password');
                 });
-        } else {
-            toast.error('Please enter valid email and password');
         }
 
     };
@@ -99,16 +102,15 @@ export default function Login(props) {
                     <Typography variant="body2" color="text.secondary">
                         <form onSubmit={handleLogin}>
                             <TextField
-                                id="outlined-basic"
                                 label="Email address"
                                 variant="outlined"
                                 fullWidth
                                 margin="normal"
                                 required={true}
                                 onChange={handleEmail}
+                                value={email}
                             />
                             <TextField
-                                id="outlined-basic"
                                 label="Password"
                                 variant="outlined"
                                 fullWidth
@@ -116,6 +118,7 @@ export default function Login(props) {
                                 type="password"
                                 required={true}
                                 onChange={handlePassword}
+                                value={password}
                             />
                             <Button type="submit" variant="contained" fullWidth margin="normal" >
                                 Login

@@ -10,57 +10,43 @@ import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import {useDispatch} from "react-redux";
-import {register} from "../../actions/authenticationActions";
+import {logout, register} from "../../actions/authenticationActions";
 import {toast} from "react-toastify";
 import {useNavigate} from "react-router-dom";
-
+import {validatePassword, validateEmail, validateName} from "./validation";
 
 
 export default function Register(){
-    const [email, setEmail] = React.useState()
-    const [firstName, setFirstName] = React.useState()
-    const [lastName, setLastName] = React.useState()
-    const [password, setPassword] = React.useState()
-    const [passwordRepeat, setPasswordRepeat] = React.useState()
+    const [email, setEmail] = React.useState("")
+    const [firstName, setFirstName] = React.useState("")
+    const [lastName, setLastName] = React.useState("")
+    const [password, setPassword] = React.useState("")
+    const [passwordRepeat, setPasswordRepeat] = React.useState("")
     const dispatch = useDispatch()
     const navigate = useNavigate()
 
-
     const handleEmail = (event) => {
-        const emailValue = event.target.value
-        const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i
-        if (emailRegex.test(emailValue)) {
-            setEmail(emailValue)
-        }
+        setEmail(event.target.value);
     };
+
     const handleFirstName = (event) => {
-        const firstNameValue = event.target.value
-        if (firstNameValue.length > 0){
-            setFirstName(firstNameValue)
-        }
-    }
+        setFirstName(event.target.value);
+    };
 
     const handleLastName = (event) => {
-        const lastNameValue = event.target.value
-        if (lastNameValue.length > 0){
-            setLastName(lastNameValue)
-        }
-    }
+        setLastName(event.target.value);
+    };
 
     const handlePassword = (event) => {
-        const passwordValue = event.target.value
-        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
-        if (passwordRegex.test(passwordValue)) {
-            setPassword(passwordValue);
-        }
-    }
+        setPassword(event.target.value);
+    };
 
     const handlePasswordRepeat = (event) => {
-        const passwordValue = event.target.value
-        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
-        if (passwordRegex.test(passwordValue) && passwordValue === password) {
-            setPasswordRepeat(passwordValue);
-        }
+        setPasswordRepeat(event.target.value);
+    };
+
+    const handleLoginRedirection = () => {
+        navigate("/login");
     }
 
     const handleRegister = (event) => {
@@ -69,25 +55,41 @@ export default function Register(){
         console.log('First:', firstName);
         console.log('Last:', lastName);
         console.log('Password:', password);
-        if (email !== undefined && firstName !== undefined && lastName !== undefined
-            && password !== undefined && passwordRepeat !== undefined){
-            dispatch(register(email, firstName, lastName, password))
-            setEmail(undefined)
-            setFirstName(undefined)
-            setLastName(undefined)
-            setPassword(undefined)
-            setPasswordRepeat(undefined)
+        if (!validateEmail(email)){
+            toast.info('Wrong email');
+        } else if (!validateName(firstName)){
+            toast.info('Wrong first name');
+        } else if(!validateName(lastName)){
+            toast.info('Wrong last name');
+        } else if (!validatePassword(password)){
+            toast.info('Password must contains eight characters, including at least one capital letter and number');
+        } else if(passwordRepeat !== password) {
+            toast.info('Passwords must be the same');
         } else {
-            toast.error('Please enter valid data');
-
+            dispatch(register(email, firstName, lastName, password))
+                .then(response => {
+                    console.log(response);
+                    if (response.status === 200){
+                        setEmail("")
+                        setFirstName("")
+                        setLastName("")
+                        setPassword("")
+                        setPasswordRepeat("")
+                        toast.success('Registration successful');
+                        dispatch(logout());
+                        handleLoginRedirection();
+                    } else {
+                        console.log('Registration failed');
+                        toast.error('Something went wrong. Try again.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    toast.error('Something went wrong. Try again.');
+                });
         }
 
     }
-    const handleLoginRedirection = () => {
-        navigate("/login");
-    }
-
-
 
     return (
         <Container maxWidth="lg">
@@ -121,6 +123,7 @@ export default function Register(){
                                         margin="normal"
                                         required={true}
                                         onChange={handleEmail}
+                                        value={email}
                                     />
                                     <TextField
                                         id="outlined-basic"
@@ -130,6 +133,7 @@ export default function Register(){
                                         margin="normal"
                                         required={true}
                                         onChange={handleFirstName}
+                                        value={firstName}
                                     />
                                     <TextField
                                         id="outlined-basic"
@@ -139,6 +143,7 @@ export default function Register(){
                                         margin="normal"
                                         required={true}
                                         onChange={handleLastName}
+                                        value={lastName}
                                     />
                                     <TextField
                                         id="outlined-basic"
@@ -149,6 +154,7 @@ export default function Register(){
                                         type="password"
                                         required={true}
                                         onChange={handlePassword}
+                                        value={password}
                                     />
                                     <TextField
                                         id="outlined-basic"
@@ -159,6 +165,7 @@ export default function Register(){
                                         type="password"
                                         required={true}
                                         onChange={handlePasswordRepeat}
+                                        value={passwordRepeat}
                                     />
                                     <Button type="submit" variant="contained" fullWidth margin="normal" >
                                         Register
