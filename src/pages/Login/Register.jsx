@@ -17,11 +17,11 @@ import {validatePassword, validateEmail, validateName} from "./validation";
 
 
 export default function Register(){
-    const [email, setEmail] = React.useState()
-    const [firstName, setFirstName] = React.useState()
-    const [lastName, setLastName] = React.useState()
-    const [password, setPassword] = React.useState()
-    const [passwordRepeat, setPasswordRepeat] = React.useState()
+    const [email, setEmail] = React.useState("")
+    const [firstName, setFirstName] = React.useState("")
+    const [lastName, setLastName] = React.useState("")
+    const [password, setPassword] = React.useState("")
+    const [passwordRepeat, setPasswordRepeat] = React.useState("")
     const dispatch = useDispatch()
     const navigate = useNavigate()
 
