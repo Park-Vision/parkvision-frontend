@@ -2,9 +2,9 @@ import { REGISTER_SUCCESS, REGISTER_USER, REGISTER_FAIL, LOGIN_FAIL, LOGIN_SUCCE
 
 import AuthenticationService from "../services/AuthenticationService";
 
-export const register = (email, firstName, lastName, password) => (dispatch) => {
+export const register = (email, firstName, lastName, password) => async (dispatch) => {
     try {
-        const response = AuthenticationService.register(email, firstName, lastName, password);
+        const response = await AuthenticationService.register(email, firstName, lastName, password);
         dispatch({
             type: REGISTER_SUCCESS,
             value: response,
