@@ -20,33 +20,15 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom';
 import {validateEmail, validatePassword} from "./validation";
-
+import decodeToken from "../../utils/decodeToken";
 
 
 export default function Login() {
 
-    const [email, setEmail] = React.useState()
-    const [password, setPassword] = React.useState()
+    const [email, setEmail] = React.useState("")
+    const [password, setPassword] = React.useState("")
     const dispatch = useDispatch()
     const navigate = useNavigate()
-    const authenticationReducer = useSelector((state) => state.authenticationReducer);
-
-    useEffect(() => {
-        const interval = setInterval(() => {
-            if (authenticationReducer && authenticationReducer.decodedUser) {
-                clearInterval(interval);
-                console.log(authenticationReducer.decodedUser);
-                if (authenticationReducer.decodedUser.role === "PARKING_MANAGER") {
-                    navigate('/management');
-                }
-                if (authenticationReducer.decodedUser.role === "USER") {
-                    navigate('/');
-                }
-            }
-        }, 1000); // Check every second
-
-        return () => clearInterval(interval);
-    }, [authenticationReducer, navigate]);
 
     const handleEmail = (event) => {
         setEmail(event.target.value);
@@ -74,6 +56,13 @@ export default function Login() {
                         setEmail("");
                         setPassword("");
                         toast.success('Login successful');
+                        const decodedUser = decodeToken(response.data.token);
+                        if (decodedUser.role === "PARKING_MANAGER") {
+                            navigate('/management');
+                        }
+                        if (decodedUser.role === "USER") {
+                            navigate('/');
+                        }
                     } else {
                         console.log('Login failed');
                     }
@@ -113,7 +102,6 @@ export default function Login() {
                     <Typography variant="body2" color="text.secondary">
                         <form onSubmit={handleLogin}>
                             <TextField
-                                id="outlined-basic"
                                 label="Email address"
                                 variant="outlined"
                                 fullWidth
@@ -123,7 +111,6 @@ export default function Login() {
                                 value={email}
                             />
                             <TextField
-                                id="outlined-basic"
                                 label="Password"
                                 variant="outlined"
                                 fullWidth
