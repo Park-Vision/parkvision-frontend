@@ -7,9 +7,9 @@ export const register = (email, firstName, lastName, password) => (dispatch) => 
         const response = AuthenticationService.register(email, firstName, lastName, password);
         dispatch({
             type: REGISTER_SUCCESS,
-            value: response.data,
+            value: response,
         });
-        return Promise.resolve(response.data);
+        return Promise.resolve(response);
     } catch (error) {
         dispatch({
             type: REGISTER_FAIL,

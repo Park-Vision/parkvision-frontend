@@ -19,6 +19,7 @@ import {login} from "../../actions/authenticationActions";
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom';
+import {validateEmail, validatePassword} from "./validation";
 
 
 
@@ -30,8 +31,6 @@ export default function Login() {
     const navigate = useNavigate()
     const authenticationReducer = useSelector((state) => state.authenticationReducer);
 
-    const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
-
     useEffect(() => {
         const interval = setInterval(() => {
             if (authenticationReducer && authenticationReducer.decodedUser) {
@@ -41,7 +40,7 @@ export default function Login() {
                     navigate('/management');
                 }
                 if (authenticationReducer.decodedUser.role === "USER") {
-                    navigate(-1);
+                    navigate('/');
                 }
             }
         }, 1000); // Check every second
@@ -50,15 +49,11 @@ export default function Login() {
     }, [authenticationReducer, navigate]);
 
     const handleEmail = (event) => {
-        const emailValue = event.target.value;
-        if (emailRegex.test(emailValue)) {
-            setEmail(emailValue);
-        }
+        setEmail(event.target.value);
     };
 
     const handlePassword = (event) => {
-        const passwordValue = event.target.value;
-        setPassword(passwordValue)
+        setPassword(event.target.value);
     };
 
     const handleRegister = () => {
@@ -69,7 +64,9 @@ export default function Login() {
         e.preventDefault()
         console.log('Email:', email);
         console.log('Password:', password);
-        if (email !== undefined && password !== undefined){
+        if (!validateEmail(email) || !validatePassword(password)){
+            toast.info('Please enter valid email and password');
+        } else {
             dispatch(login(email, password))
                 .then(response => {
                     console.log(response);
@@ -83,9 +80,8 @@ export default function Login() {
                 })
                 .catch(error => {
                     console.error('Error:', error);
+                    toast.error('Please enter valid email and password');
                 });
-        } else {
-            toast.error('Please enter valid email and password');
         }
 
     };
@@ -124,6 +120,7 @@ export default function Login() {
                                 margin="normal"
                                 required={true}
                                 onChange={handleEmail}
+                                value={email}
                             />
                             <TextField
                                 id="outlined-basic"
@@ -134,6 +131,7 @@ export default function Login() {
                                 type="password"
                                 required={true}
                                 onChange={handlePassword}
+                                value={password}
                             />
                             <Button type="submit" variant="contained" fullWidth margin="normal" >
                                 Login

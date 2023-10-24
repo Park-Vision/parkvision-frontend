@@ -114,7 +114,9 @@ function ResponsiveAppBar() {
               ))}
                 {!isLoggedIn ? (
                     <MenuItem onClick={handleCloseNavMenu}>
-                        <Link style={{ textDecoration: 'none' }} onClick={handleLogin}>Login</Link>
+                        <Link style={{ textDecoration: 'none' }} onClick={handleLogin}>
+                            Login
+                        </Link>
                     </MenuItem>
                 ) : (
                     <MenuItem onClick={handleCloseNavMenu}>
@@ -174,13 +176,7 @@ function ResponsiveAppBar() {
               )}
           </Box>
 
-
-            {!isLoggedIn ? (
-                <MenuItem onClick={handleCloseNavMenu}>
-                    <Link style={{ textDecoration: 'none' }} onClick={handleLogin}>
-                        Login</Link>
-                </MenuItem>
-            ) : (
+            {isLoggedIn && (
                 <Box sx={{ flexGrow: 0 }}>
                     <Tooltip title="Open settings">
                         <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
