@@ -19,7 +19,7 @@ import {getCars} from "../../actions/carActions";
 import {getParkings} from "../../actions/parkingActions";
 import { useNavigate } from "react-router-dom";
 
-import { MapContainer, TileLayer } from 'react-leaflet';
+import {MapContainer, Marker, Popup, TileLayer} from 'react-leaflet';
 
 export default function Home() {
     const parkings = useSelector(state => state.parkingReducer.parkings)
@@ -32,6 +32,18 @@ export default function Home() {
         dispatch(getParkings())
     }, []);
 
+    // {
+    //     "id": 2,
+    //     "name": "D20 - Politechnika Wrocławska",
+    //     "description": "Parking D20 to parking dla studentów i pracowników Politehcniki Wrocławskiej. Posiada 50 miejsc parkingowych, w tym 2 miejsca dla osób niepełnosprawnych. Parking jest monitorowany przez 24 godziny na dobę.",
+    //     "city": "Wrocław",
+    //     "street": "Janiszewskiego 8",
+    //     "zipCode": "50-372",
+    //     "costRate": 3,
+    //     "openHours": "4:30 - 23:00",
+    //     "latitude": 17.059114686292222,
+    //     "longitude": 51.10975855141324
+    // }
     const handleChange = (event) => {
     };
 
@@ -76,6 +88,62 @@ export default function Home() {
                 </Grid>
             </Grid>
             </form>
+            <div>
+                <Grid xs={12} sm={12} md={12}>
+                    <Card
+                        sx={{
+                            height: '100%',
+                            display: 'flex',
+                            flexDirection: 'column',
+                        }}
+                    >
+                        <div style={{ height: '400px'}}>
+                                <MapContainer
+                                    style={{ width: '100%', height: '100%' }}
+                                    zoom={12}
+                                    center={[51.1000000, 17.0333300]}
+                                    scrollWheelZoom={true}
+                                    zoomControl={true}
+                                    dragging={true}
+                                >
+
+                                    <TileLayer
+                                        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                                    />
+                                    {parkings.map((parking, index) => (
+                                        <Marker key={index} position={[parking.latitude, parking.longitude]}>
+                                            <Popup>
+                                                <div style={{ minWidth: '150px', maxWidth: '300px', position: 'relative' }}>
+                                                    <div>
+                                                        <Typography gutterBottom variant="h5" component="h2">
+                                                            {parking.name}
+                                                        </Typography>
+                                                        <Typography style={{ fontSize: '14px' }}>Address: {parking.street}, {parking.zipCode} {parking.city}</Typography>
+                                                        <Typography style={{ fontSize: '14px' }}>Open hours: {parking.openHours}</Typography>
+                                                        <Typography style={{ fontSize: '14px' }}>$/h: {parking.costRate}</Typography>
+                                                    </div>
+                                                    <div style={{ position: 'absolute', bottom: 0, right: 0, margin: '10px' }}>
+                                                        <Button
+                                                            variant="contained"
+                                                            color="primary"
+                                                            type="submit"
+                                                            onClick={() => handleClick(parking.id)}
+                                                        >
+                                                            MORE
+                                                        </Button>
+                                                    </div>
+                                                </div>
+                                            </Popup>
+                                        </Marker>
+                                    ))}
+
+                                </MapContainer>
+                        </div>
+
+                    </Card>
+                </Grid>
+            </div>
             <Grid container spacing={4} sx={{ mt: 4 }} >
             {parkings.map((parking, index) => (
                 <Grid item key={index} xs={12} sm={12} md={12}>
