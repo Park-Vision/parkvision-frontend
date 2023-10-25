@@ -14,35 +14,25 @@ export default function ReservationDetails(props) {
     const dispatch = useDispatch()
 
     const handleReseveClick = (event) => {
-        debugger;
         try {
-            dispatch(addReservation(reservation))
-            toast.success('reservation created');
-
+            dispatch(addReservation(reservation)).then((response) => {
+                toast.success('reservation created, check your email');
+                dispatch({
+                    type: 'GET_PARKING_SPOT',
+                    value: {}
+                })
+                navigate('/');
+            });
         }
         catch (e) {
             console.log(e);
             toast.error('coflict!');
         }
-        dispatch({
-            type: 'GET_PARKING_SPOT',
-            value: {}
-        })
-        navigate('/');
     };
 
     const handleEditClick = (event) => {
-        // navigate back
         navigate('/parking/' + parking.id);
     };
-
-    // useEffect(() => {
-    //     // Check if reservation is not found in Redux state
-    //     if (reservation.id === undefined) {
-    //         // Redirect to the '/reservations' route
-    //         navigate('/parkings');
-    //     }
-    // }, [reservation]);
     
     
     return (
