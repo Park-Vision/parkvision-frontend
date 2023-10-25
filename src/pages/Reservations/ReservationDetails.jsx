@@ -1,31 +1,38 @@
 import { useNavigate} from 'react-router-dom';
-import { Container, Box, Typography, Paper, CardContent, TextField, Button } from '@mui/material';
+import { Container, Box, Typography, Paper, CardContent, TextField, Button, CircularProgress } from '@mui/material';
 import { useDispatch, useSelector } from "react-redux";
 import { MapContainer, TileLayer, FeatureGroup, Polygon, Popup } from 'react-leaflet';
 import { addReservation } from '../../actions/reservationActions';
-import {toast} from "react-toastify";
+import { toast } from "react-toastify";
+import { useState } from 'react';
 
 export default function ReservationDetails(props) {
     const navigate = useNavigate();
     const reservation = useSelector(state => state.reservationReducer.reservation);
     const parking = useSelector(state => state.parkingReducer.parking);
     const parkingSpotReducer = useSelector(state => state.parkingSpotReducer);
+    const [loading, setLoading] = useState(false);
 
     const dispatch = useDispatch()
 
     const handleReseveClick = (event) => {
         try {
-            dispatch(addReservation(reservation)).then((response) => {
-                toast.success('reservation created, check your email');
-                dispatch({
-                    type: 'GET_PARKING_SPOT',
-                    value: {}
-                })
-                navigate('/');
-            });
+            setLoading(true);
+            dispatch(addReservation(reservation))
+                .then(response => {
+                    setLoading(false);
+                    toast.success('reservation created');
+                    navigate('/');
+                    dispatch({
+                        type: 'GET_PARKING_SPOT',
+                        value: {}
+                    })
+                }
+                );
         }
         catch (e) {
             console.log(e);
+            setLoading(false);
             toast.error('coflict!');
         }
     };
@@ -41,6 +48,18 @@ export default function ReservationDetails(props) {
             <Typography variant="h4" component="h1" gutterBottom>
             Rerservation Details
                 </Typography>
+            {loading && <Box
+                                    sx={{
+                                        display: "flex",
+                                        "align-content": "center",
+                                        "justify-content": "center",
+                                        "flex-direction": "row",
+                                        "flex-wrap": "wrap",
+                                    }}
+                                    style={{ width: "100%", height: "100%" }}
+                                >
+                                    <CircularProgress />
+                                </Box>}
                 <Paper>
                     <CardContent>
                         <div style={{ height: '500px'}}>
