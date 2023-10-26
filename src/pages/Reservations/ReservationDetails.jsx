@@ -35,21 +35,11 @@ export default function ReservationDetails(props) {
             setLoading(false);
             toast.error('coflict!');
         }
-
     };
 
     const handleEditClick = (event) => {
-        // navigate back
         navigate('/parking/' + parking.id);
     };
-
-    // useEffect(() => {
-    //     // Check if reservation is not found in Redux state
-    //     if (reservation.id === undefined) {
-    //         // Redirect to the '/reservations' route
-    //         navigate('/parkings');
-    //     }
-    // }, [reservation]);
     
     
     return (
