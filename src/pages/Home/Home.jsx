@@ -11,6 +11,8 @@ import Typography from '@mui/material/Typography';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
+import L from 'leaflet';
+
 
 // use @mui/icons-material
 import SearchIcon from '@mui/icons-material/Search';
@@ -19,14 +21,14 @@ import {getCars} from "../../actions/carActions";
 import {getParkings} from "../../actions/parkingActions";
 import { useNavigate } from "react-router-dom";
 
-import {MapContainer, Marker, Popup, TileLayer} from 'react-leaflet';
+import {MapContainer, Marker, Popup, TileLayer, ZoomControl} from 'react-leaflet';
 
 export default function Home() {
     const parkings = useSelector(state => state.parkingReducer.parkings)
     useSelector(state => state.parkingReducer.parking = {})
     const dispatch = useDispatch()
     const authenticationReducer = useSelector((state) => state.authenticationReducer);
-
+    const [showMap, setShowMap] = useState(true);
 
     useEffect(() => {
         dispatch(getParkings())
@@ -55,137 +57,191 @@ export default function Home() {
     const handleSubmit = (event) => {
         console.log('search', event);
     };
+
+    const handleShowMap = () => {
+        setShowMap(true);
+    };
+
+    const handleShowList = () => {
+        setShowMap(false);
+    };
+
+    const greenIcon = new L.Icon({
+        iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+        shadowSize: [41, 41]
+    });
     
     return (
         <Container maxWidth="lg">
         <Box sx={{ my: 4 }}>
-            <Typography variant="h4" component="h1" gutterBottom>
-            Wyszukaj parking
-            </Typography>
-            <form onSubmit={handleSubmit}>
-            <Grid container spacing={2} alignItems="center">
-                <Grid item>
-                <SearchIcon />
-                </Grid>
-                <Grid item>
-                <TextField
-                    id="input-with-icon-grid"
-                    label="Zacznij pisać nazwę parkingu"
-                    variant="standard"
-                    // value={}
-                    onChange={handleChange}
-                />
-                </Grid>
-                <Grid item>
+            <div style={{ marginBottom: '20px' }}>
+                <Grid container spacing={2}>
                 <Button
                     variant="contained"
                     color="primary"
-                    type="submit"
-                    // disabled={}
+                    onClick={handleShowMap}
+                    style={{ marginRight: '10px' }}
+                    disabled={showMap}
+
                 >
-                    Szukaj
+                    Show Map
+                </Button>
+
+                <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={handleShowList}
+                    disabled={!showMap}
+                >
+                    Show List
                 </Button>
                 </Grid>
-            </Grid>
-            </form>
-            <div>
-                <Grid xs={12} sm={12} md={12}>
-                    <Card
-                        sx={{
-                            height: '100%',
-                            display: 'flex',
-                            flexDirection: 'column',
-                        }}
-                    >
-                        <div style={{ height: '400px'}}>
+            </div>
+
+            {showMap ? (
+                <div>
+                    <Grid xs={12} sm={12} md={12}>
+                        <Card
+                            sx={{
+                                height: '100%',
+                                display: 'flex',
+                                flexDirection: 'column',
+                            }}
+                        >
+                            <div style={{ height: '600px'}}>
                                 <MapContainer
                                     style={{ width: '100%', height: '100%' }}
                                     zoom={12}
                                     center={[51.1000000, 17.0333300]}
                                     scrollWheelZoom={true}
-                                    zoomControl={true}
                                     dragging={true}
                                 >
-
                                     <TileLayer
                                         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                                         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                                     />
                                     {parkings.map((parking, index) => (
-                                        <Marker key={index} position={[parking.latitude, parking.longitude]}>
+                                        <Marker
+                                            key={index}
+                                            position={[parking.latitude, parking.longitude]}
+                                            icon={greenIcon}
+                                        >
                                             <Popup>
-                                                <div style={{ minWidth: '150px', maxWidth: '300px', position: 'relative' }}>
-                                                    <div>
-                                                        <Typography gutterBottom variant="h5" component="h2">
-                                                            {parking.name}
-                                                        </Typography>
-                                                        <Typography style={{ fontSize: '14px' }}>Address: {parking.street}, {parking.zipCode} {parking.city}</Typography>
-                                                        <Typography style={{ fontSize: '14px' }}>Open hours: {parking.openHours}</Typography>
-                                                        <Typography style={{ fontSize: '14px' }}>$/h: {parking.costRate}</Typography>
+                                                <div style={{ minWidth: '200px', maxWidth: '250px', padding: '10px', textAlign: 'left' }}>
+                                                    <div style={{ marginBottom: '5px', textAlign: 'center',
+                                                        fontSize: `${Math.min(20, 450 / parking.name.length)}px`, fontWeight: 'bold',
+                                                        whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                                        {parking.name}
                                                     </div>
-                                                    <div style={{ position: 'absolute', bottom: 0, right: 0, margin: '10px' }}>
-                                                        <Button
-                                                            variant="contained"
-                                                            color="primary"
-                                                            type="submit"
-                                                            onClick={() => handleClick(parking.id)}
-                                                        >
-                                                            MORE
-                                                        </Button>
+                                                    <div style={{ marginBottom: '5px' }}>
+                                                        <span style={{ fontWeight: 'bold' }}>Address:</span> {parking.street}, {parking.zipCode} {parking.city}
                                                     </div>
+                                                    <div style={{ marginBottom: '5px' }}>
+                                                        <span style={{ fontWeight: 'bold' }}>Open hours:</span> {parking.openHours}
+                                                    </div>
+                                                    <div style={{ marginBottom: '10px' }}>
+                                                        <span style={{ fontWeight: 'bold' }}>$</span>/h: {parking.costRate}
+                                                    </div>
+                                                    <Button
+                                                        variant="contained"
+                                                        color="primary"
+                                                        onClick={() => handleClick(parking.id)}
+                                                        style={{ width: '100%' }}
+                                                    >
+                                                        MORE
+                                                    </Button>
                                                 </div>
                                             </Popup>
                                         </Marker>
                                     ))}
 
                                 </MapContainer>
-                        </div>
+                            </div>
 
-                    </Card>
-                </Grid>
-            </div>
-            <Grid container spacing={4} sx={{ mt: 4 }} >
-            {parkings.map((parking, index) => (
-                <Grid item key={index} xs={12} sm={12} md={12}>
-                <Card
-                    sx={{
-                    height: '100%',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    }}
-                    onClick={() => handleClick(parking.id)}
-                    >
-                    <div style={{ height: '400px'}}>
-                        {parking.id && (
-                        <MapContainer
-                            style={{ width: '100%', height: '100%' }}
-                            center={[parking.latitude, parking.longitude]}
-                            zoom={18}
-                            scrollWheelZoom={false}
-                            zoomControl={false}
-                            dragging={false}        
-                        >   
+                        </Card>
+                    </Grid>
+                </div>
+            ) : (
+                <div>
+                    <Typography variant="h4" component="h1" gutterBottom>
+                        Wyszukaj parking
+                    </Typography>
+                    <form onSubmit={handleSubmit}>
+                        <Grid container spacing={2} alignItems="center">
+                            <Grid item>
+                                <SearchIcon />
+                            </Grid>
+                            <Grid item>
+                                <TextField
+                                    id="input-with-icon-grid"
+                                    label="Zacznij pisać nazwę parkingu"
+                                    variant="standard"
+                                    // value={}
+                                    onChange={handleChange}
+                                />
+                            </Grid>
+                            <Grid item>
+                                <Button
+                                    variant="contained"
+                                    color="primary"
+                                    type="submit"
+                                    // disabled={}
+                                >
+                                    Szukaj
+                                </Button>
+                            </Grid>
+                        </Grid>
+                    </form>
 
-                            <TileLayer
-                                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                                url="http://mt0.google.com/vt/lyrs=s&x={x}&y={y}&z={z}"
-                                    />
+                    <Grid container spacing={4} sx={{ mt: 4 }} >
+                        {parkings.map((parking, index) => (
+                            <Grid item key={index} xs={12} sm={12} md={12}>
+                                <Card
+                                    sx={{
+                                        height: '100%',
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                    }}
+                                    onClick={() => handleClick(parking.id)}
+                                >
+                                    <div style={{ height: '400px'}}>
+                                        {parking.id && (
+                                            <MapContainer
+                                                style={{ width: '100%', height: '100%' }}
+                                                center={[parking.latitude, parking.longitude]}
+                                                zoom={18}
+                                                scrollWheelZoom={false}
+                                                zoomControl={false}
+                                                dragging={false}
+                                            >
 
-                        </MapContainer>
-                    )}
-                    </div>
-                    <CardContent sx={{ flexGrow: 1 }}>
-                        <Typography gutterBottom variant="h5" component="h2">
-                            {parking.name}
-                        </Typography>
-                        <Typography>Address:{parking.street},{parking.zipCode} {parking.city}</Typography>
-                        <Typography>Open hours: {parking.openHours}</Typography>
-                        <Typography>$/h: {parking.costRate}</Typography>
-                    </CardContent>
-                </Card>
-                </Grid>
-            ))}
-            </Grid>
+                                                <TileLayer
+                                                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                                                    url="http://mt0.google.com/vt/lyrs=s&x={x}&y={y}&z={z}"
+                                                />
+
+                                            </MapContainer>
+                                        )}
+                                    </div>
+                                    <CardContent sx={{ flexGrow: 1 }}>
+                                        <Typography gutterBottom variant="h5" component="h2">
+                                            {parking.name}
+                                        </Typography>
+                                        <Typography>Address:{parking.street},{parking.zipCode} {parking.city}</Typography>
+                                        <Typography>Open hours: {parking.openHours}</Typography>
+                                        <Typography>$/h: {parking.costRate}</Typography>
+                                    </CardContent>
+                                </Card>
+                            </Grid>
+                        ))}
+                    </Grid>
+                </div>
+            )}
+
+
         </Box>
         </Container>
     );
