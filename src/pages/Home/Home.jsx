@@ -11,6 +11,8 @@ import Typography from '@mui/material/Typography';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
+import PlaceIcon from '@mui/icons-material/Place';
+import ListIcon from '@material-ui/icons/List';
 import L from 'leaflet';
 
 
@@ -78,26 +80,25 @@ export default function Home() {
         <Container maxWidth="lg">
         <Box sx={{ my: 4 }}>
             <div style={{ marginBottom: '20px' }}>
-                <Grid container spacing={2}>
-                <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={handleShowMap}
-                    style={{ marginRight: '10px' }}
-                    disabled={showMap}
+                <Grid container spacing={2} justifyContent="flex-end">
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={handleShowList}
+                        style={{ marginRight: '10px' }}
+                        disabled={!showMap}
+                    >
+                        <ListIcon />
+                    </Button>
 
-                >
-                    Show Map
-                </Button>
-
-                <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={handleShowList}
-                    disabled={!showMap}
-                >
-                    Show List
-                </Button>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={handleShowMap}
+                        disabled={showMap}
+                    >
+                        <PlaceIcon />
+                    </Button>
                 </Grid>
             </div>
 
