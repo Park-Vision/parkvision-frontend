@@ -16,7 +16,7 @@ import CardMedia from '@mui/material/CardMedia';
 import SearchIcon from '@mui/icons-material/Search';
 import {useDispatch, useSelector} from "react-redux";
 import {getCars} from "../../actions/carActions";
-import {getParkings} from "../../actions/parkingActions";
+import {getParkingFreeSpotsNumber, getParkingSpotsNumber, getParkings} from "../../actions/parkingActions";
 import { useNavigate } from "react-router-dom";
 
 import { MapContainer, TileLayer } from 'react-leaflet';
@@ -26,10 +26,18 @@ export default function Home() {
     useSelector(state => state.parkingReducer.parking = {})
     const dispatch = useDispatch()
     const authenticationReducer = useSelector((state) => state.authenticationReducer);
+    const numOfSpotsList = useSelector(state => state.parkingReducer.numOfSpotsInParkings);
+    const numOfFreeSpotsList = useSelector(state => state.parkingReducer.numOfFreeSpotsInParkings);
 
 
     useEffect(() => {
-        dispatch(getParkings())
+        dispatch(getParkings()).then((response) => {
+                response.map((parking, index) => {
+                    dispatch(getParkingFreeSpotsNumber(parking.id, new Date().toISOString()))
+                    dispatch(getParkingSpotsNumber(parking.id))
+                })
+            }
+        )
     }, []);
 
     const handleChange = (event) => {
@@ -107,11 +115,14 @@ export default function Home() {
                     )}
                     </div>
                     <CardContent sx={{ flexGrow: 1 }}>
-                        <Typography gutterBottom variant="h5" component="h2">
-                            {parking.name}
+                        <Typography gutterBottom variant="h4" component="h3">
+                                {parking.name}
+                                
                         </Typography>
-                        <Typography>Address:{parking.street},{parking.zipCode} {parking.city}</Typography>
-                        <Typography>Open hours: {parking.openHours}</Typography>
+                        <Typography variant='h5'>Free: {numOfFreeSpotsList[parking.id]}</Typography>
+                        <Typography variant='h5'>All: {numOfSpotsList[parking.id]}</Typography>
+                        <Typography>Address: {parking.street},{parking.zipCode} {parking.city}</Typography>
+                        <Typography>Open hours: {parking.startTime} - {parking.endTime}</Typography>
                         <Typography>$/h: {parking.costRate}</Typography>
                     </CardContent>
                 </Card>
