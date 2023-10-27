@@ -21,7 +21,7 @@ import dayjs from "dayjs";
 import { useNavigate } from "react-router-dom";
 
 import { MapContainer, Marker, Polygon, Popup, TileLayer, FeatureGroup, MapControl } from "react-leaflet";
-import { getFreeParkingSpotsByParkingId, getParkingSpotsByParkingId } from "../../actions/parkingSpotActions";
+import { getFreeParkingSpotsByParkingId, getOccupiedParkingSpotsMapByParkingId, getParkingSpotsByParkingId } from "../../actions/parkingSpotActions";
 import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
 import TextField from "@mui/material/TextField";
@@ -70,6 +70,7 @@ function ParkingDetails(props) {
     const [selectedCar, setSelectedCar] = React.useState("none");
     const authenticationReducer = useSelector((state) => state.authenticationReducer);
     const [disableEndDateTime, setDisableDateTime] = React.useState(true);
+    const occupiedParkingSpotsMap = useSelector(state => state.parkingSpotReducer.occupiedParkingSpots);
 
     useEffect(() => {
         dispatch(getParking(parkingId));
@@ -77,6 +78,7 @@ function ParkingDetails(props) {
         handleSearch(endTime);
         unsetParkingSpot();
         tryGetUserCars();
+    
     }, []);
 
 
@@ -128,6 +130,7 @@ function ParkingDetails(props) {
         setEnd(end);
 
         dispatch(getFreeParkingSpotsByParkingId(parkingId, start, end));
+        dispatch(getOccupiedParkingSpotsMapByParkingId(parkingId, start));
     };
 
     const handleClickOnFreeParkingSpot = (event) => {
@@ -250,7 +253,9 @@ function ParkingDetails(props) {
                                                         point.longitude,
                                                     ])}
                                                     color='red'
-                                                />
+                                                    interactive>
+                                                    <Popup>{`This spot will be availbe from: ${new Date(occupiedParkingSpotsMap[parkingSpot.id]).toLocaleString()}`} </Popup>
+                                                    </Polygon>                                                
                                             ))}
                                                 {freeParkingSpots.map((spot, index) => (
                                                 spot.id !== parkingSpots.parkingSpot.id && (
@@ -298,7 +303,7 @@ function ParkingDetails(props) {
                                             }}
                                             interactive
                                             >
-                                            <Popup>{`Selected Parking Spot ID: ${parkingSpot.id}`} <br></br> Click to deselect</Popup>
+                                            <Popup>{`Selected spot number: ${parkingSpot.id}`} <br></br> Click to deselect</Popup>
                                             </Polygon>
                                         )}
                                 </MapContainer>
