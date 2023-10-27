@@ -25,9 +25,13 @@ export default function Home() {
     const dispatch = useDispatch()
     const authenticationReducer = useSelector((state) => state.authenticationReducer);
     const [showMap, setShowMap] = useState(false);
+    const [filter, setFilter] = useState("");
+    const [listOfParkings, setListOfParkings] = useState([]);
+
 
     useEffect(() => {
-        dispatch(getParkings())
+        dispatch(getParkings());
+        setListOfParkings(parkings);
     }, []);
 
     // {
@@ -61,6 +65,42 @@ export default function Home() {
     const handleShowList = () => {
         setShowMap(false);
     };
+
+    const handleChangeFilter = (event) => {
+        setFilter(event.target.value);
+        if (event.target.value === ""){
+            setListOfParkings(parkings);
+        }
+    };
+
+    const handleSubmitFilter = (event) => {
+        event.preventDefault();
+        const result = [];
+        const filterElements = filter.toLowerCase().split(" ");
+        const filteredResults = parkings.filter(parking => {
+            const parkingAddress = (parking.name + " " + parking.city + " " + parking.street).toLowerCase();
+            let termCount = 0;
+            for (let term of filterElements) {
+                if (parkingAddress.includes(term)) {
+                    termCount++;
+                }
+            }
+            result.push(
+                {
+                    parking: parking,
+                    termCount: termCount
+                }
+            )
+        });
+        console.log(result);
+        const maxTermCount = result
+            .reduce((max, current) => Math.max(max, current.termCount), 0);
+        const parkingsWithMaxTermCount = result
+            .filter(item => item.termCount === maxTermCount)
+            .map(item => item.parking);
+        console.log(parkingsWithMaxTermCount);
+        setListOfParkings(parkingsWithMaxTermCount);
+    }
 
     const parkingIcon = new L.DivIcon({
         html: renderToString(<LocalParkingIcon style={{ color: 'green', background: 'white', borderRadius: '4px',
@@ -157,10 +197,7 @@ export default function Home() {
                 </div>
             ) : (
                 <div>
-                    <Typography variant="h4" component="h1" gutterBottom>
-                        Wyszukaj parking
-                    </Typography>
-                    <form onSubmit={handleSubmit}>
+                    <form onSubmit={handleSubmitFilter}>
                         <Grid container spacing={2} alignItems="center">
                             <Grid item>
                                 <SearchIcon />
@@ -170,24 +207,19 @@ export default function Home() {
                                     id="input-with-icon-grid"
                                     label="Zacznij pisać nazwę parkingu"
                                     variant="standard"
-                                    // value={}
-                                    onChange={handleChange}
+                                    value={filter}
+                                    onChange={handleChangeFilter}
                                 />
                             </Grid>
                             <Grid item>
-                                <Button
-                                    variant="contained"
-                                    color="primary"
-                                    type="submit"
-                                    // disabled={}
-                                >
+                                <Button variant="contained" color="primary" type="submit" disabled={!filter}>
                                     Szukaj
                                 </Button>
                             </Grid>
                         </Grid>
                     </form>
                     <Grid container spacing={4} sx={{ mt: 4 }}>
-                        {parkings.map((parking, index) => (
+                        {listOfParkings.map((parking, index) => (
                             <Grid item key={index} xs={12} sm={12} md={12}>
                                 <Card
                                     sx={{
