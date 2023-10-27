@@ -19,7 +19,6 @@ import { DigitalClock } from "@mui/x-date-pickers/DigitalClock";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
 import { useNavigate } from "react-router-dom";
-
 import { MapContainer, Marker, Polygon, Popup, TileLayer, FeatureGroup, MapControl } from "react-leaflet";
 import { getFreeParkingSpotsByParkingId, getOccupiedParkingSpotsMapByParkingId, getParkingSpotsByParkingId } from "../../actions/parkingSpotActions";
 import Button from "@mui/material/Button";
@@ -37,6 +36,7 @@ import {
     GET_FREE_PARKING_SPOTS_BY_PARKING_ID,
 } from "../../actions/types";
 import { toast } from "react-toastify";
+import { set } from "react-hook-form";
 
 delete L.Icon.Default.prototype._getIconUrl;
 
@@ -48,6 +48,9 @@ L.Icon.Default.mergeOptions({
     shadowUrl:
         "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.1/images/marker-shadow.png",
 });
+
+
+
 function ParkingDetails(props) {
     const { parkingId } = useParams();
     const dispatch = useDispatch();
@@ -75,7 +78,7 @@ function ParkingDetails(props) {
     useEffect(() => {
         dispatch(getParking(parkingId));
         dispatch(getParkingSpotsByParkingId(parkingId));
-        handleSearch(endTime);
+        handleSearch(startDay, startTime, endDay, endTime);
         unsetParkingSpot();
         tryGetUserCars();
     
@@ -97,14 +100,30 @@ function ParkingDetails(props) {
 
     const mapRef = useRef(null);
 
-    const startOpenHour = 6;
-    const endOpenHour = 22;
+    const parseTime = (timeString) => {
+        const [hours, minutes, seconds] = timeString.split(':');
+        const date = new Date();
+        date.setHours(Number(hours));
+        date.setMinutes(Number(minutes));
+        date.setSeconds(Number(seconds));
+        return date;
+    }
+
+
     const shouldDisableTime = (value, view) => {
-        const hour = value.hour();
-        if (view === "hours") {
-            return hour < startOpenHour || hour > endOpenHour;
+        if (parking.startTime === undefined) {
+            return true;
         }
-        return false;
+    const hour = value.hour();
+
+    if (view === "hours") {
+        const parkingStart = parseTime(parking.startTime)
+        const parkingEnd = parseTime(parking.endTime)
+
+        return hour < parkingStart.getHours() || hour > parkingEnd.getHours() || (hour === parkingEnd.getHours() && value.minute() > 0);
+    }
+
+    return false;
     };
 
     const changeCarSelection = (e) => {
@@ -113,22 +132,35 @@ function ParkingDetails(props) {
         setRegistrationNumber(registrationNumber);
     };
 
-    const _created = (e) => {
-        console.log(e.layer.toGeoJSON());
-    };
 
-    const handleSetEndTime = (newValue) => {
-        setEndTime(newValue);
-        handleSearch(newValue); 
+    const handleAnyChangeOfTime = (startDay, startTime, endDay, endTime) => {
+        setStartDay(startDay);
+        setStartTime(startTime);
+        setEndDay(endDay);
+        setEndTime(endTime);
+        handleSearch(startDay, startTime, endDay, endTime);
     }
 
-    const handleSearch = (event) => {
+
+
+
+    const handleSearch = (startDay, startTime, endDay, endTime) => {
         const start =
             startDay.toDate().toISOString().split("T")[0] + "T" + startTime.toDate().toISOString().split("T")[1];
         setStart(start);
-        const end = endDay.toDate().toISOString().split("T")[0] + "T" + event.toDate().toISOString().split("T")[1];
+        const end =
+            endDay.toDate().toISOString().split("T")[0] + "T" + endTime.toDate().toISOString().split("T")[1];
         setEnd(end);
 
+        //create startTime as Date from start string 
+        const startTimeDate = new Date(start);
+        //create endTime as Date from end string
+        const endTimeDate = new Date(end);
+        // check if startTime is before endTime
+        if (startTimeDate.getTime() > endTimeDate.getTime()) {
+            toast.warning("Start time must be before end time");
+            return;
+        }
         dispatch(getFreeParkingSpotsByParkingId(parkingId, start, end));
         dispatch(getOccupiedParkingSpotsMapByParkingId(parkingId, start));
     };
@@ -254,7 +286,10 @@ function ParkingDetails(props) {
                                                     ])}
                                                     color='red'
                                                     interactive>
-                                                    <Popup>{`This spot will be availbe from: ${new Date(occupiedParkingSpotsMap[parkingSpot.id]).toLocaleString()}`} </Popup>
+                                                    <Popup>
+                                                        {`This spot will be availbe from: ${new Date(occupiedParkingSpotsMap[parkingSpot.id]?.earliestStart).toLocaleString()}`} <br></br>
+                                                        {`This spot will be availbe to: ${new Date(occupiedParkingSpotsMap[parkingSpot.id]?.earliestEnd).toLocaleString()}`}
+                                                    </Popup>
                                                     </Polygon>                                                
                                             ))}
                                                 {freeParkingSpots.map((spot, index) => (
@@ -351,7 +386,7 @@ function ParkingDetails(props) {
                                         >
                                             <DateCalendar
                                                 value={startDay}
-                                                onChange={(newValue) => setStartDay(newValue)}
+                                                onChange={(newStartDay) => handleAnyChangeOfTime(newStartDay, startTime, endDay, endTime)}
                                             />
                                         </Grid>
                                         <Grid
@@ -363,7 +398,7 @@ function ParkingDetails(props) {
                                                 skipDisabled
                                                 shouldDisableTime={shouldDisableTime}
                                                 value={startTime}
-                                                onChange={(newValue) => { setStartTime(newValue); setDisableDateTime(false); }}
+                                                onChange={(newStartTime) => { handleAnyChangeOfTime(startDay, newStartTime, endDay, endTime); setDisableDateTime(false); }}
                                             />
                                         </Grid>
                                     </LocalizationProvider>
@@ -379,7 +414,7 @@ function ParkingDetails(props) {
                                         >
                                             <DateCalendar
                                                 value={endDay}
-                                                onChange={(newValue) => setEndDay(newValue)}
+                                                onChange={(newValue) => { handleAnyChangeOfTime(startDay, startTime, newValue, endTime);} }
                                                 disabled={disableEndDateTime}
                                             />
                                         </Grid>
@@ -392,7 +427,7 @@ function ParkingDetails(props) {
                                                 skipDisabled
                                                 shouldDisableTime={shouldDisableTime}
                                                 value={endTime}
-                                                onChange={(newValue) => { handleSetEndTime(newValue) }}
+                                                onChange={(newValue) => { handleAnyChangeOfTime(startDay, startTime, endDay, newValue);}}
                                                 disabled={disableEndDateTime}
                                             />
                                         </Grid>
