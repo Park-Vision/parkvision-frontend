@@ -72,9 +72,10 @@ function ParkingDetails(props) {
     const [disableEndDateTime, setDisableDateTime] = React.useState(true);
 
     useEffect(() => {
-        dispatch(getParking(parkingId));
+        dispatch(getParking(parkingId)).then((response) => {
+            handleSearch(endTime);
+        });
         dispatch(getParkingSpotsByParkingId(parkingId));
-        handleSearch(endTime);
         unsetParkingSpot();
         tryGetUserCars();
     }, []);
@@ -121,10 +122,16 @@ function ParkingDetails(props) {
     }
 
     const handleSearch = (event) => {
+        const timeZone = parking.timeZone; // "Europe/Warsaw"
+        var options = {timeZone: timeZone, hour12: false };
+
         const start =
-            startDay.toDate().toISOString().split("T")[0] + "T" + startTime.toDate().toISOString().split("T")[1];
+            new Date(startDay.toDate().toLocaleString("en-US",options)).toISOString().split("T")[0] + "T" + new Date(startTime.toDate().toLocaleString("en-US",options)).toISOString().split("T")[1];
+        
+        
         setStart(start);
-        const end = endDay.toDate().toISOString().split("T")[0] + "T" + event.toDate().toISOString().split("T")[1];
+        const end = new Date(endDay.toDate().toLocaleString("en-US",options)).toISOString().split("T")[0] + "T" + new Date(event.toDate().toLocaleString("en-US",options)).toISOString().split("T")[1];
+        // startDay.toDate().toISOString().split("T")[0] + "T" + startTime.toDate().toLocaleTimeString();
         setEnd(end);
 
         dispatch(getFreeParkingSpotsByParkingId(parkingId, start, end));
@@ -332,6 +339,7 @@ function ParkingDetails(props) {
                                 </Typography>
                                 <Typography>$/h: {parking.costRate}</Typography>
                                 <Typography>Open hours: {parking.openHours}</Typography>
+                                <Typography>Time zone: {parking.timeZone}</Typography>
                             </CardContent>
                             <CardContent spacing={2}>
                                     <Typography variant='h6'>Select start date and time:</Typography>
