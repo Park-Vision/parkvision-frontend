@@ -27,29 +27,19 @@ export default function Home() {
     const [showMap, setShowMap] = useState(false);
     const [filter, setFilter] = useState("");
     const [listOfParkings, setListOfParkings] = useState([]);
-
+    let navigate = useNavigate();
 
     useEffect(() => {
-        dispatch(getParkings());
-        setListOfParkings(parkings);
-    }, []);
+        if (parkings.length === 0) {
+            dispatch(getParkings());
+        } else {
+            setListOfParkings(parkings); // Set the value of listOfParkings once parkings are fetched
+        }
+    }, [dispatch, parkings]);
 
-    // {
-    //     "id": 2,
-    //     "name": "D20 - Politechnika Wrocławska",
-    //     "description": "Parking D20 to parking dla studentów i pracowników Politehcniki Wrocławskiej. Posiada 50 miejsc parkingowych, w tym 2 miejsca dla osób niepełnosprawnych. Parking jest monitorowany przez 24 godziny na dobę.",
-    //     "city": "Wrocław",
-    //     "street": "Janiszewskiego 8",
-    //     "zipCode": "50-372",
-    //     "costRate": 3,
-    //     "openHours": "4:30 - 23:00",
-    //     "latitude": 17.059114686292222,
-    //     "longitude": 51.10975855141324
-    // }
     const handleChange = (event) => {
     };
 
-    let navigate = useNavigate();
     const handleClick = (event) => {
         navigate(`/parking/${event}`);
     }
@@ -75,31 +65,13 @@ export default function Home() {
 
     const handleSubmitFilter = (event) => {
         event.preventDefault();
-        const result = [];
         const filterElements = filter.toLowerCase().split(" ");
         const filteredResults = parkings.filter(parking => {
-            const parkingAddress = (parking.name + " " + parking.city + " " + parking.street).toLowerCase();
-            let termCount = 0;
-            for (let term of filterElements) {
-                if (parkingAddress.includes(term)) {
-                    termCount++;
-                }
-            }
-            result.push(
-                {
-                    parking: parking,
-                    termCount: termCount
-                }
-            )
+            const parkingAddress = `${parking.name} ${parking.city} ${parking.street}`.toLowerCase();
+            return filterElements.every(term => parkingAddress.includes(term));
         });
-        console.log(result);
-        const maxTermCount = result
-            .reduce((max, current) => Math.max(max, current.termCount), 0);
-        const parkingsWithMaxTermCount = result
-            .filter(item => item.termCount === maxTermCount)
-            .map(item => item.parking);
-        console.log(parkingsWithMaxTermCount);
-        setListOfParkings(parkingsWithMaxTermCount);
+        console.log(filteredResults);
+        setListOfParkings(filteredResults);
     }
 
     const parkingIcon = new L.DivIcon({
@@ -198,22 +170,26 @@ export default function Home() {
             ) : (
                 <div>
                     <form onSubmit={handleSubmitFilter}>
-                        <Grid container spacing={2} alignItems="center">
-                            <Grid item>
-                                <SearchIcon />
-                            </Grid>
+                        <Grid container spacing={2} alignItems="center" justifyContent="flex-end">
                             <Grid item>
                                 <TextField
                                     id="input-with-icon-grid"
-                                    label="Zacznij pisać nazwę parkingu"
-                                    variant="standard"
+                                    label="Search for parking"
+                                    variant="outlined"
                                     value={filter}
                                     onChange={handleChangeFilter}
+                                    style={{ width: '300px' }}
                                 />
                             </Grid>
                             <Grid item>
-                                <Button variant="contained" color="primary" type="submit" disabled={!filter}>
-                                    Szukaj
+                                <Button
+                                    variant="contained"
+                                    color="primary"
+                                    type="submit"
+                                    disabled={!filter}
+                                    style={{ height: '40px' }}
+                                >
+                                    Search
                                 </Button>
                             </Grid>
                         </Grid>
