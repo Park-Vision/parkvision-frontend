@@ -152,11 +152,8 @@ function ParkingDetails(props) {
             endDay.toDate().toISOString().split("T")[0] + "T" + endTime.toDate().toISOString().split("T")[1];
         setEnd(end);
 
-        //create startTime as Date from start string 
         const startTimeDate = new Date(start);
-        //create endTime as Date from end string
         const endTimeDate = new Date(end);
-        // check if startTime is before endTime
         if (startTimeDate.getTime() > endTimeDate.getTime()) {
             toast.warning("Start time must be before end time");
             return;
