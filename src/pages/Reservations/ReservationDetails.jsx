@@ -97,7 +97,7 @@ export default function ReservationDetails(props) {
                     )}
                             </div>
                         <TextField sx={{ m: 1 }} fullWidth
-                                value={new Date(reservation.startDate).toLocaleString()}
+                                value={`${new Date(reservation.startDate).toLocaleString()} (${parking.timeZone})`}
                                 id="outlined-basic"
                                 label="Start date"
                                 variant="outlined" 
@@ -106,7 +106,7 @@ export default function ReservationDetails(props) {
                                 }}
                         />
                         <TextField sx={{ m: 1 }} fullWidth
-                                value={new Date(reservation.endDate).toLocaleString()}
+                            value={`${new Date(reservation.endDate).toLocaleString()} (${parking.timeZone})`}
                                 id="outlined-basic"
                                 label="End date"
                                 variant="outlined" 

@@ -82,9 +82,10 @@ function ParkingDetails(props) {
 
 
     useEffect(() => {
-        dispatch(getParking(parkingId));
+        dispatch(getParking(parkingId)).then((response) => {
+            handleSearch(startDay, startTime, endDay, endTime);
+        });
         dispatch(getParkingSpotsByParkingId(parkingId));
-        handleSearch(startDay, startTime, endDay, endTime);
         unsetParkingSpot();
         tryGetUserCars();
         tryGetUser();
@@ -158,11 +159,16 @@ function ParkingDetails(props) {
 
 
     const handleSearch = (startDay, startTime, endDay, endTime) => {
+        const timeZone = parking.timeZone; // "Europe/Warsaw"
+        var options = {timeZone: timeZone, hour12: false };
+
         const start =
-            startDay.toDate().toISOString().split("T")[0] + "T" + startTime.toDate().toISOString().split("T")[1];
+            new Date(startDay.toDate().toLocaleString("en-US",options)).toISOString().split("T")[0] + "T" + new Date(startTime.toDate().toLocaleString("en-US",options)).toISOString().split("T")[1];
+        
+        
         setStart(start);
-        const end =
-            endDay.toDate().toISOString().split("T")[0] + "T" + endTime.toDate().toISOString().split("T")[1];
+        const end = new Date(endDay.toDate().toLocaleString("en-US",options)).toISOString().split("T")[0] + "T" + new Date(endTime.toDate().toLocaleString("en-US",options)).toISOString().split("T")[1];
+        // startDay.toDate().toISOString().split("T")[0] + "T" + startTime.toDate().toLocaleTimeString();
         setEnd(end);
 
         const startTimeDate = new Date(start);
@@ -380,7 +386,8 @@ function ParkingDetails(props) {
                                     Address: {parking.street},{parking.zipCode} {parking.city}
                                 </Typography>
                                 <Typography>$/h: {parking.costRate}</Typography>
-                                <Typography>Open hours: {parking.startTime}  {parking.endTime}</Typography>
+                                <Typography>Open hours: {parking.openHours}</Typography>
+                                <Typography>Time zone: {parking.timeZone}</Typography>
                             </CardContent>
                             <Grid container>
                                 {  user && user.parkingDTO &&
