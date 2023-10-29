@@ -72,10 +72,9 @@ function ParkingDetails(props) {
     const [disableEndDateTime, setDisableDateTime] = React.useState(true);
 
     useEffect(() => {
-        dispatch(getParking(parkingId)).then((response) => {
-            handleSearch(endTime);
-        });
+        dispatch(getParking(parkingId));
         dispatch(getParkingSpotsByParkingId(parkingId));
+        handleSearch(endTime);
         unsetParkingSpot();
         tryGetUserCars();
     }, []);
@@ -122,16 +121,10 @@ function ParkingDetails(props) {
     }
 
     const handleSearch = (event) => {
-        const timeZone = parking.timeZone; // "Europe/Warsaw"
-        var options = {timeZone: timeZone, hour12: false };
-
         const start =
-            new Date(startDay.toDate().toLocaleString("en-US",options)).toISOString().split("T")[0] + "T" + new Date(startTime.toDate().toLocaleString("en-US",options)).toISOString().split("T")[1];
-        
-        
+            startDay.toDate().toISOString().split("T")[0] + "T" + startTime.toDate().toLocaleTimeString();
         setStart(start);
-        const end = new Date(endDay.toDate().toLocaleString("en-US",options)).toISOString().split("T")[0] + "T" + new Date(event.toDate().toLocaleString("en-US",options)).toISOString().split("T")[1];
-        // startDay.toDate().toISOString().split("T")[0] + "T" + startTime.toDate().toLocaleTimeString();
+        const end = endDay.toDate().toISOString().split("T")[0] + "T" + event.toDate().toLocaleTimeString();
         setEnd(end);
 
         dispatch(getFreeParkingSpotsByParkingId(parkingId, start, end));
