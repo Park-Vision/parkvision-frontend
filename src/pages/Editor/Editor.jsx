@@ -79,7 +79,6 @@ function ParkingEditor(props) {
         dispatch(getParkingSpotsByParkingId(parkingId));
         handleSearch(endTime);
         unsetParkingSpot();
-        tryGetUserCars();
     }, []);
 
 
@@ -88,12 +87,6 @@ function ParkingEditor(props) {
             type: GET_PARKING_SPOT,
             value: {},
         });
-    };
-
-    const tryGetUserCars = () => {
-        if (authenticationReducer.decodedUser) {
-            dispatch(getUserCars());
-        }
     };
 
     const mapRef = useRef(null);

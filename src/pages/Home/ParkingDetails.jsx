@@ -96,7 +96,8 @@ function ParkingDetails(props) {
     };
 
     const tryGetUserCars = () => {
-        if (authenticationReducer.decodedUser) {
+        // Do not request cars for manager or admin
+        if (authenticationReducer.decodedUser && authenticationReducer.decodedUser.role == "USER") {
             dispatch(getUserCars());
         }
     };
