@@ -16,15 +16,16 @@ import {useDispatch, useSelector} from "react-redux";
 import {logout} from "../actions/authenticationActions";
 import { useNavigate } from 'react-router-dom';
 
-const pages = ['Strona główna', 'Rezerwuj', 'Kontakt', 'O nas'];
-const links = ['/', '/reservations', '/contact', '/about'];
-const settings = ['Profile', 'Account', 'Dashboard'];
+const pages = ['Home', 'Contact', 'About'];
+const links = ['/', '/contact', '/about'];
+const settings = ['Account', 'Cars', 'Reservations'];
 
 function ResponsiveAppBar() {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
   const dispatch = useDispatch()
   const isLoggedIn = useSelector((state) => state.authenticationReducer.isLoggedIn);
+  const currentUser = useSelector((state) => state.authenticationReducer.decodedUser);
 
   const navigate = useNavigate()
 
@@ -54,7 +55,13 @@ function ResponsiveAppBar() {
       console.log(isLoggedIn)
   }
 
-  return (
+  const getInitials = () => {
+        const result = currentUser.role.charAt(0) + currentUser.sub.charAt(0);
+        return result.toUpperCase();
+  }
+
+
+    return (
     <AppBar position="fixed">
       <Container maxWidth="xl">
         <Toolbar disableGutters>
@@ -176,11 +183,11 @@ function ResponsiveAppBar() {
               )}
           </Box>
 
-            {isLoggedIn && (
+            {currentUser && (
                 <Box sx={{ flexGrow: 0 }}>
                     <Tooltip title="Open settings">
                         <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                            <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+                            <Avatar alt="Remy Sharp">{getInitials()}</Avatar>
                         </IconButton>
                     </Tooltip>
                     <Menu
