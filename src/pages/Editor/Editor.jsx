@@ -19,8 +19,9 @@ import { DigitalClock } from "@mui/x-date-pickers/DigitalClock";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
 import { useNavigate } from "react-router-dom";
+
 import { MapContainer, Marker, Polygon, Popup, TileLayer, FeatureGroup, MapControl } from "react-leaflet";
-import { getFreeParkingSpotsByParkingId, getOccupiedParkingSpotsMapByParkingId, getParkingSpotsByParkingId } from "../../actions/parkingSpotActions";
+import { getFreeParkingSpotsByParkingId, getParkingSpotsByParkingId, addStagedParkingSpot } from "../../actions/parkingSpotActions";
 import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
 import TextField from "@mui/material/TextField";
@@ -36,7 +37,7 @@ import {
     GET_FREE_PARKING_SPOTS_BY_PARKING_ID,
 } from "../../actions/types";
 import { toast } from "react-toastify";
-import { set } from "react-hook-form";
+import parkingSpotReducer from "../../reducers/parkingSpotReducer";
 
 delete L.Icon.Default.prototype._getIconUrl;
 
@@ -49,9 +50,7 @@ L.Icon.Default.mergeOptions({
         "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.1/images/marker-shadow.png",
 });
 
-
-
-function ParkingDetails(props) {
+function ParkingEditor(props) {
     const { parkingId } = useParams();
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -67,24 +66,20 @@ function ParkingDetails(props) {
     const reservationReducer = useSelector((state) => state.reservationReducer);
     const parkingSpots = useSelector((state) => state.parkingSpotReducer);
     const freeParkingSpots = useSelector((state) => state.parkingSpotReducer.freeParkingSpots);
+    const stagedParkingSpots = useSelector((state) => state.parkingSpotReducer.stagedParkingSpots);
     const parkingSpot = useSelector((state) => state.parkingSpotReducer.parkingSpot);
     const cars = useSelector((state) => state.carReducer);
     const [registrationNumber, setRegistrationNumber] = React.useState();
     const [selectedCar, setSelectedCar] = React.useState("none");
     const authenticationReducer = useSelector((state) => state.authenticationReducer);
     const [disableEndDateTime, setDisableDateTime] = React.useState(true);
-    const occupiedParkingSpotsMap = useSelector(state => state.parkingSpotReducer.occupiedParkingSpots);
-    const numOfSpotsList = useSelector(state => state.parkingReducer.numOfSpotsInParkings);
-    const numOfFreeSpotsList = useSelector(state => state.parkingReducer.numOfFreeSpotsInParkings);
-
 
     useEffect(() => {
         dispatch(getParking(parkingId));
         dispatch(getParkingSpotsByParkingId(parkingId));
-        handleSearch(startDay, startTime, endDay, endTime);
+        handleSearch(endTime);
         unsetParkingSpot();
         tryGetUserCars();
-    
     }, []);
 
 
@@ -103,30 +98,14 @@ function ParkingDetails(props) {
 
     const mapRef = useRef(null);
 
-    const parseTime = (timeString) => {
-        const [hours, minutes, seconds] = timeString.split(':');
-        const date = new Date();
-        date.setHours(Number(hours));
-        date.setMinutes(Number(minutes));
-        date.setSeconds(Number(seconds));
-        return date;
-    }
-
-
+    const startOpenHour = 6;
+    const endOpenHour = 22;
     const shouldDisableTime = (value, view) => {
-        if (parking.startTime === undefined) {
-            return true;
+        const hour = value.hour();
+        if (view === "hours") {
+            return hour < startOpenHour || hour > endOpenHour;
         }
-    const hour = value.hour();
-
-    if (view === "hours") {
-        const parkingStart = parseTime(parking.startTime)
-        const parkingEnd = parseTime(parking.endTime)
-
-        return hour < parkingStart.getHours() || hour > parkingEnd.getHours() || (hour === parkingEnd.getHours() && value.minute() > 0);
-    }
-
-    return false;
+        return false;
     };
 
     const changeCarSelection = (e) => {
@@ -135,34 +114,23 @@ function ParkingDetails(props) {
         setRegistrationNumber(registrationNumber);
     };
 
+    const _created = (e) => {
+        console.log(e.layer.toGeoJSON());
+    };
 
-    const handleAnyChangeOfTime = (startDay, startTime, endDay, endTime) => {
-        setStartDay(startDay);
-        setStartTime(startTime);
-        setEndDay(endDay);
-        setEndTime(endTime);
-        handleSearch(startDay, startTime, endDay, endTime);
+    const handleSetEndTime = (newValue) => {
+        setEndTime(newValue);
+        handleSearch(newValue); 
     }
 
-
-
-
-    const handleSearch = (startDay, startTime, endDay, endTime) => {
+    const handleSearch = (event) => {
         const start =
             startDay.toDate().toISOString().split("T")[0] + "T" + startTime.toDate().toISOString().split("T")[1];
         setStart(start);
-        const end =
-            endDay.toDate().toISOString().split("T")[0] + "T" + endTime.toDate().toISOString().split("T")[1];
+        const end = endDay.toDate().toISOString().split("T")[0] + "T" + event.toDate().toISOString().split("T")[1];
         setEnd(end);
 
-        const startTimeDate = new Date(start);
-        const endTimeDate = new Date(end);
-        if (startTimeDate.getTime() > endTimeDate.getTime()) {
-            toast.warning("Start time must be before end time");
-            return;
-        }
         dispatch(getFreeParkingSpotsByParkingId(parkingId, start, end));
-        dispatch(getOccupiedParkingSpotsMapByParkingId(parkingId, start));
     };
 
     const handleClickOnFreeParkingSpot = (event) => {
@@ -189,44 +157,7 @@ function ParkingDetails(props) {
         });
     };
 
-    const handleRegistrationTextFieldChange = (event) => {
-        const registrationNumber = event.target.value;
-        setRegistrationNumber(registrationNumber);
-        setSelectedCar("none");
-    }
 
-    const handleCreateReservation = (event) => {
-        if (!authenticationReducer.decodedUser) {
-            toast.error("You must be logged in to make a reservation");
-            return;
-        }
-
-        const newReservation = {
-            startDate: start,
-            endDate: end,
-            registrationNumber: registrationNumber,
-            userDTO: {
-                id: authenticationReducer.decodedUser.userId,
-            },
-            parkingSpotDTO: {
-                id: parkingSpot.id,
-            },
-        };
-        dispatch({
-            type: GET_RESERVATION,
-            value: newReservation,
-        });
-
-        // route to resevation detail page and pass reservation object
-
-        navigate("/reservation-details");
-
-        // dispatch(addReservation(newReservation))
-    };
-
-    const handleGoToMission = (event) => {
-        navigate(`/parking/${parkingId}/editor`);
-    };
 
     return (
         <Container
@@ -252,7 +183,6 @@ function ParkingDetails(props) {
                                     center={[parking.latitude, parking.longitude]}
                                     zoom={20}
                                     scrollWheelZoom={true}
-                                    whenCreated={(map) => (mapRef.current = map)}
                                 >
                                     <FeatureGroup>
                                         <EditControl
@@ -278,6 +208,18 @@ function ParkingDetails(props) {
                                                 edit: true,
                                                 featureGroup: mapRef.current?.leafletElement,
                                             }}
+                                            onCreated={e => {
+                                                const eventJson = (e.layer.toGeoJSON())
+                                                //addStagedParkingSpot(e.layer.toGeoJSON())
+                                                console.log(eventJson.geometry.coordinates)
+                                                addStagedParkingSpot(eventJson.geometry.coordinates)
+                                            }}
+                                            onEdited={e => {
+                                                // console.log(e)
+                                                e.layers.eachLayer(a => {
+                                                    console.log(a.toGeoJSON())
+                                                });
+                                            }}
                                         />
                                         {parkingSpots.parkingSpots
                                             .filter(
@@ -290,12 +232,7 @@ function ParkingDetails(props) {
                                                         point.longitude,
                                                     ])}
                                                     color='red'
-                                                    interactive>
-                                                    <Popup>
-                                                        {`This spot will be availbe from: ${new Date(occupiedParkingSpotsMap[parkingSpot.id]?.earliestStart).toLocaleString()}`} <br></br>
-                                                        {`This spot will be availbe to: ${new Date(occupiedParkingSpotsMap[parkingSpot.id]?.earliestEnd).toLocaleString()}`}
-                                                    </Popup>
-                                                    </Polygon>                                                
+                                                />
                                             ))}
                                                 {freeParkingSpots.map((spot, index) => (
                                                 spot.id !== parkingSpots.parkingSpot.id && (
@@ -314,6 +251,7 @@ function ParkingDetails(props) {
                                                     />
                                                 )
                                                 ))}
+                                        
 
                                     </FeatureGroup>
 
@@ -343,7 +281,7 @@ function ParkingDetails(props) {
                                             }}
                                             interactive
                                             >
-                                            <Popup>{`Selected spot number: ${parkingSpot.id}`} <br></br> Click to deselect</Popup>
+                                            <Popup>{`Selected Parking Spot ID: ${parkingSpot.id}`} <br></br> Click to deselect</Popup>
                                             </Polygon>
                                         )}
                                 </MapContainer>
@@ -371,159 +309,21 @@ function ParkingDetails(props) {
                         <Paper className='reserve'>
                             <CardContent>
                                 <Typography variant='h4'>{parking.name}</Typography>
-                                <Typography variant='h5'>Free: {numOfFreeSpotsList[parking.id]}</Typography>
-                                <Typography variant='h5'>All: {numOfSpotsList[parking.id]}</Typography>
                                 <Typography variant='p'>{parking.description}</Typography>
                                 <Typography>
-                                    Address: {parking.street},{parking.zipCode} {parking.city}
+                                    Address:{parking.street},{parking.zipCode} {parking.city}
                                 </Typography>
                                 <Typography>$/h: {parking.costRate}</Typography>
-                                <Typography>Open hours: {parking.startTime}  {parking.endTime}</Typography>
+                                <Typography>Open hours: {parking.openHours}</Typography>
                             </CardContent>
-                            <CardContent spacing={2}>
-                                    <Typography variant='h6'>Select start date and time:</Typography>
-
-                                <Grid
-                                    container
-                                    spacing={3}
-                                >
-                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                        <Grid  
-                                            item xs={12} sm={8} lg={9}
-                                        >
-                                            <DateCalendar
-                                                value={startDay}
-                                                onChange={(newStartDay) => handleAnyChangeOfTime(newStartDay, startTime, endDay, endTime)}
-                                            />
-                                        </Grid>
-                                        <Grid
-                                           item xs={12} sm={4} lg={3}
-                                        >
-                                            <DigitalClock
-                                                ampm={false}
-                                                timeStep={15}
-                                                skipDisabled
-                                                shouldDisableTime={shouldDisableTime}
-                                                value={startTime}
-                                                onChange={(newStartTime) => { handleAnyChangeOfTime(startDay, newStartTime, endDay, endTime); setDisableDateTime(false); }}
-                                            />
-                                        </Grid>
-                                    </LocalizationProvider>
-                                </Grid>
-                                    <Typography variant='h6'>Select end date and time:</Typography>
-                                <Grid
-                                    container
-                                    spacing={3}
-                                >
-                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                        <Grid
-                                            item xs={12} sm={8} lg={9}
-                                        >
-                                            <DateCalendar
-                                                value={endDay}
-                                                onChange={(newValue) => { handleAnyChangeOfTime(startDay, startTime, newValue, endTime);} }
-                                                disabled={disableEndDateTime}
-                                            />
-                                        </Grid>
-                                        <Grid
-                                            item xs={12} sm={4} lg={3}
-                                        >
-                                            <DigitalClock
-                                                ampm={false}
-                                                timeStep={15}
-                                                skipDisabled
-                                                shouldDisableTime={shouldDisableTime}
-                                                value={endTime}
-                                                onChange={(newValue) => { handleAnyChangeOfTime(startDay, startTime, endDay, newValue);}}
-                                                disabled={disableEndDateTime}
-                                            />
-                                        </Grid>
-                                    </LocalizationProvider>
-                                </Grid>
-                                {/* <Grid container>
-                                    <Button
-                                        sx={{ m: 1 }}
-                                        variant='outlined'
-                                        onClick={handleSearch}
-                                        fullWidth
-                                    >
-                                        Search
-                                    </Button>
-                                </Grid> */}
-                                <Grid container>
-                                    <TextField
-                                        sx={{ m: 1 }}
-                                        fullWidth
-                                        value={parkingSpot.id || ""}
-                                        id='outlined-basic'
-                                        label='Parking spot'
-                                        variant='outlined'
-                                        placeholder="Click on a free parking spot on a map"
-                                        required={true}
-                                        InputProps={{
-                                            readOnly: true,
-                                        }}
-                                    />
-                                </Grid>
-                                <Grid container>
-                                    <TextField
-                                        sx={{ m: 1 }}
-                                        fullWidth
-                                        label="Registration number"
-                                        variant="outlined"
-                                        type="text"
-                                        required={true}
-                                        value={registrationNumber ?? ''}
-                                        onChange={handleRegistrationTextFieldChange}
-                                    />
-                                </Grid>
-                                {authenticationReducer.decodedUser && cars.cars.length > 0 ? (
-                                    <Grid container>
-                                        <FormControl
-                                            sx={{ m: 1 }}
-                                            fullWidth
-                                        >
-                                            <InputLabel id='demo-multiple-name-label'>Select your car</InputLabel>
-                                            <Select
-                                                labelId='demo-multiple-name-label'
-                                                id='demo-multiple-name'
-                                                value={selectedCar}
-                                                onChange={changeCarSelection}
-                                                label='Select your car'
-                                            >
-                                                {cars.cars.map((car, index) => (
-                                                    <MenuItem
-                                                        key={index}
-                                                        value={car}
-                                                    >
-                                                        {car.brand},{car.registrationNumber}
-                                                    </MenuItem>
-                                                ))}
-                                            </Select>
-                                        </FormControl>
-                                    </Grid>
-                                ) : (
-                                    <div></div>
-                                )}
-                                <Grid container>
-                                    <Button
+                            <Button
                                         sx={{ m: 1 }}
                                         variant='contained'
-                                        onClick={handleCreateReservation}
+                                        //onClick={}
                                         fullWidth
                                     >
-                                        Reserve
+                                        Save parking
                                     </Button>
-                                    <Button
-                                        sx={{ m: 1 }}
-                                        variant='contained'
-                                        onClick={handleGoToMission}
-                                        fullWidth
-                                    >
-                                        Parking editor
-                                    </Button>
-                                </Grid>
-                            </CardContent>
                         </Paper>
                     </Grid>
                 </Grid>
@@ -532,5 +332,4 @@ function ParkingDetails(props) {
     );
 }
 
-export default ParkingDetails;
-
+export default ParkingEditor;

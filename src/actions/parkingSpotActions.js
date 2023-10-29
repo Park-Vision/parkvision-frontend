@@ -7,6 +7,10 @@ import {
     GET_PARKING_SPOT,
     GET_PARKING_SPOTS_BY_PARKING_ID,
     GET_FREE_PARKING_SPOTS_BY_PARKING_ID,
+    ADD_STAGED_PARKING_SPOT
+} from "./types"
+import ParkingSpotService from "../services/ParkingSpotService"
+    GET_FREE_PARKING_SPOTS_BY_PARKING_ID,
     GET_OCCUPIED_PARKING_SPOTS_MAP_BY_PARKING_ID,
 } from "./types";
 import ParkingSpotService from "../services/ParkingSpotService";
@@ -122,4 +126,8 @@ export const updateParkingSpot = (parkingSpotData) => async (dispatch) => {
     } catch (error) {
         return Promise.reject(error);
     }
-};
+}
+export const addStagedParkingSpot = (parkingSpotData) => ({
+    type: ADD_STAGED_PARKING_SPOT,
+    value: parkingSpotData
+})
