@@ -42,12 +42,16 @@ export default function Home() {
                 })
             }
         )
+
+    }, []);
+
+    useEffect(() => {
         if (parkings.length === 0) {
-              dispatch(getParkings());
-          } else {
-              setListOfParkings(parkings);
-          }
-    }, [dispatch, parkings]);
+            dispatch(getParkings());
+        } else {
+            setListOfParkings(parkings);
+        }
+    }, [dispatch, parkings])
 
     const handleChange = (event) => {
     };
