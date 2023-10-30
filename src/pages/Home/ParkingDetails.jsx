@@ -70,6 +70,8 @@ function ParkingDetails(props) {
     const [selectedCar, setSelectedCar] = React.useState("none");
     const authenticationReducer = useSelector((state) => state.authenticationReducer);
     const [disableEndDateTime, setDisableDateTime] = React.useState(true);
+    const numOfSpotsList = useSelector(state => state.parkingReducer.numOfSpotsInParkings);
+    const numOfFreeSpotsList = useSelector(state => state.parkingReducer.numOfFreeSpotsInParkings);
 
     useEffect(() => {
         dispatch(getParking(parkingId));
@@ -326,12 +328,14 @@ function ParkingDetails(props) {
                         <Paper className='reserve'>
                             <CardContent>
                                 <Typography variant='h4'>{parking.name}</Typography>
+                                <Typography variant='h5'>Free: {numOfFreeSpotsList[parking.id]}</Typography>
+                                <Typography variant='h5'>All: {numOfSpotsList[parking.id]}</Typography>
                                 <Typography variant='p'>{parking.description}</Typography>
                                 <Typography>
-                                    Address:{parking.street},{parking.zipCode} {parking.city}
+                                    Address: {parking.street},{parking.zipCode} {parking.city}
                                 </Typography>
                                 <Typography>$/h: {parking.costRate}</Typography>
-                                <Typography>Open hours: {parking.openHours}</Typography>
+                                <Typography>Open hours: {parking.startTime}  {parking.endTime}</Typography>
                             </CardContent>
                             <CardContent spacing={2}>
                                     <Typography variant='h6'>Select start date and time:</Typography>

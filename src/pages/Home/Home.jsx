@@ -14,7 +14,9 @@ import LocalParkingIcon from '@mui/icons-material/LocalParking';
 import L from 'leaflet';
 import SearchIcon from '@mui/icons-material/Search';
 import {useDispatch, useSelector} from "react-redux";
-import {getParkings} from "../../actions/parkingActions";
+import {getCars} from "../../actions/carActions";
+import {getParkingFreeSpotsNumber, getParkingSpotsNumber, getParkings} from "../../actions/parkingActions";
+
 import { useNavigate } from "react-router-dom";
 import {MapContainer, Marker, Popup, TileLayer} from 'react-leaflet';
 import {renderToString} from "react-dom/server";
@@ -24,17 +26,27 @@ export default function Home() {
     useSelector(state => state.parkingReducer.parking = {})
     const dispatch = useDispatch()
     const authenticationReducer = useSelector((state) => state.authenticationReducer);
+    const numOfSpotsList = useSelector(state => state.parkingReducer.numOfSpotsInParkings);
+    const numOfFreeSpotsList = useSelector(state => state.parkingReducer.numOfFreeSpotsInParkings);
     const [showMap, setShowMap] = useState(false);
     const [filter, setFilter] = useState("");
     const [listOfParkings, setListOfParkings] = useState([]);
     let navigate = useNavigate();
 
+
     useEffect(() => {
+        dispatch(getParkings()).then((response) => {
+                response.map((parking, index) => {
+                    dispatch(getParkingFreeSpotsNumber(parking.id, new Date().toISOString()))
+                    dispatch(getParkingSpotsNumber(parking.id))
+                })
+            }
+        )
         if (parkings.length === 0) {
-            dispatch(getParkings());
-        } else {
-            setListOfParkings(parkings); // Set the value of listOfParkings once parkings are fetched
-        }
+              dispatch(getParkings());
+          } else {
+              setListOfParkings(parkings);
+          }
     }, [dispatch, parkings]);
 
     const handleChange = (event) => {
@@ -95,7 +107,6 @@ export default function Home() {
                     >
                         <ListIcon />
                     </Button>
-
                     <Button
                         variant="contained"
                         color="primary"
@@ -210,6 +221,8 @@ export default function Home() {
                                             <Typography gutterBottom variant="h5" component="h2">
                                                 {parking.name}
                                             </Typography>
+                                             <Typography variant='h5'>Free: {numOfFreeSpotsList[parking.id]}</Typography>
+                                             <Typography variant='h5'>All: {numOfSpotsList[parking.id]}</Typography>
                                             <Typography>Address: {parking.street}, {parking.zipCode} {parking.city}</Typography>
                                             <Typography>Open hours: {parking.openHours}</Typography>
                                             <Typography>$/h: {parking.costRate}</Typography>
