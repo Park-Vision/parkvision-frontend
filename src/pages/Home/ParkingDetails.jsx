@@ -74,6 +74,8 @@ function ParkingDetails(props) {
     const authenticationReducer = useSelector((state) => state.authenticationReducer);
     const [disableEndDateTime, setDisableDateTime] = React.useState(true);
     const occupiedParkingSpotsMap = useSelector(state => state.parkingSpotReducer.occupiedParkingSpots);
+    const numOfSpotsList = useSelector(state => state.parkingReducer.numOfSpotsInParkings);
+    const numOfFreeSpotsList = useSelector(state => state.parkingReducer.numOfFreeSpotsInParkings);
 
 
     useEffect(() => {
