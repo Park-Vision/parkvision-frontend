@@ -21,7 +21,7 @@ import dayjs from "dayjs";
 import { useNavigate } from "react-router-dom";
 
 import { MapContainer, Marker, Polygon, Popup, TileLayer, FeatureGroup, MapControl } from "react-leaflet";
-import { getFreeParkingSpotsByParkingId, getParkingSpotsByParkingId, addStagedParkingSpot } from "../../actions/parkingSpotActions";
+import { getFreeParkingSpotsByParkingId, getParkingSpotsByParkingId, addStagedParkingSpot, addParkingSpot } from "../../actions/parkingSpotActions";
 import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
 import TextField from "@mui/material/TextField";
@@ -148,6 +148,24 @@ function ParkingEditor(props) {
             type: GET_FREE_PARKING_SPOTS_BY_PARKING_ID,
             value: freeParkingSpots.concat(event),
         });
+    };
+
+    const handleSaveToDB = (event) => {
+        var newSpotsBody = []
+        for (const spot in stagedParkingSpots) {
+            const spotData = {
+                "spotNumber":"11",
+                "occupied":false,
+                "active":true,
+                "parkingDTO":{
+                "id":1
+                },
+                "points":
+            }
+            newSpotsBody.push(spotData)
+        }
+        
+        dispatch(addParkingSpot(parkingId, newSpotsBody))
     };
 
 
@@ -312,7 +330,7 @@ function ParkingEditor(props) {
                             <Button
                                         sx={{ m: 1 }}
                                         variant='contained'
-                                        //onClick={}
+                                        onClick={handleSaveToDB}
                                         fullWidth
                                     >
                                         Save parking

@@ -7,12 +7,9 @@ import {
     GET_PARKING_SPOT,
     GET_PARKING_SPOTS_BY_PARKING_ID,
     GET_FREE_PARKING_SPOTS_BY_PARKING_ID,
+    GET_OCCUPIED_PARKING_SPOTS_MAP_BY_PARKING_ID,
     ADD_STAGED_PARKING_SPOT
 } from "./types"
-import ParkingSpotService from "../services/ParkingSpotService"
-    GET_FREE_PARKING_SPOTS_BY_PARKING_ID,
-    GET_OCCUPIED_PARKING_SPOTS_MAP_BY_PARKING_ID,
-} from "./types";
 import ParkingSpotService from "../services/ParkingSpotService";
 
 export const addParkingSpot = (parkingSpotData) => async (dispatch) => {
@@ -20,49 +17,49 @@ export const addParkingSpot = (parkingSpotData) => async (dispatch) => {
         const response = await ParkingSpotService.createParkingSpot(parkingSpotData);
         dispatch({
             type: ADD_PARKING_SPOT,
-            value: response.data,
-        });
-        return Promise.resolve(response.data);
-    } catch (error) {
-        return Promise.reject(error);
+            value: response.data
+        })
+        return Promise.resolve(response.data)
+    } catch (error){
+        return Promise.reject(error)
     }
-};
+}
 export const getParkingSpots = () => async (dispatch) => {
     try {
-        const response = await ParkingSpotService.getParkingSpots();
+        const response = await ParkingSpotService.getParkingSpots()
         dispatch({
             type: GET_PARKING_SPOTS,
-            value: response.data,
-        });
-        return Promise.resolve(response.data);
-    } catch (error) {
-        return Promise.reject(error);
+            value: response.data
+        })
+        return Promise.resolve(response.data)
+    } catch (error){
+        return Promise.reject(error)
     }
-};
+}
 
 export const getParkingSpotsByParkingId = (parkingId) => async (dispatch) => {
     try {
-        const response = await ParkingSpotService.getParkingSpotsByParkingId(parkingId);
+        const response = await ParkingSpotService.getParkingSpotsByParkingId(parkingId)
         dispatch({
             type: GET_PARKING_SPOTS_BY_PARKING_ID,
-            value: response.data,
-        });
-        return Promise.resolve(response.data);
-    } catch (error) {
-        return Promise.reject(error);
+            value: response.data
+        })
+        return Promise.resolve(response.data)
+    } catch (error){
+        return Promise.reject(error)
     }
-};
+}
 
 export const getFreeParkingSpotsByParkingId = (parkingId, start, end) => async (dispatch) => {
     try {
         const response = await ParkingSpotService.getFreeParkingSpotsByParkingId(parkingId, start, end);
         dispatch({
             type: GET_FREE_PARKING_SPOTS_BY_PARKING_ID,
-            value: response.data,
-        });
-        return Promise.resolve(response.data);
-    } catch (error) {
-        return Promise.reject(error);
+            value: response.data
+        })
+        return Promise.resolve(response.data)
+    } catch (error){
+        return Promise.reject(error)
     }
 };
 
@@ -81,14 +78,14 @@ export const getOccupiedParkingSpotsMapByParkingId = (parkingId, start) => async
 
 export const getParkingSpot = (parkingSpotId) => async (dispatch) => {
     try {
-        const response = await ParkingSpotService.getParkingSpotById(parkingSpotId);
+        const response = await ParkingSpotService.getParkingSpotById(parkingSpotId)
         dispatch({
             type: GET_PARKING_SPOT,
-            value: response.data,
-        });
-        return Promise.resolve(response.data);
-    } catch (error) {
-        return Promise.reject(error);
+            value: response.data
+        })
+        return Promise.resolve(response.data)
+    } catch (error){
+        return Promise.reject(error)
     }
 };
 export const deleteParkingSpotSoft = (parkingSpotId) => async (dispatch) => {
