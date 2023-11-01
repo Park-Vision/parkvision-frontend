@@ -17,7 +17,7 @@ import ManagerProfile from "./pages/ParkingManagement/ManagerProfile";
 import UserProfile from "./pages/User/UserProfile";
 import * as React from "react";
 
-import { Stomp } from '@stomp/stompjs';
+import Stomp, { setInterval } from 'stompjs';
 import SockJS from 'sockjs-client';
 
 
@@ -74,16 +74,16 @@ function App() {
 
         setStomClient(client);
         
-
-
-        setTimeout(() => {
+            
+            setInterval(() => {
+        if (stompClient !== null) {
             sendMessage();
         }
-            , 1000);
-        
-        return () => client.disconnect();
-        
+    }, 1000);
     }, []);
+
+
+
 
 
     const sendMessage = () => {
