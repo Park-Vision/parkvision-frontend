@@ -18,7 +18,8 @@ const parkingSpotReducer = (state = initialState, action) => {
             return {
                 ...state,
                 parkingSpots: [...state.parkingSpots, ...action.value], //This makes "flat" because endpoint returns array of parking spots
-                parkingSpot: {}
+                parkingSpot: {},
+                stagedParkingSpots: []
             }
         case GET_PARKING_SPOTS:
             return {
