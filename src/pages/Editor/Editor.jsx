@@ -150,22 +150,45 @@ function ParkingEditor(props) {
         });
     };
 
-    const handleSaveToDB = (event) => {
-        var newSpotsBody = []
-        for (const spot in stagedParkingSpots) {
-            const spotData = {
-                "spotNumber":"11",
-                "occupied":false,
-                "active":true,
-                "parkingDTO":{
-                "id":1
-                },
-                "points":
-            }
-            newSpotsBody.push(spotData)
-        }
+    const handleSaveToDB = (event) => { 
+        dispatch(addParkingSpot(parking.id, stagedParkingSpots))
+    };
+
+    const mapPonitsToParkingSpot = (points) => {
         
-        dispatch(addParkingSpot(parkingId, newSpotsBody))
+        const mappedPoints = points[0].map((coord) => {
+                console.log(coord);
+                return { latitude: coord[1], longitude: coord[0] };
+        });
+        
+        mappedPoints.pop();
+        
+        const pointsDTO = mappedPoints.map((point) => {
+                return {
+                    latitude: point.latitude,
+                    longitude: point.longitude,
+                    parkingSpotDTO: {
+                        id: parking.id
+                    }
+                }
+            }
+        );
+
+
+
+        const newParkingSpot = {
+            spotNumber: "newly created spot",
+            occupied: false,
+            active: true,
+            parkingDTO: {
+                id: parking.id
+            },
+            pointsDTO: pointsDTO
+        }
+
+        console.log(newParkingSpot);
+
+        dispatch(addStagedParkingSpot(newParkingSpot));
     };
 
 
@@ -223,7 +246,8 @@ function ParkingEditor(props) {
                                                 const eventJson = (e.layer.toGeoJSON())
                                                 //addStagedParkingSpot(e.layer.toGeoJSON())
                                                 console.log(eventJson.geometry.coordinates)
-                                                addStagedParkingSpot(eventJson.geometry.coordinates)
+                                                mapPonitsToParkingSpot(eventJson.geometry.coordinates);
+                                                
                                             }}
                                             onEdited={e => {
                                                 // console.log(e)
@@ -232,38 +256,16 @@ function ParkingEditor(props) {
                                                 });
                                             }}
                                         />
-                                        {parkingSpots.parkingSpots
-                                            .filter(
-                                                (spot) => !freeParkingSpots.map((spot) => spot.id).includes(spot.id)
-                                            )
+                                        {/* {parkingSpots.parkingSpots
                                             .map((parkingSpot, index) => (
                                                 <Polygon
                                                     positions={parkingSpot.pointsDTO.map((point) => [
                                                         point.latitude,
                                                         point.longitude,
                                                     ])}
-                                                    color='red'
+                                                    color='blue'
                                                 />
-                                            ))}
-                                                {freeParkingSpots.map((spot, index) => (
-                                                spot.id !== parkingSpots.parkingSpot.id && (
-                                                    <Polygon
-                                                    key={index}
-                                                    positions={spot.pointsDTO.map((point) => [
-                                                        point.latitude,
-                                                        point.longitude,
-                                                    ])}
-                                                    color="green" // Set the color to green for excluded polygons
-                                                    eventHandlers={{
-                                                        click: (event) => {
-                                                        handleClickOnFreeParkingSpot(spot);
-                                                        },
-                                                    }}
-                                                    />
-                                                )
-                                                ))}
-                                        
-
+                                            ))} */}
                                     </FeatureGroup>
 
                                     <TileLayer
@@ -272,7 +274,7 @@ function ParkingEditor(props) {
                                         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                                         url='http://mt0.google.com/vt/lyrs=s&x={x}&y={y}&z={z}'
                                     />
-                                    {parkingSpot && parkingSpot.id && (
+                                    {/* {parkingSpot && parkingSpot.id && (
                                             <Polygon
                                                 positions={parkingSpot.pointsDTO.map((point) => [
                                                     point.latitude,
@@ -294,7 +296,17 @@ function ParkingEditor(props) {
                                             >
                                             <Popup>{`Selected Parking Spot ID: ${parkingSpot.id}`} <br></br> Click to deselect</Popup>
                                             </Polygon>
-                                        )}
+                                        )} */}
+                                     {parkingSpots.parkingSpots
+                                            .map((spot, index) => (
+                                                <Polygon
+                                                    positions={spot.pointsDTO.map((point) => [
+                                                        point.latitude,
+                                                        point.longitude,
+                                                    ])}
+                                                    color='blue'
+                                                />
+                                            ))}
                                 </MapContainer>
                             ) : (
                                 <Box

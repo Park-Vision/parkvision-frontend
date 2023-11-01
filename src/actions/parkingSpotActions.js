@@ -87,44 +87,51 @@ export const getParkingSpot = (parkingSpotId) => async (dispatch) => {
     } catch (error){
         return Promise.reject(error)
     }
-};
+}
 export const deleteParkingSpotSoft = (parkingSpotId) => async (dispatch) => {
     try {
-        const response = await ParkingSpotService.softDeleteParkingSpotById(parkingSpotId);
+        const response = await ParkingSpotService.softDeleteParkingSpotById(parkingSpotId)
         dispatch({
             type: DELETE_PARKING_SPOT_SOFT,
-            value: parkingSpotId,
-        });
-        return Promise.resolve(response.data);
-    } catch (error) {
-        return Promise.reject(error);
-    }
-};
-export const deleteParkingSpotHard = (parkingSpotId) => async (dispatch) => {
-    try {
-        const response = await ParkingSpotService.hardDeleteParkingSpotById(parkingSpotId);
-        dispatch({
-            type: DELETE_PARKING_SPOT_HARD,
-            value: parkingSpotId,
-        });
-        return Promise.resolve(response.data);
-    } catch (error) {
-        return Promise.reject(error);
-    }
-};
-export const updateParkingSpot = (parkingSpotData) => async (dispatch) => {
-    try {
-        const response = await ParkingSpotService.updateParkingSpot(parkingSpotData);
-        dispatch({
-            type: UPDATE_PARKING_SPOT,
-            value: parkingSpotData,
-        });
-        return Promise.resolve(response.data);
-    } catch (error) {
-        return Promise.reject(error);
+            value: parkingSpotId
+        })
+        return Promise.resolve(response.data)
+    } catch (error){
+        return Promise.reject(error)
     }
 }
-export const addStagedParkingSpot = (parkingSpotData) => ({
-    type: ADD_STAGED_PARKING_SPOT,
-    value: parkingSpotData
-})
+export const deleteParkingSpotHard = (parkingSpotId) => async (dispatch) => {
+    try {
+        const response = await ParkingSpotService.hardDeleteParkingSpotById(parkingSpotId)
+        dispatch({
+            type: DELETE_PARKING_SPOT_HARD,
+            value: parkingSpotId
+        })
+        return Promise.resolve(response.data)
+    } catch (error){
+        return Promise.reject(error)
+    }
+}
+export const updateParkingSpot = (parkingSpotData) => async (dispatch) => {
+    try {
+        const response = await ParkingSpotService.updateParkingSpot(parkingSpotData)
+        dispatch({
+            type: UPDATE_PARKING_SPOT,
+            value: parkingSpotData
+        })
+        return Promise.resolve(response.data)
+    } catch (error){
+        return Promise.reject(error)
+    }
+}
+export const addStagedParkingSpot = (parkingSpotData) => async (dispatch) => {
+    try {
+        dispatch({
+            type: ADD_STAGED_PARKING_SPOT,
+            value: parkingSpotData
+        })
+        return Promise.resolve(parkingSpotData)
+    } catch (error) {
+        return Promise.reject(error)
+    }
+}
