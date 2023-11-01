@@ -19,9 +19,11 @@ import {getParkingFreeSpotsNumber, getParkingSpotsNumber, getParkings} from "../
 import convertTime  from '../../utils/convertTime';
 import { useNavigate } from "react-router-dom";
 import {MapContainer, Marker, Popup, TileLayer, useMap} from 'react-leaflet';
-import { renderToString } from "react-dom/server";
+import {  renderToString  } from "react-dom/server";
 import {getUser} from "../../actions/userActions";
 import decodeToken from '../../utils/decodeToken';
+
+
 
 export default function Home() {
     const parkings = useSelector(state => state.parkingReducer.parkings)
@@ -35,6 +37,10 @@ export default function Home() {
     const [filter, setFilter] = useState("");
     const [listOfParkings, setListOfParkings] = useState([]);
     let navigate = useNavigate();
+
+
+
+
 
 
     useEffect(() => {
@@ -59,6 +65,22 @@ export default function Home() {
             });
         }
     }, []);
+
+
+
+
+
+
+    const onError = (error) => {
+        console.log('error', error);
+    }
+
+    const onMessageReceived = (msg) => {
+
+        const message = JSON.parse(msg.body);
+        console.log('message', message);
+    }
+    
 
     useEffect(() => {
         const user = decodeToken(JSON.parse(localStorage.getItem("user"))?.token);
