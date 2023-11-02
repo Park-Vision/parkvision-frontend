@@ -52,7 +52,7 @@ const parkingSpotReducer = (state = initialState, action) => {
             return {
                 ...state,
                 parkingSpots: state.parkingSpots.map(item => item.id === parkingSpot.id ? parkingSpot : item ),
-                parkingSpot: {}
+                parkingSpot: parkingSpot
             }
         case DELETE_PARKING_SPOT_SOFT:
             return {

@@ -17,6 +17,8 @@ import ManagerProfile from "./pages/ParkingManagement/ManagerProfile";
 import UserProfile from "./pages/User/UserProfile";
 import * as React from "react";
 const ColorModeContext = React.createContext({ toggleColorMode: () => {} });
+import ParkingSpotDetails from "./pages/ParkingSpot/ParkingSpotDetails";
+
 function App() {
     const [mode, setMode] = React.useState("light");
     const colorMode = React.useMemo(
@@ -58,52 +60,20 @@ function App() {
                     <Toolbar />
                     <div className='home'>
                         <Routes>
-                            <Route path={'/mission'} element={<Mission/>}/>
-                            <Route
-                                exact
-                                path={"/"}
-                                element={<Home />}
-                            />
-                            <Route
-                                path={"/login"}
-                                element={<Login />}
-                            />
-                            <Route
-                                path={"/register"}
-                                element={<Register />}
-                            />
-                            <Route
-                                path={"/reservations"}
-                                element={<Reservations />}
-                            />
-                            <Route
-                                path={"/about"}
-                                element={<About />}
-                            />
-                            <Route
-                                path={"/contact"}
-                                element={<Contact />}
-                            />
-                            <Route
-                                path={"/cars"}
-                                element={<CarPage />}
-                            />
-                            <Route
-                                path={"/parking/:parkingId"}
-                                element={<ParkingDetails />}
-                            />
-                            <Route
-                                path={"/reservation-details"}
-                                element={<ReservationDetails />}
-                            />
-                            <Route
-                                path={"/management"}
-                                element={<ManagerProfile />}
-                            />
-                            <Route
-                                path={"/profile"}
-                                element={<UserProfile />}
-                            />
+                            <Route exact path={'/'} element={<Home/>}/>
+                            <Route path={'/login'} element={<Login/>}/>
+                            <Route path={'/register'} element={<Register/>}/>
+                            <Route path={'/reservations'} element={<Reservations/>}/>
+                            <Route path={'/about'} element={<About/>}/>
+                            <Route path={'/contact'} element={<Contact/>}/>
+                            <Route path={'/cars'} element={<CarPage/>}/>
+                            <Route path={'/parking/:parkingId/editor'} element={<ParkingEditor/>}/>
+                            <Route path={'/parking/:parkingId'} element={<ParkingDetails />} />
+                            <Route path={"/parkingspot/:parkingSpotId"} element={<ParkingSpotDetails />}/>
+                            <Route path={"/reservation-details"} element={<ReservationDetails />}/>
+                            <Route path={"/management"} element={<ManagerProfile />}/>
+                            <Route path={"/profile"} element={<UserProfile />}/>
+
                         </Routes>
                     </div>
                 </ThemeProvider>

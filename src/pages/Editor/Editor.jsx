@@ -21,7 +21,7 @@ import dayjs from "dayjs";
 import { useNavigate } from "react-router-dom";
 
 import { MapContainer, Marker, Polygon, Popup, TileLayer, FeatureGroup, MapControl } from "react-leaflet";
-import { getFreeParkingSpotsByParkingId, getParkingSpotsByParkingId, addStagedParkingSpot, addParkingSpot } from "../../actions/parkingSpotActions";
+import { getFreeParkingSpotsByParkingId, getParkingSpotsByParkingId, addStagedParkingSpot, addParkingSpot, getParkingSpot } from "../../actions/parkingSpotActions";
 import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
 import TextField from "@mui/material/TextField";
@@ -77,7 +77,6 @@ function ParkingEditor(props) {
     useEffect(() => {
         dispatch(getParking(parkingId));
         dispatch(getParkingSpotsByParkingId(parkingId));
-        handleSearch(endTime);
         unsetParkingSpot();
     }, []);
 
@@ -90,31 +89,6 @@ function ParkingEditor(props) {
     };
 
     const mapRef = useRef(null);
-
-    const startOpenHour = 6;
-    const endOpenHour = 22;
-    const shouldDisableTime = (value, view) => {
-        const hour = value.hour();
-        if (view === "hours") {
-            return hour < startOpenHour || hour > endOpenHour;
-        }
-        return false;
-    };
-
-    const changeCarSelection = (e) => {
-        setSelectedCar(e.target.value);
-        const registrationNumber = e.target.value.registrationNumber;
-        setRegistrationNumber(registrationNumber);
-    };
-
-    const _created = (e) => {
-        console.log(e.layer.toGeoJSON());
-    };
-
-    const handleSetEndTime = (newValue) => {
-        setEndTime(newValue);
-        handleSearch(newValue); 
-    }
 
     const handleSearch = (event) => {
         const start =
@@ -191,7 +165,17 @@ function ParkingEditor(props) {
         dispatch(addStagedParkingSpot(newParkingSpot));
     };
 
+    const handleEditClick = (event) => {
+        console.log(event)
+        if (parkingSpot.id === undefined) {
+            dispatch({
+                type: GET_PARKING_SPOT,
+                value: event,
+            });
+            navigate(`/parkingspot/${event.id}`);
+        }
 
+    };
 
     return (
         <Container
@@ -256,16 +240,19 @@ function ParkingEditor(props) {
                                                 });
                                             }}
                                         />
-                                        {/* {parkingSpots.parkingSpots
-                                            .map((parkingSpot, index) => (
+                                        {parkingSpots.parkingSpots
+                                            .map((spot, index) => (
                                                 <Polygon
-                                                    positions={parkingSpot.pointsDTO.map((point) => [
+                                                    positions={spot.pointsDTO.map((point) => [
                                                         point.latitude,
                                                         point.longitude,
                                                     ])}
-                                                    color='blue'
-                                                />
-                                            ))} */}
+                                                    color='blue'>
+                                                    <Popup>{`Parking Spot ID: ${spot.id}`} <br></br>
+                                                        <Button onClick={() => handleEditClick(spot)}> EDIT</Button>
+                                                    </Popup>
+                                                </Polygon>
+                                            ))}
                                     </FeatureGroup>
 
                                     <TileLayer
@@ -297,16 +284,7 @@ function ParkingEditor(props) {
                                             <Popup>{`Selected Parking Spot ID: ${parkingSpot.id}`} <br></br> Click to deselect</Popup>
                                             </Polygon>
                                         )} */}
-                                     {parkingSpots.parkingSpots
-                                            .map((spot, index) => (
-                                                <Polygon
-                                                    positions={spot.pointsDTO.map((point) => [
-                                                        point.latitude,
-                                                        point.longitude,
-                                                    ])}
-                                                    color='blue'
-                                                />
-                                            ))}
+
                                 </MapContainer>
                             ) : (
                                 <Box
