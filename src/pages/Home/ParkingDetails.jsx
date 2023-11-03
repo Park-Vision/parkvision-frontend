@@ -273,19 +273,11 @@ function ParkingDetails(props) {
                                                 circlemarker: false,
                                                 marker: false,
                                                 polyline: false,
-                                                polygon: {
-                                                    allowIntersection: false,
-                                                    drawError: {
-                                                        color: "#e1e100",
-                                                        message: "<strong>Oh snap!<strong> you can't draw that!",
-                                                    },
-                                                    shapeOptions: {
-                                                        color: "#97009c",
-                                                    },
-                                                },
+                                                polygon: false,
                                             }}
                                             edit={{
-                                                edit: true,
+                                                edit: false,
+                                                remove: false,
                                                 featureGroup: mapRef.current?.leafletElement,
                                             }}
                                         />

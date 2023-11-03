@@ -117,7 +117,7 @@ export const updateParkingSpot = (parkingSpotData) => async (dispatch) => {
         const response = await ParkingSpotService.updateParkingSpot(parkingSpotData)
         dispatch({
             type: UPDATE_PARKING_SPOT,
-            value: parkingSpotData
+            value: response.data
         })
         return Promise.resolve(response.data)
     } catch (error){
