@@ -12,10 +12,8 @@ class ParkingSpotService {
         return await axios.get(process.env.REACT_APP_BACKEND_URL + urlConst + "/" + parkingSpotId, { headers: authHeader() });
     }
 
-    async createParkingSpot(parkingSpotData) {
-        return await axios.post(process.env.REACT_APP_BACKEND_URL + urlConst, parkingSpotData, {
-            headers: authHeader(),
-        });
+    async createParkingSpot(parkingId, parkingSpotData) {
+        return await axios.post(process.env.REACT_APP_BACKEND_URL + urlConst + "/parking/" + parkingId + "/model/create", parkingSpotData, { headers: authHeader() });
     }
 
     async updateParkingSpot(parkingSpotData) {

@@ -382,6 +382,22 @@ function ParkingDetails(props) {
                                 <Typography>$/h: {parking.costRate}</Typography>
                                 <Typography>Open hours: {parking.startTime}  {parking.endTime}</Typography>
                             </CardContent>
+                            <Grid container>
+                                {  user && user.parkingDTO &&
+                                user.parkingDTO.id === parking.id
+                                && authenticationReducer.decodedUser.role === "PARKING_MANAGER" ? (
+                                    <Button
+                                        sx={{ m: 1 }}
+                                        variant='contained'
+                                        onClick={handleGoToMission}
+                                        fullWidth
+                                    >
+                                        Parking editor
+                                    </Button>
+                                ) : (
+                                    <div></div>
+                                )}
+                            </Grid>
                             <CardContent spacing={2}>
                                     <Typography variant='h6'>Select start date and time:</Typography>
 
@@ -515,14 +531,6 @@ function ParkingDetails(props) {
                                         fullWidth
                                     >
                                         Reserve
-                                    </Button>
-                                    <Button
-                                        sx={{ m: 1 }}
-                                        variant='contained'
-                                        onClick={handleGoToMission}
-                                        fullWidth
-                                    >
-                                        Parking editor
                                     </Button>
                                 </Grid>
                             </CardContent>

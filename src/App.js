@@ -8,7 +8,6 @@ import Reservations from "./pages/Reservations/Reservations";
 import About from "./pages/About/About";
 import Contact from "./pages/Contact/Contact";
 import CarPage from "./pages/Car/CarPage";
-import Mission from "./pages/Mission/Mission";
 import ParkingDetails from "./pages/Home/ParkingDetails";
 import Toolbar from "@mui/material/Toolbar";
 import Register from "./pages/Login/Register";
@@ -16,8 +15,10 @@ import ReservationDetails from "./pages/Reservations/ReservationDetails";
 import ManagerProfile from "./pages/ParkingManagement/ManagerProfile";
 import UserProfile from "./pages/User/UserProfile";
 import * as React from "react";
-const ColorModeContext = React.createContext({ toggleColorMode: () => {} });
 import ParkingSpotDetails from "./pages/ParkingSpot/ParkingSpotDetails";
+import ParkingEditor from "./pages/Editor/Editor"
+
+const ColorModeContext = React.createContext({ toggleColorMode: () => {} });
 
 function App() {
     const [mode, setMode] = React.useState("light");

@@ -12,9 +12,9 @@ import {
 } from "./types"
 import ParkingSpotService from "../services/ParkingSpotService";
 
-export const addParkingSpot = (parkingSpotData) => async (dispatch) => {
+export const addParkingSpot = (parkingId, parkingSpotData) => async (dispatch) => {
     try {
-        const response = await ParkingSpotService.createParkingSpot(parkingSpotData);
+        const response = await ParkingSpotService.createParkingSpot(parkingId, parkingSpotData);
         dispatch({
             type: ADD_PARKING_SPOT,
             value: response.data
