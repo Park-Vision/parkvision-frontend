@@ -1,10 +1,23 @@
 import { useNavigate} from 'react-router-dom';
-import { Container, Box, Typography, Paper, CardContent, TextField, Button, CircularProgress } from '@mui/material';
+import {
+    Container,
+    Grid,
+    Box,
+    Typography,
+    Paper,
+    CardContent,
+    Card,
+    TextField,
+    Button,
+    CircularProgress, FormControl, FormLabel, Input, Divider, Checkbox,
+} from '@mui/material';
 import { useDispatch, useSelector } from "react-redux";
 import { MapContainer, TileLayer, FeatureGroup, Polygon, Popup } from 'react-leaflet';
 import { addReservation } from '../../actions/reservationActions';
 import { toast } from "react-toastify";
 import { useState } from 'react';
+import {InfoOutlined} from "@material-ui/icons";
+import CreditCardIcon from '@mui/icons-material/CreditCard';
 
 export default function ReservationDetails(props) {
     const navigate = useNavigate();
@@ -12,8 +25,14 @@ export default function ReservationDetails(props) {
     const parking = useSelector(state => state.parkingReducer.parking);
     const parkingSpotReducer = useSelector(state => state.parkingSpotReducer);
     const [loading, setLoading] = useState(false);
-
     const dispatch = useDispatch()
+
+    const handleSubmit = (event) => {
+        event.preventDefault();
+        // Do something with the form data, for example, submit it to a server
+        console.log('Form submitted with data:');
+    };
+
 
     const handleReseveClick = (event) => {
         try {
@@ -40,6 +59,8 @@ export default function ReservationDetails(props) {
     const handleEditClick = (event) => {
         navigate('/parking/' + parking.id);
     };
+
+
     
     
     return (
@@ -141,13 +162,63 @@ export default function ReservationDetails(props) {
                                     readOnly: true,
                                 }}
                         />
-                        <Button sx={{ m: 1 }} variant="contained" onClick={handleReseveClick} fullWidth>
-                            Reserve
-                        </Button>
-                        <Button sx={{ m: 1 }} variant="outlined" onClick={handleEditClick} fullWidth>
-                            Edit
-                        </Button>
-                        
+                        <div>
+                        <Card
+                            variant="outlined"
+                            sx={{
+                                maxHeight: 'max-content',
+                                maxWidth: '100%',
+                                mx: 'auto',
+                            }}
+                        >
+                            <Divider inset="none" />
+                            <CardContent
+                                sx={{
+                                    display: 'grid',
+                                    gridTemplateColumns: 'repeat(2, minmax(80px, 1fr))',
+                                    gap: 1.5,
+                                }}
+                            >
+                                <FormControl sx={{ gridColumn: '1/-1' }}>
+                                    <FormLabel>Card number</FormLabel>
+                                    <Input
+                                        endDecorator={<CreditCardIcon />} />
+                                </FormControl>
+                                <FormControl>
+                                    <FormLabel>Expiration date</FormLabel>
+                                    <div style={{ display: 'flex' }}>
+                                        <Input
+                                            value=""
+                                            inputProps={{
+                                                maxLength: 2,
+                                            }}
+                                            endDecorator={<InfoOutlined />}
+                                        />
+                                        <Typography variant="h6" style={{ margin: '0 10px' }}>/</Typography>
+                                        <Input
+                                            value=""
+                                            inputProps={{
+                                                maxLength: 2,
+                                            }}
+                                            endDecorator={<InfoOutlined />}
+                                        />
+                                    </div>
+                                </FormControl>
+                                <FormControl>
+                                    <FormLabel>CVC/CVV</FormLabel>
+                                    <div  style={{ display: 'flex', maxWidth: '100%'}}>
+                                        <Input
+                                            endDecorator={<InfoOutlined />} />
+                                    </div>
+                                </FormControl>
+                            </CardContent>
+                                <Button
+                                        variant='contained'
+                                        fullWidth>
+                                    RESERVE
+                                </Button>
+                        </Card>
+                        </div>
                     </CardContent>
                 </Paper>
             </Box>
