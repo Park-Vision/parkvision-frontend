@@ -12,7 +12,7 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet-draw/dist/leaflet.draw.css";
 import { EditControl } from "react-leaflet-draw";
-import "./ParkingDetails.css"; // Create a CSS file for styling
+import "./Editor.css"; // Create a CSS file for styling
 import { useNavigate } from "react-router-dom";
 
 import { MapContainer, Polygon, Popup, TileLayer, FeatureGroup } from "react-leaflet";
@@ -63,6 +63,10 @@ function ParkingEditor(props) {
 
     const handleSaveToDB = (event) => {
         dispatch(addParkingSpot(parking.id, stagedParkingSpots))
+    };
+
+    const handleExitClick = () => {
+        navigate(`/parking/${parking.id}`);
     };
 
     const mapPonitsToParkingSpot = (points) => {
@@ -176,8 +180,25 @@ function ParkingEditor(props) {
                                                         point.longitude,
                                                     ])}
                                                     color='blue'>
-                                                    <Popup>{`Parking Spot ID: ${spot.id}`} <br></br>
-                                                        <Button variant='contained' onClick={() => handleEditClick(spot)}> EDIT</Button>
+                                                    <Popup>
+                                                        <div style={{ minWidth: '200px', maxWidth: '250px', padding: '10px', textAlign: 'left' }}>
+                                                            <div style={{ marginBottom: '5px', textAlign: 'center',
+                                                                fontSize: `${Math.min(20, 450 / parking.name.length)}px`, fontWeight: 'bold',
+                                                                whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                                                Spot: {spot.id}
+                                                            </div>
+                                                            <div style={{ marginBottom: '5px' }}>
+                                                                <span style={{ fontWeight: 'bold' }}>Spot number:</span> {spot.spotNumber}
+                                                            </div>
+                                                            <Button
+                                                                variant="contained"
+                                                                color="primary"
+                                                                onClick={() => handleEditClick(spot)}
+                                                                style={{ width: '100%' }}
+                                                            >
+                                                                EDIT
+                                                            </Button>
+                                                        </div>
                                                     </Popup>
                                                 </Polygon>
                                             ))}
@@ -221,14 +242,25 @@ function ParkingEditor(props) {
                                 <Typography>$/h: {parking.costRate}</Typography>
                                 <Typography>Open hours: {parking.openHours}</Typography>
                             </CardContent>
+                            <Grid container>
                             <Button
                                 sx={{ m: 1 }}
                                 variant='contained'
                                 onClick={handleSaveToDB}
                                 fullWidth
+                                disabled={stagedParkingSpots.length === 0}
                             >
                                 Save parking
                             </Button>
+                            <Button
+                                sx={{ m: 1 }}
+                                variant='contained'
+                                onClick={handleExitClick}
+                                fullWidth
+                            >
+                                Exit editor
+                            </Button>
+                            </Grid>
                         </Paper>
                     </Grid>
                 </Grid>

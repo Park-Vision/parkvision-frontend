@@ -1,5 +1,5 @@
 import { useNavigate, useParams } from 'react-router-dom';
-import { Container, Box, Typography, Paper, CardContent, TextField, Button, CircularProgress, RadioGroup } from '@mui/material';
+import { Container, Box, Typography, Paper, CardContent, TextField, Button, CircularProgress, RadioGroup, Grid} from '@mui/material';
 import { useDispatch, useSelector } from "react-redux";
 import { MapContainer, TileLayer, FeatureGroup, Polygon, Popup } from 'react-leaflet';
 import { EditControl } from "react-leaflet-draw";
@@ -26,7 +26,7 @@ L.Icon.Default.mergeOptions({
 export default function ParkingSpotDetails(props) {
     const parking = useSelector(state => state.parkingReducer.parking);
     const parkingSpotReducer = useSelector(state => state.parkingSpotReducer);
-
+    const navigate = useNavigate();
     const mapRef = useRef(null);
     const dispatch = useDispatch()
     const params = useParams();
@@ -123,7 +123,9 @@ export default function ParkingSpotDetails(props) {
         })
     };
 
-
+    const handleExitClick = () => {
+        navigate(`/parking/${parkingSpotReducer.parkingSpot.parkingDTO.id}/editor`);
+    };
 
     const handleEditInfo = () => {
 
@@ -148,6 +150,11 @@ export default function ParkingSpotDetails(props) {
                 {parkingSpotReducer.parkingSpot.id && (
                     <Paper>
                         <CardContent>
+                            <Grid container>
+                                <Button sx={{ m: 1 }} variant='contained' onClick={handleExitClick} fullWidth>
+                                    Go to editor
+                                </Button>
+                            </Grid>
                             <div style={{ height: '500px' }}>
                                 {parkingSpotReducer.parkingSpot.id && (
                                     <MapContainer
@@ -204,6 +211,7 @@ export default function ParkingSpotDetails(props) {
                                     </MapContainer>
                                 )}
                             </div>
+                            <Grid container>
                             <TextField sx={{ m: 1 }} fullWidth
                                 value={`${parkingSpotReducer.parkingSpot.parkingDTO.name}, ${parkingSpotReducer.parkingSpot.parkingDTO.street}, ${parkingSpotReducer.parkingSpot.parkingDTO.city}`}
                                 id="outlined-basic"
@@ -262,6 +270,8 @@ export default function ParkingSpotDetails(props) {
                             <Button sx={{ m: 1 }} variant='contained' onClick={handleEditInfo} fullWidth>
                                 Edit
                             </Button>
+                            </Grid>
+
                         </CardContent>
                     </Paper>
                 )}
