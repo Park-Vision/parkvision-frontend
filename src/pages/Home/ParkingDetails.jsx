@@ -19,12 +19,14 @@ import { DigitalClock } from "@mui/x-date-pickers/DigitalClock";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
 import { useNavigate } from "react-router-dom";
+
 import { MapContainer, Marker, Polygon, Popup, TileLayer, FeatureGroup, MapControl } from "react-leaflet";
 import { getFreeParkingSpotsByParkingId, getOccupiedParkingSpotsMapByParkingId, getParkingSpotsByParkingId } from "../../actions/parkingSpotActions";
 import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
 import TextField from "@mui/material/TextField";
 import MenuItem from "@mui/material/MenuItem";
+import { getUser } from "../../actions/userActions";
 import { getCar, getUserCars } from "../../actions/carActions";
 import {
     ADD_RESERVATION,
@@ -72,6 +74,7 @@ function ParkingDetails(props) {
     const [registrationNumber, setRegistrationNumber] = React.useState();
     const [selectedCar, setSelectedCar] = React.useState("none");
     const authenticationReducer = useSelector((state) => state.authenticationReducer);
+    const user = useSelector((state) => state.userReducer.user);
     const [disableEndDateTime, setDisableDateTime] = React.useState(true);
     const occupiedParkingSpotsMap = useSelector(state => state.parkingSpotReducer.occupiedParkingSpots);
     const numOfSpotsList = useSelector(state => state.parkingReducer.numOfSpotsInParkings);
@@ -84,7 +87,7 @@ function ParkingDetails(props) {
         handleSearch(startDay, startTime, endDay, endTime);
         unsetParkingSpot();
         tryGetUserCars();
-    
+        tryGetUser();
     }, []);
 
 
@@ -96,8 +99,15 @@ function ParkingDetails(props) {
     };
 
     const tryGetUserCars = () => {
-        if (authenticationReducer.decodedUser) {
+        // Do not request cars for manager or admin
+        if (authenticationReducer.decodedUser && authenticationReducer.decodedUser.role == "USER") {
             dispatch(getUserCars());
+        }
+    };
+
+    const tryGetUser = () => {
+        if (authenticationReducer.decodedUser) {
+            dispatch(getUser(authenticationReducer.decodedUser.userId));
         }
     };
 
@@ -194,6 +204,7 @@ function ParkingDetails(props) {
         setRegistrationNumber(registrationNumber);
         setSelectedCar("none");
     }
+
     const handleCreateReservation = (event) => {
         if (!authenticationReducer.decodedUser) {
             toast.error("You must be logged in to make a reservation");
@@ -221,6 +232,10 @@ function ParkingDetails(props) {
         navigate("/reservation-details");
 
         // dispatch(addReservation(newReservation))
+    };
+
+    const handleGoToMission = (event) => {
+        navigate(`/parking/${parkingId}/editor`);
     };
 
     return (
@@ -258,19 +273,11 @@ function ParkingDetails(props) {
                                                 circlemarker: false,
                                                 marker: false,
                                                 polyline: false,
-                                                polygon: {
-                                                    allowIntersection: false,
-                                                    drawError: {
-                                                        color: "#e1e100",
-                                                        message: "<strong>Oh snap!<strong> you can't draw that!",
-                                                    },
-                                                    shapeOptions: {
-                                                        color: "#97009c",
-                                                    },
-                                                },
+                                                polygon: false,
                                             }}
                                             edit={{
-                                                edit: true,
+                                                edit: false,
+                                                remove: false,
                                                 featureGroup: mapRef.current?.leafletElement,
                                             }}
                                         />
@@ -290,7 +297,7 @@ function ParkingDetails(props) {
                                                         {`This spot will be availbe from: ${new Date(occupiedParkingSpotsMap[parkingSpot.id]?.earliestStart).toLocaleString()}`} <br></br>
                                                         {`This spot will be availbe to: ${new Date(occupiedParkingSpotsMap[parkingSpot.id]?.earliestEnd).toLocaleString()}`}
                                                     </Popup>
-                                                    </Polygon>                                                
+                                                    </Polygon>
                                             ))}
                                                 {freeParkingSpots.map((spot, index) => (
                                                 spot.id !== parkingSpots.parkingSpot.id && (
@@ -375,6 +382,22 @@ function ParkingDetails(props) {
                                 <Typography>$/h: {parking.costRate}</Typography>
                                 <Typography>Open hours: {parking.startTime}  {parking.endTime}</Typography>
                             </CardContent>
+                            <Grid container>
+                                {  user && user.parkingDTO &&
+                                user.parkingDTO.id === parking.id
+                                && authenticationReducer.decodedUser.role === "PARKING_MANAGER" ? (
+                                    <Button
+                                        sx={{ m: 1 }}
+                                        variant='contained'
+                                        onClick={handleGoToMission}
+                                        fullWidth
+                                    >
+                                        Parking editor
+                                    </Button>
+                                ) : (
+                                    <div></div>
+                                )}
+                            </Grid>
                             <CardContent spacing={2}>
                                     <Typography variant='h6'>Select start date and time:</Typography>
 
