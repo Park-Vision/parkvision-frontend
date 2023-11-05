@@ -32,5 +32,6 @@ class UserService {
     async registerUser(userData) {
         return await axios.post(process.env.REACT_APP_BACKEND_URL + authUrlConst + "/register", userData, { headers: authHeader() });
     }
+
 }
 export default new UserService();

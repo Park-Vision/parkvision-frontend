@@ -8,6 +8,10 @@ class ReservationService {
         return await axios.get(process.env.REACT_APP_BACKEND_URL + urlConst, { headers: authHeader() });
     }
 
+    async getUserReservations() {
+        return await axios.get(process.env.REACT_APP_BACKEND_URL + urlConst + "/client", { headers: authHeader() });
+    }
+
     async getReservationById(reservationId) {
         return await axios.get(process.env.REACT_APP_BACKEND_URL + urlConst + "/" + reservationId, { headers: authHeader() });
     }

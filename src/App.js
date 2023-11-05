@@ -15,6 +15,7 @@ import ReservationDetails from "./pages/Reservations/ReservationDetails";
 import ManagerProfile from "./pages/ParkingManagement/ManagerProfile";
 import UserProfile from "./pages/User/UserProfile";
 import * as React from "react";
+import UserReservations from "./pages/User/UserReservations";
 const ColorModeContext = React.createContext({ toggleColorMode: () => {} });
 function App() {
     const [mode, setMode] = React.useState("light");
@@ -101,6 +102,10 @@ function App() {
                             <Route
                                 path={"/profile"}
                                 element={<UserProfile />}
+                            />
+                            <Route
+                                path={"/profile/reservations"}
+                                element={<UserReservations />}
                             />
                         </Routes>
                     </div>
