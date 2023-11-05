@@ -7,27 +7,18 @@ import {
     Box,
     Container,
     List,
-    ListItem,
-    ListItemText,
     Paper,
-    TableCell,
-    TableHead,
-    Table,
-    TableContainer,
-    TableBody,
-    TableRow,
     Typography
 } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import Button from "@mui/material/Button";
-import ListIcon from "@mui/icons-material/List";
-import PlaceIcon from "@mui/icons-material/Place";
 import ModeEditIcon from '@mui/icons-material/ModeEdit';
 import DeleteIcon from '@mui/icons-material/Delete';
 
 export default function UserReservations() {
     const authenticationReducer = useSelector((state) => state.authenticationReducer);
     const reservations = useSelector((state) => state.reservationReducer.reservations);
+
     const [archivedReservations, setArchivedReservations] = useState([]);
     const [pendingReservations, setPendingReservations] = useState([]);
     const [showArchived, setShowArchived] = useState(false);
@@ -36,9 +27,11 @@ export default function UserReservations() {
     const dispatch = useDispatch();
 
     useEffect(() => {
-        dispatch(getUserReservations());
-        setArchivedReservations(reservations.Archived);
-        setPendingReservations(reservations.Pending);
+        dispatch(getUserReservations())
+            .then((response) => {
+                setArchivedReservations(response.Archived);
+                setPendingReservations(response.Pending);
+            });
     }, []);
 
     const handleShowArchived = () => {
@@ -55,11 +48,6 @@ export default function UserReservations() {
         return date.toLocaleString('en-US', options);
     }
 
-
-    console.log(archivedReservations);
-    console.log(pendingReservations);
-
-
     if (!authenticationReducer.decodedUser || authenticationReducer.decodedUser.role !== 'USER') {
         navigate('/');
         return <Home />;
@@ -69,7 +57,7 @@ export default function UserReservations() {
         <Container maxWidth="lg">
             <Box sx={{ my: 4 }}>
                 <Typography variant="h4" align="center" gutterBottom>
-                    USER RESERVATIONS
+                    RESERVATIONS
                 </Typography>
                 <div style={{ margin: '20px' }}>
                     <Grid container spacing={2} justifyContent="center">
@@ -102,11 +90,12 @@ export default function UserReservations() {
                                         <Typography variant="subtitle1" sx={{ fontWeight: 'bold', fontSize: '1.2rem' }}>
                                             Reservation ID: {reservation.id}
                                         </Typography>
-                                        <Typography variant="body1">Start Date: {formatDate(reservation.startDate)}</Typography>
-                                        <Typography variant="body1">End Date: {formatDate(reservation.endDate)}</Typography>
+                                        <Typography variant="body1">Parking: {reservation.parkingSpotDTO.parkingDTO.name}</Typography>
+                                        <Typography variant="body1">Spot Number: {reservation.parkingSpotDTO.spotNumber}</Typography>
+                                        <Typography variant="body1">Start: {formatDate(reservation.startDate)}</Typography>
+                                        <Typography variant="body1">End: {formatDate(reservation.endDate)}</Typography>
                                         <Typography variant="body1">Registration Number: {reservation.registrationNumber}</Typography>
-                                        <Typography variant="body1">User: {reservation.userDTO.firstName} {reservation.userDTO.lastName}</Typography>
-                                        <Typography variant="body1">Parking Spot Number: {reservation.parkingSpotDTO.spotNumber}</Typography>
+                                        <Typography variant="body1">Name: {reservation.userDTO.firstName} {reservation.userDTO.lastName}</Typography>
                                     </Paper>
                                 ))}
                             </List>
@@ -124,11 +113,12 @@ export default function UserReservations() {
                                 <Typography variant="subtitle1" sx={{ fontWeight: 'bold', fontSize: '1.2rem' }}>
                                     Reservation ID: {reservation.id}
                                 </Typography>
-                                <Typography variant="body1">Start Date: {formatDate(reservation.startDate)}</Typography>
-                                <Typography variant="body1">End Date: {formatDate(reservation.endDate)}</Typography>
+                                <Typography variant="body1">Parking: {reservation.parkingSpotDTO.parkingDTO.name}</Typography>
+                                <Typography variant="body1">Spot Number: {reservation.parkingSpotDTO.spotNumber}</Typography>
+                                <Typography variant="body1">Start: {formatDate(reservation.startDate)}</Typography>
+                                <Typography variant="body1">End: {formatDate(reservation.endDate)}</Typography>
                                 <Typography variant="body1">Registration Number: {reservation.registrationNumber}</Typography>
-                                <Typography variant="body1">User: {reservation.userDTO.firstName} {reservation.userDTO.lastName}</Typography>
-                                <Typography variant="body1">Parking Spot Number: {reservation.parkingSpotDTO.spotNumber}</Typography>
+                                <Typography variant="body1">Name: {reservation.userDTO.firstName} {reservation.userDTO.lastName}</Typography>
                                 <div style={{ textAlign: 'right' }}>
                                     <ModeEditIcon style={{ fontSize: 30 }} />
                                     <DeleteIcon style={{ fontSize: 30 }} />
@@ -145,8 +135,3 @@ export default function UserReservations() {
         </Container>
         );
 }
-
-
-
-
-
