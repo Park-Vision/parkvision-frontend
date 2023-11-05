@@ -59,9 +59,10 @@ function App() {
         const socket = new SockJS('http://localhost:8080/ws');
         const client = Stomp.over(socket);
 
-        client.connect({}, () => {
-            client.subscribe('/topic/messages', (message) => {
+        client.connect({ Authorization: "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJQbW9kQHB2LnBsIiwidXNlcklkIjoiMSIsInJvbGUiOiJQQVJLSU5HX01BTkFHRVIiLCJpYXQiOjE2OTkxODIwMzMsImV4cCI6MTY5OTE4NTYzM30.8vOxMI8Yw7xmNWqMvwiqj6a43fxEbdA-fO1i2-i4B7E"}, () => {
+            client.subscribe('/topic/parkings/1', (message) => {
                 const recievedMessage = JSON.parse(message.body);
+                console.log(recievedMessage)
                 setMessages((messages) => [...messages, recievedMessage]);
             });
         }, (error) => {
@@ -75,7 +76,7 @@ function App() {
             
             setInterval(() => {
         if (stompClient !== null) {
-            sendMessage();
+            // sendMessage();
         }
     }, 1000);
     }, []);
@@ -88,7 +89,7 @@ function App() {
         const messageObject = {
             message: message,
         };
-        stompClient.send('/app/chat', {}, JSON.stringify(messageObject));
+        stompClient.send('/app/messages', {}, JSON.stringify(messageObject));
         setMessage("");
     }
 
