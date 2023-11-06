@@ -1,5 +1,5 @@
 import {ADD_RESERVATION, DELETE_RESERVATION, GET_RESERVATION,
-    UPDATE_RESERVATION, GET_RESERVATIONS} from "./types"
+    UPDATE_RESERVATION, GET_RESERVATIONS, GET_USER_RESERVATIONS} from "./types"
 import ReservationService from "../services/ReservationService"
 
 export const addReservation = (reservationData) => async (dispatch) => {
@@ -19,6 +19,18 @@ export const getReservations = () => async (dispatch) => {
         const response = await ReservationService.getReservations()
         dispatch({
             type: GET_RESERVATIONS,
+            value: response.data
+        })
+        return Promise.resolve(response.data)
+    } catch (error){
+        return Promise.reject(error)
+    }
+}
+export const getUserReservations = () => async (dispatch) => {
+    try {
+        const response = await ReservationService.getUserReservations()
+        dispatch({
+            type: GET_USER_RESERVATIONS,
             value: response.data
         })
         return Promise.resolve(response.data)

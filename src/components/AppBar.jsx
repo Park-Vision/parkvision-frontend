@@ -46,13 +46,20 @@ function ResponsiveAppBar() {
 
     const handleLogin = () => {
       navigate('/login');
-      console.log(isLoggedIn)
   }
 
   const handleLogout = () => {
-      dispatch(logout())
+      dispatch(logout());
       navigate('/');
-      console.log(isLoggedIn)
+      handleCloseUserMenu();
+  }
+
+  const handleProfile = () => {
+      navigate('/profile');
+  }
+
+  const handleReservations = () => {
+      navigate('/profile/reservations');
   }
 
   const getInitials = () => {
@@ -206,11 +213,16 @@ function ResponsiveAppBar() {
                         open={Boolean(anchorElUser)}
                         onClose={handleCloseUserMenu}
                     >
-                        {settings.map((setting) => (
-                            <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                                <Typography textAlign="center">{setting}</Typography>
-                            </MenuItem>
-                        ))}
+                        <MenuItem onClick={handleProfile}>
+                            <Typography textAlign="center">Profile</Typography>
+                        </MenuItem>
+                        <MenuItem onClick={handleReservations}>
+                            <Typography textAlign="center">Reservations</Typography>
+                        </MenuItem>
+                        <MenuItem onClick={handleLogout}>
+                            <Typography textAlign="center">Logout</Typography>
+                        </MenuItem>
+
                     </Menu>
                 </Box>
             )}

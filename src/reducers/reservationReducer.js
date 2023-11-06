@@ -3,7 +3,7 @@ import {
     DELETE_RESERVATION,
     GET_RESERVATION,
     UPDATE_RESERVATION,
-    GET_RESERVATIONS,
+    GET_RESERVATIONS, GET_USER_RESERVATIONS,
 } from "../actions/types";
 
 const initialState = {
@@ -22,6 +22,11 @@ const reservationReducer = (state = initialState, action) => {
                 reservation: action.value,
             };
         case GET_RESERVATIONS:
+            return {
+                ...state,
+                reservations: action.value,
+            };
+        case GET_USER_RESERVATIONS:
             return {
                 ...state,
                 reservations: action.value,
