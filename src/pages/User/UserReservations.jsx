@@ -17,7 +17,6 @@ import DeleteIcon from '@mui/icons-material/Delete';
 
 export default function UserReservations() {
     const authenticationReducer = useSelector((state) => state.authenticationReducer);
-    const reservations = useSelector((state) => state.reservationReducer.reservations);
 
     const [archivedReservations, setArchivedReservations] = useState([]);
     const [pendingReservations, setPendingReservations] = useState([]);
@@ -27,12 +26,14 @@ export default function UserReservations() {
     const dispatch = useDispatch();
 
     useEffect(() => {
-        dispatch(getUserReservations())
-            .then((response) => {
-                setArchivedReservations(response.Archived);
-                setPendingReservations(response.Pending);
-            });
-    }, []);
+        if (authenticationReducer.decodedUser && authenticationReducer.decodedUser.role === "User") {
+            dispatch(getUserReservations())
+                .then((response) => {
+                    setArchivedReservations(response.Archived);
+                    setPendingReservations(response.Pending);
+                });
+        }
+    }, [authenticationReducer.decodedUser, dispatch]);
 
     const handleShowArchived = () => {
         setShowArchived(true);
