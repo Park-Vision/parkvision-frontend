@@ -18,14 +18,24 @@ import { toast } from "react-toastify";
 import { useState } from 'react';
 import {InfoOutlined} from "@material-ui/icons";
 import CreditCardIcon from '@mui/icons-material/CreditCard';
+import authenticationReducer from "../../reducers/authenticationReducer";
+import {addPayment} from "../../actions/paymentActions";
 
 export default function ReservationDetails(props) {
     const navigate = useNavigate();
+    const authenticationReducer = useSelector(state => state.authenticationReducer);
     const reservation = useSelector(state => state.reservationReducer.reservation);
     const parking = useSelector(state => state.parkingReducer.parking);
     const parkingSpotReducer = useSelector(state => state.parkingSpotReducer);
     const [loading, setLoading] = useState(false);
     const dispatch = useDispatch()
+
+    const [newPayment, setNewPayment] = useState({
+        cardNumber: "",
+        expMonth: "",
+        expYear: "",
+        cvc: "",
+    });
 
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -33,19 +43,41 @@ export default function ReservationDetails(props) {
         console.log('Form submitted with data:');
     };
 
+    const handleInputChange = (event) => {
+        const { name, value } = event.target;
+        setNewPayment({ ...newPayment, [name]: value });
+    };
 
-    const handleReseveClick = (event) => {
+
+    const handleResevation = (event) => {
+        event.preventDefault();
         try {
             setLoading(true);
             dispatch(addReservation(reservation))
                 .then(response => {
-                    setLoading(false);
-                    toast.success('reservation created');
-                    navigate('/');
-                    dispatch({
-                        type: 'GET_PARKING_SPOT',
-                        value: {}
-                    })
+                    const userId = authenticationReducer.decodedUser.userId;
+                    const updatedNewPayment = {
+                        user: {
+                            id: userId,
+                        },
+                        ...newPayment,
+                    };
+                    console.log(updatedNewPayment);
+                    dispatch(addPayment(updatedNewPayment))
+                        .then((response) => {
+                            console.log(response)
+
+                            setLoading(false);
+                            toast.success('reservation created');
+                            navigate('/');
+                            dispatch({
+                                type: 'GET_PARKING_SPOT',
+                                value: {}
+                            })
+                            }
+
+                        )
+
                 }
                 );
         }
@@ -59,6 +91,7 @@ export default function ReservationDetails(props) {
     const handleEditClick = (event) => {
         navigate('/parking/' + parking.id);
     };
+
 
 
     
@@ -163,61 +196,80 @@ export default function ReservationDetails(props) {
                                 }}
                         />
                         <div>
-                        <Card
-                            variant="outlined"
-                            sx={{
-                                maxHeight: 'max-content',
-                                maxWidth: '100%',
-                                mx: 'auto',
-                            }}
-                        >
-                            <Divider inset="none" />
-                            <CardContent
+                        <form onSubmit={handleResevation}>
+                            <Card
+                                variant="outlined"
                                 sx={{
-                                    display: 'grid',
-                                    gridTemplateColumns: 'repeat(2, minmax(80px, 1fr))',
-                                    gap: 1.5,
+                                    maxHeight: 'max-content',
+                                    maxWidth: '100%',
+                                    mx: 'auto',
                                 }}
                             >
-                                <FormControl sx={{ gridColumn: '1/-1' }}>
-                                    <FormLabel>Card number</FormLabel>
-                                    <Input
-                                        endDecorator={<CreditCardIcon />} />
-                                </FormControl>
-                                <FormControl>
-                                    <FormLabel>Expiration date</FormLabel>
-                                    <div style={{ display: 'flex' }}>
+                                <Divider inset="none" />
+                                <CardContent
+                                    sx={{
+                                        display: 'grid',
+                                        gridTemplateColumns: 'repeat(2, minmax(80px, 1fr))',
+                                        gap: 1.5,
+                                    }}
+                                >
+                                    <FormControl sx={{ gridColumn: '1/-1' }}>
+                                        <FormLabel>Card number</FormLabel>
                                         <Input
-                                            value=""
-                                            inputProps={{
-                                                maxLength: 2,
-                                            }}
-                                            endDecorator={<InfoOutlined />}
+                                            name="cardNumber"
+                                            required={true}
+                                            value={newPayment.cardNumber}
+                                            onChange={handleInputChange}
+                                            endDecorator={<CreditCardIcon />}
                                         />
-                                        <Typography variant="h6" style={{ margin: '0 10px' }}>/</Typography>
-                                        <Input
-                                            value=""
-                                            inputProps={{
-                                                maxLength: 2,
-                                            }}
+                                    </FormControl>
+                                    <FormControl>
+                                        <FormLabel>Expiration date</FormLabel>
+                                        <div style={{ display: 'flex' }}>
+                                            <Input
+                                                name="expMonth"
+                                                required={true}
+                                                value={newPayment.expMonth}
+                                                onChange={handleInputChange}
+                                                inputProps={{
+                                                    maxLength: 2,
+                                                }}
+                                                endDecorator={<InfoOutlined />}
+                                            />
+                                            <Typography variant="h6" style={{ margin: '0 10px' }}>/</Typography>
+                                            <Input
+                                                name="expYear"
+                                                required={true}
+                                                value={newPayment.expYear}
+                                                onChange={handleInputChange}
+                                                inputProps={{
+                                                    maxLength: 2,
+                                                }}
+                                                endDecorator={<InfoOutlined />}
+                                            />
+                                        </div>
+                                    </FormControl>
+                                    <FormControl>
+                                        <FormLabel>CVC/CVV</FormLabel>
+                                        <div  style={{ display: 'flex', maxWidth: '100%'}}>
+                                            <Input
+                                            name="cvc"
+                                            required={true}
+                                            value={newPayment.cvc}
+                                            onChange={handleInputChange}
                                             endDecorator={<InfoOutlined />}
-                                        />
-                                    </div>
-                                </FormControl>
-                                <FormControl>
-                                    <FormLabel>CVC/CVV</FormLabel>
-                                    <div  style={{ display: 'flex', maxWidth: '100%'}}>
-                                        <Input
-                                            endDecorator={<InfoOutlined />} />
-                                    </div>
-                                </FormControl>
-                            </CardContent>
-                                <Button
+                                            />
+                                        </div>
+                                    </FormControl>
+                                </CardContent>
+                                    <Button
+                                        type="submit"
                                         variant='contained'
                                         fullWidth>
-                                    RESERVE
-                                </Button>
-                        </Card>
+                                        RESERVE
+                                    </Button>
+                            </Card>
+                        </form>
                         </div>
                     </CardContent>
                 </Paper>
