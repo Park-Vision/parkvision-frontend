@@ -9,6 +9,7 @@ import {
     GET_FREE_PARKING_SPOTS_BY_PARKING_ID,
     ADD_STAGED_PARKING_SPOT,
     GET_STAGED_PARKING_SPOTS_BY_PARKING_ID,
+    GET_OCCUPIED_PARKING_SPOTS_MAP_BY_PARKING_ID
 } from "../actions/types"
 
 const initialState = {
@@ -45,6 +46,11 @@ const parkingSpotReducer = (state = initialState, action) => {
                 ...state,
                 freeParkingSpots: action.value
             }
+        case GET_OCCUPIED_PARKING_SPOTS_MAP_BY_PARKING_ID:
+            return {
+                ...state,
+                occupiedParkingSpots: action.value,
+            };
         case GET_STAGED_PARKING_SPOTS_BY_PARKING_ID:
             return {
                 ...state,

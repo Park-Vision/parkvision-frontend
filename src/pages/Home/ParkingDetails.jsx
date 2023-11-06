@@ -39,7 +39,8 @@ import {
 } from "../../actions/types";
 import { toast } from "react-toastify";
 import { set } from "react-hook-form";
-
+import convertTime from "../../utils/convertTime";
+import convertDate from "../../utils/convertDate";
 delete L.Icon.Default.prototype._getIconUrl;
 
 L.Icon.Default.mergeOptions({
@@ -116,28 +117,33 @@ function ParkingDetails(props) {
 
     const parseTime = (timeString) => {
         const [hours, minutes, seconds] = timeString.split(':');
-        const date = new Date();
+        let date = new Date();
         date.setHours(Number(hours));
         date.setMinutes(Number(minutes));
-        date.setSeconds(Number(seconds));
+        if (seconds)
+            date.setSeconds(Number(seconds));
+        else
+            date.setSeconds(0);
         return date;
     }
-
 
     const shouldDisableTime = (value, view) => {
         if (parking.startTime === undefined) {
             return true;
         }
-    const hour = value.hour();
+        let hour = value.hour();
+        let minute = value.minute();
 
-    if (view === "hours") {
-        const parkingStart = parseTime(parking.startTime)
-        const parkingEnd = parseTime(parking.endTime)
+        if (view === "hours") {
+            const parkingStart = parseTime(convertTime(parking.startTime, parking.timeZone))
+            const parkingEnd = parseTime(convertTime(parking.endTime, parking.timeZone))
+            return hour < parkingStart.getHours()
+                || hour > parkingEnd.getHours()
+                || (hour === parkingEnd.getHours() && minute > parkingEnd.getMinutes())
+                || (hour === parkingStart.getHours() && minute < parkingStart.getMinutes());
+        }
 
-        return hour < parkingStart.getHours() || hour > parkingEnd.getHours() || (hour === parkingEnd.getHours() && value.minute() > 0);
-    }
-
-    return false;
+        return false;
     };
 
     const changeCarSelection = (e) => {
@@ -162,12 +168,15 @@ function ParkingDetails(props) {
         const timeZone = parking.timeZone; // "Europe/Warsaw"
         var options = {timeZone: timeZone, hour12: false };
 
+        console.log(new Date(startDay.toDate()).toISOString().split("T")[0] + "T" + new Date(startTime.toDate()).toISOString().split("T")[1])
+
+
         const start =
-            new Date(startDay.toDate().toLocaleString("en-US",options)).toISOString().split("T")[0] + "T" + new Date(startTime.toDate().toLocaleString("en-US",options)).toISOString().split("T")[1];
+            new Date(startDay.toDate()).toISOString().split("T")[0] + "T" + new Date(startTime.toDate()).toISOString().split("T")[1];
         
         
         setStart(start);
-        const end = new Date(endDay.toDate().toLocaleString("en-US",options)).toISOString().split("T")[0] + "T" + new Date(endTime.toDate().toLocaleString("en-US",options)).toISOString().split("T")[1];
+        const end = new Date(endDay.toDate()).toISOString().split("T")[0] + "T" + new Date(endTime.toDate()).toISOString().split("T")[1];
         // startDay.toDate().toISOString().split("T")[0] + "T" + startTime.toDate().toLocaleTimeString();
         setEnd(end);
 
@@ -299,11 +308,13 @@ function ParkingDetails(props) {
                                                     ])}
                                                     color='red'
                                                     interactive>
-                                                    <Popup>
-                                                        {`This spot will be availbe from: ${new Date(occupiedParkingSpotsMap[parkingSpot.id]?.earliestStart).toLocaleString()}`} <br></br>
-                                                        {`This spot will be availbe to: ${new Date(occupiedParkingSpotsMap[parkingSpot.id]?.earliestEnd).toLocaleString()}`}
-                                                    </Popup>
-                                                    </Polygon>
+                                                    {occupiedParkingSpotsMap && occupiedParkingSpotsMap[parkingSpot.id] && (
+                                                        <Popup>
+                                                            {`This spot will be available from: ${convertDate(occupiedParkingSpotsMap[parkingSpot.id].earliestStart)}`} <br></br>
+                                                            {`This spot will be available to: ${convertDate(occupiedParkingSpotsMap[parkingSpot.id].earliestEnd)}`}
+                                                        </Popup>
+                                                    )}
+                                                </Polygon>
                                             ))}
                                                 {freeParkingSpots.map((spot, index) => (
                                                 spot.id !== parkingSpots.parkingSpot.id && (
@@ -386,7 +397,7 @@ function ParkingDetails(props) {
                                     Address: {parking.street},{parking.zipCode} {parking.city}
                                 </Typography>
                                 <Typography>$/h: {parking.costRate}</Typography>
-                                <Typography>Open hours: {parking.openHours}</Typography>
+                                <Typography>Open hours: {convertTime(parking.startTime, parking.timeZone)} -  {convertTime(parking.endTime, parking.timeZone)} </Typography>
                                 <Typography>Time zone: {parking.timeZone}</Typography>
                             </CardContent>
                             <Grid container>
