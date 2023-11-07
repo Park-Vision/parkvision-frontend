@@ -95,9 +95,12 @@ export default function ReservationDetails(props) {
 
                         </MapContainer>
                     )}
-                            </div>
+                        </div>
+                        <Typography sx={{ m: 1 }} fullWidth>
+                            Dates and times are based on parking time zone ({parking.timeZone}) compared to UTC.
+                        </Typography>
                         <TextField sx={{ m: 1 }} fullWidth
-                                value={`${new Date(reservation.startDate).toLocaleString()} (${parking.timeZone})`}
+                                value={`${new Date(reservation.startDate).toLocaleString()}`}
                                 id="outlined-basic"
                                 label="Start date"
                                 variant="outlined" 
@@ -106,7 +109,7 @@ export default function ReservationDetails(props) {
                                 }}
                         />
                         <TextField sx={{ m: 1 }} fullWidth
-                            value={`${new Date(reservation.endDate).toLocaleString()} (${parking.timeZone})`}
+                            value={`${new Date(reservation.endDate).toLocaleString()}`}
                                 id="outlined-basic"
                                 label="End date"
                                 variant="outlined" 
