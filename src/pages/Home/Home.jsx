@@ -16,7 +16,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import {useDispatch, useSelector} from "react-redux";
 import {getCars} from "../../actions/carActions";
 import {getParkingFreeSpotsNumber, getParkingSpotsNumber, getParkings} from "../../actions/parkingActions";
-
+import convertTime  from '../../utils/convertTime';
 import { useNavigate } from "react-router-dom";
 import {MapContainer, Marker, Popup, TileLayer, useMap} from 'react-leaflet';
 import {renderToString} from "react-dom/server";
@@ -32,7 +32,6 @@ export default function Home() {
     const [filter, setFilter] = useState("");
     const [listOfParkings, setListOfParkings] = useState([]);
     let navigate = useNavigate();
-
 
     useEffect(() => {
         dispatch(getParkings()).then((response) => {
@@ -166,7 +165,7 @@ export default function Home() {
                                                         <span style={{ fontWeight: 'bold' }}>Address:</span> {parking.street}, {parking.zipCode} {parking.city}
                                                     </div>
                                                     <div style={{ marginBottom: '5px' }}>
-                                                        <span style={{ fontWeight: 'bold' }}>Open hours:</span> {parking.openHours}
+                                                        <span style={{ fontWeight: 'bold' }}>Open hours:</span> {convertTime(parking.startTime, parking.timeZone)} -  {convertTime(parking.endTime, parking.timeZone)}
                                                     </div>
                                                     <div style={{ marginBottom: '10px' }}>
                                                         <span style={{ fontWeight: 'bold' }}>$</span>/h: {parking.costRate}
@@ -234,7 +233,7 @@ export default function Home() {
                                              <Typography variant='h5'>Free: {numOfFreeSpotsList[parking.id]}</Typography>
                                              <Typography variant='h5'>All: {numOfSpotsList[parking.id]}</Typography>
                                             <Typography>Address: {parking.street}, {parking.zipCode} {parking.city}</Typography>
-                                            <Typography>Open hours: {parking.openHours}</Typography>
+                                            <Typography>Open hours: {convertTime(parking.startTime, parking.timeZone)} -  {convertTime(parking.endTime, parking.timeZone)} </Typography>
                                             <Typography>$/h: {parking.costRate}</Typography>
                                             {/*<Typography>{[parking.latitude, parking.longitude]}</Typography>*/}
                                         </CardContent>

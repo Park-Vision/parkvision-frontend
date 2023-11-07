@@ -1,6 +1,6 @@
 import React, {useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getParking } from "../../actions/parkingActions";
+import { getParking, getParkingSpotsNumber, getParkingFreeSpotsNumber } from "../../actions/parkingActions";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
 import { useParams } from "react-router-dom";
@@ -20,26 +20,22 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
 import { useNavigate } from "react-router-dom";
 
-import { MapContainer, Marker, Polygon, Popup, TileLayer, FeatureGroup, MapControl } from "react-leaflet";
+import { MapContainer, Polygon, Popup, TileLayer, FeatureGroup } from "react-leaflet";
 import { getFreeParkingSpotsByParkingId, getOccupiedParkingSpotsMapByParkingId, getParkingSpotsByParkingId } from "../../actions/parkingSpotActions";
 import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
 import TextField from "@mui/material/TextField";
 import MenuItem from "@mui/material/MenuItem";
 import { getUser } from "../../actions/userActions";
-import { getCar, getUserCars } from "../../actions/carActions";
+import { getUserCars } from "../../actions/carActions";
 import {
-    ADD_RESERVATION,
-    DELETE_RESERVATION,
     GET_RESERVATION,
-    UPDATE_RESERVATION,
-    GET_RESERVATIONS,
     GET_PARKING_SPOT,
     GET_FREE_PARKING_SPOTS_BY_PARKING_ID,
 } from "../../actions/types";
 import { toast } from "react-toastify";
-import { set } from "react-hook-form";
-
+import convertTime from "../../utils/convertTime";
+import convertDate from "../../utils/convertDate";
 delete L.Icon.Default.prototype._getIconUrl;
 
 L.Icon.Default.mergeOptions({
@@ -66,7 +62,6 @@ function ParkingDetails(props) {
     const [end, setEnd] = React.useState(null);
 
     const parking = useSelector((state) => state.parkingReducer.parking);
-    const reservationReducer = useSelector((state) => state.reservationReducer);
     const parkingSpots = useSelector((state) => state.parkingSpotReducer);
     const freeParkingSpots = useSelector((state) => state.parkingSpotReducer.freeParkingSpots);
     const parkingSpot = useSelector((state) => state.parkingSpotReducer.parkingSpot);
@@ -82,9 +77,12 @@ function ParkingDetails(props) {
 
 
     useEffect(() => {
-        dispatch(getParking(parkingId));
+        dispatch(getParking(parkingId)).then((response) => {
+            handleSearch(startDay, startTime, endDay, endTime);
+            dispatch(getParkingFreeSpotsNumber(parkingId, new Date().toISOString()))
+            dispatch(getParkingSpotsNumber(parkingId))
+        });
         dispatch(getParkingSpotsByParkingId(parkingId));
-        handleSearch(startDay, startTime, endDay, endTime);
         unsetParkingSpot();
         tryGetUserCars();
         tryGetUser();
@@ -115,28 +113,33 @@ function ParkingDetails(props) {
 
     const parseTime = (timeString) => {
         const [hours, minutes, seconds] = timeString.split(':');
-        const date = new Date();
+        let date = new Date();
         date.setHours(Number(hours));
         date.setMinutes(Number(minutes));
-        date.setSeconds(Number(seconds));
+        if (seconds)
+            date.setSeconds(Number(seconds));
+        else
+            date.setSeconds(0);
         return date;
     }
-
 
     const shouldDisableTime = (value, view) => {
         if (parking.startTime === undefined) {
             return true;
         }
-    const hour = value.hour();
+        let hour = value.hour();
+        let minute = value.minute();
 
-    if (view === "hours") {
-        const parkingStart = parseTime(parking.startTime)
-        const parkingEnd = parseTime(parking.endTime)
+        if (view === "hours") {
+            const parkingStart = parseTime(convertTime(parking.startTime, parking.timeZone))
+            const parkingEnd = parseTime(convertTime(parking.endTime, parking.timeZone))
+            return hour < parkingStart.getHours()
+                || hour > parkingEnd.getHours()
+                || (hour === parkingEnd.getHours() && minute > parkingEnd.getMinutes())
+                || (hour === parkingStart.getHours() && minute < parkingStart.getMinutes());
+        }
 
-        return hour < parkingStart.getHours() || hour > parkingEnd.getHours() || (hour === parkingEnd.getHours() && value.minute() > 0);
-    }
-
-    return false;
+        return false;
     };
 
     const changeCarSelection = (e) => {
@@ -158,11 +161,18 @@ function ParkingDetails(props) {
 
 
     const handleSearch = (startDay, startTime, endDay, endTime) => {
+        const timeZone = parking.timeZone; // "Europe/Warsaw"
+
+        console.log(new Date(startDay.toDate()).toISOString().split("T")[0] + "T" + new Date(startTime.toDate()).toISOString().split("T")[1])
+
+
         const start =
-            startDay.toDate().toISOString().split("T")[0] + "T" + startTime.toDate().toISOString().split("T")[1];
+            new Date(startDay.toDate()).toISOString().split("T")[0] + "T" + new Date(startTime.toDate()).toISOString().split("T")[1];
+        
+        
         setStart(start);
-        const end =
-            endDay.toDate().toISOString().split("T")[0] + "T" + endTime.toDate().toISOString().split("T")[1];
+        const end = new Date(endDay.toDate()).toISOString().split("T")[0] + "T" + new Date(endTime.toDate()).toISOString().split("T")[1];
+        // startDay.toDate().toISOString().split("T")[0] + "T" + startTime.toDate().toLocaleTimeString();
         setEnd(end);
 
         const startTimeDate = new Date(start);
@@ -205,7 +215,7 @@ function ParkingDetails(props) {
         setSelectedCar("none");
     }
 
-    const handleCreateReservation = (event) => {
+    const handleCreateReservation = () => {
         if (!authenticationReducer.decodedUser) {
             toast.error("You must be logged in to make a reservation");
             return;
@@ -234,7 +244,7 @@ function ParkingDetails(props) {
         // dispatch(addReservation(newReservation))
     };
 
-    const handleGoToMission = (event) => {
+    const handleGoToMission = () => {
         navigate(`/parking/${parkingId}/editor`);
     };
 
@@ -285,7 +295,7 @@ function ParkingDetails(props) {
                                             .filter(
                                                 (spot) => !freeParkingSpots.map((spot) => spot.id).includes(spot.id)
                                             )
-                                            .map((parkingSpot, index) => (
+                                            .map((parkingSpot) => (
                                                 <Polygon
                                                     positions={parkingSpot.pointsDTO.map((point) => [
                                                         point.latitude,
@@ -293,11 +303,13 @@ function ParkingDetails(props) {
                                                     ])}
                                                     color='red'
                                                     interactive>
-                                                    <Popup>
-                                                        {`This spot will be availbe from: ${new Date(occupiedParkingSpotsMap[parkingSpot.id]?.earliestStart).toLocaleString()}`} <br></br>
-                                                        {`This spot will be availbe to: ${new Date(occupiedParkingSpotsMap[parkingSpot.id]?.earliestEnd).toLocaleString()}`}
-                                                    </Popup>
-                                                    </Polygon>
+                                                    {occupiedParkingSpotsMap && occupiedParkingSpotsMap[parkingSpot.id] && (
+                                                        <Popup>
+                                                            {`This spot will be available from: ${convertDate(occupiedParkingSpotsMap[parkingSpot.id].earliestStart)}`} <br></br>
+                                                            {`This spot will be available to: ${convertDate(occupiedParkingSpotsMap[parkingSpot.id].earliestEnd)}`}
+                                                        </Popup>
+                                                    )}
+                                                </Polygon>
                                             ))}
                                                 {freeParkingSpots.map((spot, index) => (
                                                 spot.id !== parkingSpots.parkingSpot.id && (
@@ -309,7 +321,7 @@ function ParkingDetails(props) {
                                                     ])}
                                                     color="green" // Set the color to green for excluded polygons
                                                     eventHandlers={{
-                                                        click: (event) => {
+                                                        click: () => {
                                                         handleClickOnFreeParkingSpot(spot);
                                                         },
                                                     }}
@@ -333,7 +345,7 @@ function ParkingDetails(props) {
                                                 ])}
                                                 color='orange'
                                                 eventHandlers={{
-                                                    click: (event) => {
+                                                    click: () => {
                                                         handleClickOnSelectedSpot(parkingSpot);
                                                     },
                                                     mouseover: (e) => {
@@ -376,11 +388,14 @@ function ParkingDetails(props) {
                                 <Typography variant='h5'>Free: {numOfFreeSpotsList[parking.id]}</Typography>
                                 <Typography variant='h5'>All: {numOfSpotsList[parking.id]}</Typography>
                                 <Typography variant='p'>{parking.description}</Typography>
-                                <Typography>
+                                <Typography variant="h6">
                                     Address: {parking.street},{parking.zipCode} {parking.city}
                                 </Typography>
+                                <Typography variant="h6">Open hours: {convertTime(parking.startTime, parking.timeZone)} -  {convertTime(parking.endTime, parking.timeZone)} </Typography>
+                                <Typography>
+                                     Dates and times are based on parking time zone ({parking.timeZone}) compared to UTC.
+                                </Typography>
                                 <Typography>$/h: {parking.costRate}</Typography>
-                                <Typography>Open hours: {parking.startTime}  {parking.endTime}</Typography>
                             </CardContent>
                             <Grid container>
                                 {  user && user.parkingDTO &&
