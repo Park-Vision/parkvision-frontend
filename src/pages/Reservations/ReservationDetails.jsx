@@ -20,6 +20,7 @@ import {InfoOutlined} from "@material-ui/icons";
 import CreditCardIcon from '@mui/icons-material/CreditCard';
 import authenticationReducer from "../../reducers/authenticationReducer";
 import {addPayment} from "../../actions/paymentActions";
+import {addStripeCharge} from "../../actions/stripeChargeActions";
 
 export default function ReservationDetails(props) {
     const navigate = useNavigate();
@@ -36,6 +37,8 @@ export default function ReservationDetails(props) {
         expYear: "",
         cvc: "",
     });
+
+
 
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -54,7 +57,7 @@ export default function ReservationDetails(props) {
         try {
             setLoading(true);
             dispatch(addReservation(reservation))
-                .then(response => {
+                .then((reservationResponse) => {
                     const userId = authenticationReducer.decodedUser.userId;
                     const updatedNewPayment = {
                         user: {
@@ -63,28 +66,33 @@ export default function ReservationDetails(props) {
                         ...newPayment,
                     };
                     console.log(updatedNewPayment);
-                    dispatch(addPayment(updatedNewPayment))
-                        .then((response) => {
-                            console.log(response)
-
+                    dispatch(addPayment(updatedNewPayment)).then((paymentResponse) => {
+                        console.log(paymentResponse);
+                        const newCharge = {
+                            amount: "123",
+                            currency: "PLN",
+                            payment: {
+                                id: paymentResponse.id,
+                            },
+                            reservation: {
+                                id: reservationResponse.id,
+                            },
+                        };
+                        dispatch(addStripeCharge(newCharge)).then((chargeResponse) => {
                             setLoading(false);
                             toast.success('reservation created');
                             navigate('/');
                             dispatch({
                                 type: 'GET_PARKING_SPOT',
-                                value: {}
-                            })
-                            }
-
-                        )
-
-                }
-                );
-        }
-        catch (e) {
+                                value: {},
+                            });
+                        });
+                    });
+                });
+        } catch (e) {
             console.log(e);
             setLoading(false);
-            toast.error('coflict!');
+            toast.error('conflict!');
         }
     };
 
