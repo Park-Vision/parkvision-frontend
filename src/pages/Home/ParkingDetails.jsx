@@ -20,25 +20,20 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
 import { useNavigate } from "react-router-dom";
 
-import { MapContainer, Marker, Polygon, Popup, TileLayer, FeatureGroup, MapControl } from "react-leaflet";
+import { MapContainer, Polygon, Popup, TileLayer, FeatureGroup } from "react-leaflet";
 import { getFreeParkingSpotsByParkingId, getOccupiedParkingSpotsMapByParkingId, getParkingSpotsByParkingId } from "../../actions/parkingSpotActions";
 import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
 import TextField from "@mui/material/TextField";
 import MenuItem from "@mui/material/MenuItem";
 import { getUser } from "../../actions/userActions";
-import { getCar, getUserCars } from "../../actions/carActions";
+import { getUserCars } from "../../actions/carActions";
 import {
-    ADD_RESERVATION,
-    DELETE_RESERVATION,
     GET_RESERVATION,
-    UPDATE_RESERVATION,
-    GET_RESERVATIONS,
     GET_PARKING_SPOT,
     GET_FREE_PARKING_SPOTS_BY_PARKING_ID,
 } from "../../actions/types";
 import { toast } from "react-toastify";
-import { set } from "react-hook-form";
 
 delete L.Icon.Default.prototype._getIconUrl;
 
@@ -86,9 +81,10 @@ function ParkingDetails(props) {
         dispatch(getParkingSpotsByParkingId(parkingId));
         handleSearch(startDay, startTime, endDay, endTime);
         unsetParkingSpot();
-        tryGetUserCars();
         tryGetUser();
+        tryGetUserCars();
     }, []);
+    
 
 
     const unsetParkingSpot = () => {
@@ -99,15 +95,18 @@ function ParkingDetails(props) {
     };
 
     const tryGetUserCars = () => {
-        // Do not request cars for manager or admin
         if (authenticationReducer.decodedUser && authenticationReducer.decodedUser.role == "USER") {
-            dispatch(getUserCars());
+            dispatch(getUserCars()).catch((error) => {
+
+            });
         }
     };
 
     const tryGetUser = () => {
         if (authenticationReducer.decodedUser) {
-            dispatch(getUser(authenticationReducer.decodedUser.userId));
+            dispatch(getUser(authenticationReducer.decodedUser.userId)).catch((error) => {
+
+            });
         }
     };
 
@@ -149,8 +148,16 @@ function ParkingDetails(props) {
     const handleAnyChangeOfTime = (startDay, startTime, endDay, endTime) => {
         setStartDay(startDay);
         setStartTime(startTime);
-        setEndDay(endDay);
+        if (startTime.toDate().getTime() >= endTime.toDate().getTime()) {
+            endTime = startTime.add(15, "minute");
+        }
         setEndTime(endTime);
+
+        if (startDay.toDate().getTime() > endDay.toDate().getTime()) {
+            endDay = startDay;
+        }
+        setEndDay(endDay);
+
         handleSearch(startDay, startTime, endDay, endTime);
     }
 
@@ -185,7 +192,9 @@ function ParkingDetails(props) {
                 type: GET_FREE_PARKING_SPOTS_BY_PARKING_ID,
                 value: freeParkingSpots.filter((spot) => spot.id !== event.id),
             });
-        }
+        } else {
+            toast.info("Click on the selected parking spot to deselect it");
+        }   
     };
 
     const handleClickOnSelectedSpot = (event) => {
@@ -208,6 +217,28 @@ function ParkingDetails(props) {
     const handleCreateReservation = (event) => {
         if (!authenticationReducer.decodedUser) {
             toast.error("You must be logged in to make a reservation");
+            navigate("/login");
+            return;
+        }
+
+        // if any of the fields are empty show toast
+        if (!start || !end || !parkingSpot.id || !registrationNumber) {
+            // show toast with info what should be filled
+            let message = "";
+            if (!start) {
+                message += "Start date, ";
+            }
+            if (!end) {
+                message += "End date, ";
+            }
+            if (!parkingSpot.id) {
+                message += "Parking spot. ";
+            }
+            if (!registrationNumber) {
+                message += "Registration number. ";
+            }
+            message += "must be filled";
+            toast.warning(message);
             return;
         }
 
@@ -384,8 +415,9 @@ function ParkingDetails(props) {
                             </CardContent>
                             <Grid container>
                                 {  user && user.parkingDTO &&
-                                user.parkingDTO.id === parking.id
-                                && authenticationReducer.decodedUser.role === "PARKING_MANAGER" ? (
+                                    user.parkingDTO.id === parking.id
+                                    && authenticationReducer.isLoggedIn
+                                    && authenticationReducer.decodedUser.role === "PARKING_MANAGER" ? (
                                     <Button
                                         sx={{ m: 1 }}
                                         variant='contained'
@@ -458,16 +490,6 @@ function ParkingDetails(props) {
                                         </Grid>
                                     </LocalizationProvider>
                                 </Grid>
-                                {/* <Grid container>
-                                    <Button
-                                        sx={{ m: 1 }}
-                                        variant='outlined'
-                                        onClick={handleSearch}
-                                        fullWidth
-                                    >
-                                        Search
-                                    </Button>
-                                </Grid> */}
                                 <Grid container>
                                     <TextField
                                         sx={{ m: 1 }}

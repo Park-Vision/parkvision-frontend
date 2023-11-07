@@ -1,36 +1,59 @@
 import axios from "axios";
-import authHeader from "./AuthenticationHeader";
+import useErrorHandler from "../utils/ErrorHandler";
 
 const urlConst = "/users";
 const authUrlConst = "/auth";
 
+const http = axios.create({
+    baseURL: process.env.REACT_APP_BACKEND_URL,
+});
+
+http.interceptors.response.use(
+    (response) => response,
+    (error) => useErrorHandler(error)
+);
+
+http.interceptors.request.use(
+    (config) => {
+        const user = JSON.parse(localStorage.getItem("user"));
+        if (user && user.token) {
+            config.headers["Authorization"] = "Bearer " + user.token;
+        }
+        return config;
+    },
+    (error) => {
+        return Promise.reject(error);
+    }
+);
+
+
 class UserService {
     async getUsers() {
-        return await axios.get(process.env.REACT_APP_BACKEND_URL + urlConst, { headers: authHeader() });
+        return await http.get(urlConst);
     }
 
     async getUserById(userId) {
-        return await axios.get(process.env.REACT_APP_BACKEND_URL + urlConst + "/" + userId,{ headers: authHeader() });
+        return await http.get(urlConst + "/" + userId);
     }
 
     async createUser(userData) {
-        return await axios.post(process.env.REACT_APP_BACKEND_URL + urlConst, userData, { headers: authHeader() });
+        return await http.post(urlConst, userData);
     }
 
     async updateUser(userData) {
-        return await axios.put(process.env.REACT_APP_BACKEND_URL + urlConst + "/", userData, { headers: authHeader() });
+        return await http.put(urlConst + "/", userData);
     }
 
     async deleteUserById(userId) {
-        return await axios.delete(process.env.REACT_APP_BACKEND_URL + urlConst + "/" + userId, { headers: authHeader() });
+        return await http.delete(urlConst + "/" + userId);
     }
 
     async authenticateUser(userData) {
-        return await axios.post(process.env.REACT_APP_BACKEND_URL + authUrlConst + "/authenticate", userData, { headers: authHeader() });
+        return await http.post(authUrlConst + "/authenticate", userData);
     }
 
     async registerUser(userData) {
-        return await axios.post(process.env.REACT_APP_BACKEND_URL + authUrlConst + "/register", userData, { headers: authHeader() });
+        return await http.post(authUrlConst + "/register", userData);
     }
 
 }

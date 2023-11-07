@@ -34,6 +34,22 @@ export const login = (email, password) => async (dispatch) => {
     }
 };
 
+export const refresh = (token) => async (dispatch) => {
+    try {
+        const response = await AuthenticationService.refresh(token);
+        dispatch({
+            type: LOGIN_SUCCESS,
+            value: response.data,
+        });
+        return Promise.resolve(response.data);
+    } catch (error) {
+        dispatch({
+            type: LOGIN_FAIL,
+        });
+        return Promise.reject(error);
+    }
+};
+
 export const logout = () => (dispatch) => {
     AuthenticationService.logout();
 
