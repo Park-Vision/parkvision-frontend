@@ -1,7 +1,6 @@
 import { useNavigate} from 'react-router-dom';
 import {
     Container,
-    Grid,
     Box,
     Typography,
     Paper,
@@ -9,7 +8,7 @@ import {
     Card,
     TextField,
     Button,
-    CircularProgress, FormControl, FormLabel, Input, Divider, Checkbox,
+    CircularProgress, FormControl, FormLabel, Input, Divider,
 } from '@mui/material';
 import { useDispatch, useSelector } from "react-redux";
 import { MapContainer, TileLayer, FeatureGroup, Polygon, Popup } from 'react-leaflet';
@@ -18,7 +17,6 @@ import { toast } from "react-toastify";
 import { useState } from 'react';
 import {InfoOutlined} from "@material-ui/icons";
 import CreditCardIcon from '@mui/icons-material/CreditCard';
-import authenticationReducer from "../../reducers/authenticationReducer";
 import {addPayment} from "../../actions/paymentActions";
 import {addStripeCharge} from "../../actions/stripeChargeActions";
 
@@ -30,15 +28,28 @@ export default function ReservationDetails(props) {
     const parkingSpotReducer = useSelector(state => state.parkingSpotReducer);
     const [loading, setLoading] = useState(false);
     const dispatch = useDispatch()
+    const [cardNumber, setCardNumber] = useState("");
+    const [expMonth, setExpMonth] = useState("");
+    const [expYear, setExpYear] = useState("");
+    const [cvc, setCvc] = useState("");
+    const cardRegex = /^\d+$/;
+    const cvcRegex = /^\d{3}$/;
 
-    const [newPayment, setNewPayment] = useState({
-        cardNumber: "",
-        expMonth: "",
-        expYear: "",
-        cvc: "",
-    });
+    const handleCardNumber = (event) => {
+        setCardNumber(event.target.value);
+    }
 
+    const handleExpMonth = (event) => {
+        setExpMonth(event.target.value);
+    }
 
+    const handleExpYear = (event) => {
+        setExpYear(event.target.value);
+    }
+
+    const handleCvc = (event) => {
+        setCvc(event.target.value);
+    }
 
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -46,53 +57,78 @@ export default function ReservationDetails(props) {
         console.log('Form submitted with data:');
     };
 
-    const handleInputChange = (event) => {
-        const { name, value } = event.target;
-        setNewPayment({ ...newPayment, [name]: value });
-    };
-
-
-    const handleResevation = (event) => {
+    const handleReservation = (event) => {
         event.preventDefault();
-        try {
-            setLoading(true);
-            dispatch(addReservation(reservation))
-                .then((reservationResponse) => {
-                    const userId = authenticationReducer.decodedUser.userId;
-                    const updatedNewPayment = {
-                        user: {
-                            id: userId,
-                        },
-                        ...newPayment,
-                    };
-                    console.log(updatedNewPayment);
-                    dispatch(addPayment(updatedNewPayment)).then((paymentResponse) => {
-                        console.log(paymentResponse);
-                        const newCharge = {
-                            amount: "123",
-                            currency: "PLN",
-                            payment: {
-                                id: paymentResponse.id,
+        const currentYear = new Date().getFullYear().toString().slice(-2);
+        if (expYear < currentYear || expMonth < 1 || expMonth > 12) {
+            toast.error('Invalid expiration date');
+        } else if (!cardRegex.test(cardNumber)) {
+            toast.error('Card number should contain only digits');
+        } else if (!cvcRegex.test(cvc)) {
+            toast.error('CVC should be 3 digits');
+        } else {
+            try {
+                setLoading(true);
+                dispatch(addReservation(reservation))
+                    .then((reservationResponse) => {
+                        const userId = authenticationReducer.decodedUser.userId;
+                        const newPayment = {
+                            user: {
+                                id: userId,
                             },
-                            reservation: {
-                                id: reservationResponse.id,
-                            },
+                            cardNumber: cardNumber,
+                            expMonth: expMonth,
+                            expYear: expYear,
+                            cvc: cvc,
                         };
-                        dispatch(addStripeCharge(newCharge)).then((chargeResponse) => {
-                            setLoading(false);
-                            toast.success('reservation created');
-                            navigate('/');
-                            dispatch({
-                                type: 'GET_PARKING_SPOT',
-                                value: {},
+                        dispatch(addPayment(newPayment))
+                            .then((paymentResponse) => {
+                                const newCharge = {
+                                    amount: "123",
+                                    currency: "PLN",
+                                    payment: {
+                                        id: paymentResponse.id,
+                                    },
+                                    reservation: {
+                                        id: reservationResponse.id,
+                                    },
+                                };
+                                dispatch(addStripeCharge(newCharge))
+                                    .then((chargeResponse) => {
+                                        setLoading(false);
+                                        toast.success('Reservation created');
+                                        navigate('/');
+                                        dispatch({
+                                            type: 'GET_PARKING_SPOT',
+                                            value: {},
+                                        });
+                                    })
+                                    .catch((error) => {
+                                        console.error('Error in adding stripe charge:', error);
+                                        setLoading(false);
+                                        toast.error('Error during payment process. Please try again.');
+                                        navigate('/');
+                                    });
+                            })
+                            .catch((error) => {
+                                console.error('Error in adding payment:', error);
+                                setLoading(false);
+                                toast.error('Error accesing payment provider. Please try again.');
+                                navigate('/');
                             });
-                        });
+                    })
+                    .catch((error) => {
+                        console.error('Error in adding reservation:', error);
+                        setLoading(false);
+                        toast.error('Error during reservation process. Please try again.');
+                        navigate('/');
                     });
-                });
-        } catch (e) {
-            console.log(e);
-            setLoading(false);
-            toast.error('conflict!');
+            } catch (e) {
+                console.error('General error:', e);
+                setLoading(false);
+                toast.error('Something went wrong. Please try again.');
+                navigate('/');
+            }
         }
     };
 
@@ -100,10 +136,6 @@ export default function ReservationDetails(props) {
         navigate('/parking/' + parking.id);
     };
 
-
-
-    
-    
     return (
         <Container maxWidth="lg">
             <Box sx={{ my: 4 }}>
@@ -203,8 +235,7 @@ export default function ReservationDetails(props) {
                                     readOnly: true,
                                 }}
                         />
-                        <div>
-                        <form onSubmit={handleResevation}>
+                        <form onSubmit={handleReservation}>
                             <Card
                                 variant="outlined"
                                 sx={{
@@ -226,8 +257,8 @@ export default function ReservationDetails(props) {
                                         <Input
                                             name="cardNumber"
                                             required={true}
-                                            value={newPayment.cardNumber}
-                                            onChange={handleInputChange}
+                                            value={cardNumber}
+                                            onChange={handleCardNumber}
                                             endDecorator={<CreditCardIcon />}
                                         />
                                     </FormControl>
@@ -237,8 +268,8 @@ export default function ReservationDetails(props) {
                                             <Input
                                                 name="expMonth"
                                                 required={true}
-                                                value={newPayment.expMonth}
-                                                onChange={handleInputChange}
+                                                value={expMonth}
+                                                onChange={handleExpMonth}
                                                 inputProps={{
                                                     maxLength: 2,
                                                 }}
@@ -248,8 +279,8 @@ export default function ReservationDetails(props) {
                                             <Input
                                                 name="expYear"
                                                 required={true}
-                                                value={newPayment.expYear}
-                                                onChange={handleInputChange}
+                                                value={expYear}
+                                                onChange={handleExpYear}
                                                 inputProps={{
                                                     maxLength: 2,
                                                 }}
@@ -261,25 +292,33 @@ export default function ReservationDetails(props) {
                                         <FormLabel>CVC/CVV</FormLabel>
                                         <div  style={{ display: 'flex', maxWidth: '100%'}}>
                                             <Input
-                                            name="cvc"
-                                            required={true}
-                                            value={newPayment.cvc}
-                                            onChange={handleInputChange}
-                                            endDecorator={<InfoOutlined />}
+                                                name="cvc"
+                                                required={true}
+                                                value={cvc}
+                                                onChange={handleCvc}
+                                                inputProps={{
+                                                    maxLength: 3,
+                                                }}
+                                                endDecorator={<InfoOutlined />}
                                             />
                                         </div>
                                     </FormControl>
                                 </CardContent>
-                                    <Button
-                                        type="submit"
-                                        variant='contained'
-                                        fullWidth>
-                                        RESERVE
-                                    </Button>
+                                <Button
+                                    type="submit"
+                                    variant='contained'
+                                    fullWidth>
+                                    RESERVE
+                                </Button>
                             </Card>
                         </form>
-                        </div>
                     </CardContent>
+                    <Button
+                        variant='contained'
+                        onClick={handleEditClick}
+                        fullWidth>
+                        EDIT
+                    </Button>
                 </Paper>
             </Box>
         </Container>
