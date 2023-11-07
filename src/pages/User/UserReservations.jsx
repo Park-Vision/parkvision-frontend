@@ -26,7 +26,7 @@ export default function UserReservations() {
     const dispatch = useDispatch();
 
     useEffect(() => {
-        if (authenticationReducer.decodedUser && authenticationReducer.decodedUser.role === "User") {
+        if (authenticationReducer.decodedUser && authenticationReducer.decodedUser.role === "USER") {
             dispatch(getUserReservations())
                 .then((response) => {
                     setArchivedReservations(response.Archived);
