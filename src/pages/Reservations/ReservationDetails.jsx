@@ -190,59 +190,61 @@ export default function ReservationDetails(props) {
                         </MapContainer>
                     )}
                             </div>
-                        <TextField sx={{ m: 1 }} fullWidth
-                                value={new Date(reservation.startDate).toLocaleString()}
-                                id="outlined-basic"
-                                label="Start date"
-                                variant="outlined" 
-                                InputProps={{
-                                    readOnly: true,
-                                }}
-                        />
-                        <TextField sx={{ m: 1 }} fullWidth
-                                value={new Date(reservation.endDate).toLocaleString()}
-                                id="outlined-basic"
-                                label="End date"
-                                variant="outlined" 
-                                InputProps={{
-                                    readOnly: true,
-                                }}
-                        />
+                        <Card
+                            sx={{ m: 1 }} fullWidth
+                            variant="outlined"
+                        >
+
                             <TextField sx={{ m: 1 }} fullWidth
-                                value={reservation.registrationNumber}
-                                id="outlined-basic"
-                                label="Registration number"
-                                variant="outlined" 
-                                InputProps={{
-                                    readOnly: true,
-                                }}
-                        />
-                        <TextField sx={{ m: 1 }} fullWidth
-                            value={`${parking.name}, ${parking.street}, ${parking.city}`}
-                                id="outlined-basic"
-                                label="Parking name"
-                                variant="outlined" 
-                                InputProps={{
-                                    readOnly: true,
-                                }}
-                        />
+                                    value={new Date(reservation.startDate).toLocaleString()}
+                                    id="outlined-basic"
+                                    label="Start date"
+                                    variant="outlined"
+                                    InputProps={{
+                                        readOnly: true,
+                                    }}
+                            />
                             <TextField sx={{ m: 1 }} fullWidth
-                                value={1}
-                                id="outlined-basic"
-                                label="Parking spot"
-                                variant="outlined" 
-                                InputProps={{
-                                    readOnly: true,
-                                }}
-                        />
+                                    value={new Date(reservation.endDate).toLocaleString()}
+                                    id="outlined-basic"
+                                    label="End date"
+                                    variant="outlined"
+                                    InputProps={{
+                                        readOnly: true,
+                                    }}
+                            />
+                                <TextField sx={{ m: 1 }} fullWidth
+                                    value={reservation.registrationNumber}
+                                    id="outlined-basic"
+                                    label="Registration number"
+                                    variant="outlined"
+                                    InputProps={{
+                                        readOnly: true,
+                                    }}
+                            />
+                            <TextField sx={{ m: 1 }} fullWidth
+                                value={`${parking.name}, ${parking.street}, ${parking.city}`}
+                                    id="outlined-basic"
+                                    label="Parking name"
+                                    variant="outlined"
+                                    InputProps={{
+                                        readOnly: true,
+                                    }}
+                            />
+                                <TextField sx={{ m: 1 }} fullWidth
+                                    value={1}
+                                    id="outlined-basic"
+                                    label="Parking spot"
+                                    variant="outlined"
+                                    InputProps={{
+                                        readOnly: true,
+                                    }}
+                            />
+                        </Card>
                         <form onSubmit={handleReservation}>
                             <Card
+                                sx={{ m: 1 }} fullWidth
                                 variant="outlined"
-                                sx={{
-                                    maxHeight: 'max-content',
-                                    maxWidth: '100%',
-                                    mx: 'auto',
-                                }}
                             >
                                 <Divider inset="none" />
                                 <CardContent
