@@ -194,26 +194,29 @@ export default function ReservationDetails(props) {
                             sx={{ m: 1 }} fullWidth
                             variant="outlined"
                         >
-
-                            <TextField sx={{ m: 1 }} fullWidth
-                                    value={new Date(reservation.startDate).toLocaleString()}
-                                    id="outlined-basic"
-                                    label="Start date"
-                                    variant="outlined"
-                                    InputProps={{
-                                        readOnly: true,
-                                    }}
-                            />
-                            <TextField sx={{ m: 1 }} fullWidth
-                                    value={new Date(reservation.endDate).toLocaleString()}
-                                    id="outlined-basic"
-                                    label="End date"
-                                    variant="outlined"
-                                    InputProps={{
-                                        readOnly: true,
-                                    }}
-                            />
-                                <TextField sx={{ m: 1 }} fullWidth
+                        </div>
+                        <Typography sx={{ m: 1 }} fullWidth>
+                            Dates and times are based on parking time zone ({parking.timeZone}) compared to UTC.
+                        </Typography>
+                        <TextField sx={{ m: 1 }} fullWidth
+                                value={`${new Date(reservation.startDate).toLocaleString()}`}
+                                id="outlined-basic"
+                                label="Start date"
+                                variant="outlined" 
+                                InputProps={{
+                                    readOnly: true,
+                                }}
+                        />
+                        <TextField sx={{ m: 1 }} fullWidth
+                            value={`${new Date(reservation.endDate).toLocaleString()}`}
+                                id="outlined-basic"
+                                label="End date"
+                                variant="outlined" 
+                                InputProps={{
+                                    readOnly: true,
+                                }}
+                        />
+                        <TextField sx={{ m: 1 }} fullWidth
                                     value={reservation.registrationNumber}
                                     id="outlined-basic"
                                     label="Registration number"
@@ -221,8 +224,8 @@ export default function ReservationDetails(props) {
                                     InputProps={{
                                         readOnly: true,
                                     }}
-                            />
-                            <TextField sx={{ m: 1 }} fullWidth
+                        />
+                        <TextField sx={{ m: 1 }} fullWidth
                                 value={`${parking.name}, ${parking.street}, ${parking.city}`}
                                     id="outlined-basic"
                                     label="Parking name"
@@ -230,8 +233,8 @@ export default function ReservationDetails(props) {
                                     InputProps={{
                                         readOnly: true,
                                     }}
-                            />
-                                <TextField sx={{ m: 1 }} fullWidth
+                         />
+                         <TextField sx={{ m: 1 }} fullWidth
                                     value={1}
                                     id="outlined-basic"
                                     label="Parking spot"
@@ -239,7 +242,7 @@ export default function ReservationDetails(props) {
                                     InputProps={{
                                         readOnly: true,
                                     }}
-                            />
+                        />
                         </Card>
                         <form onSubmit={handleReservation}>
                             <Card
