@@ -37,7 +37,7 @@ export default function ReservationDetails(props) {
         }
     };
 
-    const handleEditClick = (event) => {
+    const handleBackClick = (event) => {
         navigate('/parking/' + parking.id);
     };
     
@@ -147,8 +147,8 @@ export default function ReservationDetails(props) {
                         <Button sx={{ m: 1 }} variant="contained" onClick={handleReseveClick} fullWidth>
                             Reserve
                         </Button>
-                        <Button sx={{ m: 1 }} variant="outlined" onClick={handleEditClick} fullWidth>
-                            Edit
+                        <Button sx={{ m: 1 }} variant="outlined" onClick={handleBackClick} fullWidth>
+                            Cancel
                         </Button>
                         
                     </CardContent>

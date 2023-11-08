@@ -1,42 +1,36 @@
 import axios from "axios";
-import authHeader from "./AuthenticationHeader";
 
 const urlConst = "/parkings";
 
 class ParkingService {
     async getParkings() {
-        return await axios.get(process.env.REACT_APP_BACKEND_URL + urlConst);
+        return await axios.get(urlConst);
     }
 
     async getParkingById(parkingId) {
-        return await axios.get(process.env.REACT_APP_BACKEND_URL + urlConst + "/" + parkingId);
+        return await axios.get(urlConst + "/" + parkingId);
     }
 
     async createParking(parkingData) {
-        return await axios.post(process.env.REACT_APP_BACKEND_URL + urlConst, parkingData, { headers: authHeader() });
+        return await axios.post(urlConst, parkingData);
     }
 
     async updateParking(parkingData) {
-        return await axios.put(process.env.REACT_APP_BACKEND_URL + urlConst + "/", parkingData, {
-            headers: authHeader(),
-        });
+        return await axios.put(urlConst + "/", parkingData);
     }
 
     async deleteParkingById(parkingId) {
-        return await axios.delete(process.env.REACT_APP_BACKEND_URL + urlConst + "/" + parkingId, {
-            headers: authHeader(),
-        });
+        return await axios.delete(urlConst + "/" + parkingId);
     }
 
     async getParkingNumOfSpotsById(parkingId) {
-        return await axios.get(process.env.REACT_APP_BACKEND_URL + urlConst + "/" + parkingId + "/spots-number");
+        return await axios.get(urlConst + "/" + parkingId + "/spots-number");
     }
 
     async getParkingNumOfFreeSpotsById(parkingId, start) {
-        return await axios.get(process.env.REACT_APP_BACKEND_URL + urlConst + "/" + parkingId + "/free-spots-number", {
+        return await axios.get(urlConst + "/" + parkingId + "/free-spots-number", {
             params: { startDate: start },
-            headers: authHeader(),
         });
     }
-}
+  }
 export default new ParkingService();

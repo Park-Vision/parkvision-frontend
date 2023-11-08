@@ -25,7 +25,7 @@ const authenticationReducer = (state = initialState, action) => {
             return {
                 ...state,
                 isLoggedIn: true,
-                user: action.value,
+                user: action.value.data.token,
                 decodedUser: decodeToken(action.value.data.token),
             };
         case LOGIN_FAIL:

@@ -1,36 +1,35 @@
 import axios from "axios";
-import authHeader from "./AuthenticationHeader";
 
 const urlConst = "/users";
 const authUrlConst = "/auth";
 
 class UserService {
     async getUsers() {
-        return await axios.get(process.env.REACT_APP_BACKEND_URL + urlConst, { headers: authHeader() });
+        return await axios.get(urlConst);
     }
 
     async getUserById(userId) {
-        return await axios.get(process.env.REACT_APP_BACKEND_URL + urlConst + "/" + userId,{ headers: authHeader() });
+        return await axios.get(urlConst + "/" + userId);
     }
 
     async createUser(userData) {
-        return await axios.post(process.env.REACT_APP_BACKEND_URL + urlConst, userData, { headers: authHeader() });
+        return await axios.post(urlConst, userData);
     }
 
     async updateUser(userData) {
-        return await axios.put(process.env.REACT_APP_BACKEND_URL + urlConst + "/", userData, { headers: authHeader() });
+        return await axios.put(urlConst + "/", userData);
     }
 
     async deleteUserById(userId) {
-        return await axios.delete(process.env.REACT_APP_BACKEND_URL + urlConst + "/" + userId, { headers: authHeader() });
+        return await axios.delete(urlConst + "/" + userId);
     }
 
     async authenticateUser(userData) {
-        return await axios.post(process.env.REACT_APP_BACKEND_URL + authUrlConst + "/authenticate", userData, { headers: authHeader() });
+        return await axios.post(authUrlConst + "/authenticate", userData);
     }
 
     async registerUser(userData) {
-        return await axios.post(process.env.REACT_APP_BACKEND_URL + authUrlConst + "/register", userData, { headers: authHeader() });
+        return await axios.post(authUrlConst + "/register", userData);
     }
 
 }

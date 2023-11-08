@@ -1,27 +1,26 @@
 import axios from "axios";
-import authHeader from "./AuthenticationHeader";
 
 const urlConst = "/points";
 
 class PointService {
     async getPoints() {
-        return await axios.get(process.env.REACT_APP_BACKEND_URL + urlConst, { headers: authHeader() });
+        return await axios.get(urlConst);
     }
 
     async getPointById(pointId) {
-        return await axios.get(process.env.REACT_APP_BACKEND_URL + urlConst + "/" + pointId, { headers: authHeader() });
+        return await axios.get(urlConst + "/" + pointId);
     }
 
     async createPoint(pointData) {
-        return await axios.post(process.env.REACT_APP_BACKEND_URL + urlConst, pointData, { headers: authHeader() });
+        return await axios.post(urlConst, pointData);
     }
 
     async updatePoint(pointData) {
-        return await axios.put(process.env.REACT_APP_BACKEND_URL + urlConst + "/", pointData, { headers: authHeader() });
+        return await axios.put(urlConst + "/", pointData);
     }
 
     async deletePointById(pointId) {
-        return await axios.delete(process.env.REACT_APP_BACKEND_URL + urlConst + "/" + pointId, { headers: authHeader() });
+        return await axios.delete(urlConst + "/" + pointId);
     }
 }
 export default new PointService();

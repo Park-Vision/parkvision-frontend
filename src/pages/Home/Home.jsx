@@ -40,13 +40,16 @@ export default function Home() {
                     dispatch(getParkingSpotsNumber(parking.id))
                 })
             }
-        )
-
+        ).catch((error) => {
+            console.log(error);
+        });
     }, []);
 
     useEffect(() => {
         if (parkings.length === 0) {
-            dispatch(getParkings());
+            dispatch(getParkings()).catch((error) => {
+                console.log(error);
+            });
         } else {
             setListOfParkings(parkings);
         }
