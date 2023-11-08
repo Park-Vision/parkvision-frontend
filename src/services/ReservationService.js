@@ -21,7 +21,7 @@ class ReservationService {
     }
 
     async updateReservation(reservationData) {
-        return await axios.put(process.env.REACT_APP_BACKEND_URL + urlConst + "/", reservationData, { headers: authHeader() });
+        return await axios.put(process.env.REACT_APP_BACKEND_URL + urlConst, reservationData, { headers: authHeader() });
     }
 
     async deleteReservationById(reservationId) {

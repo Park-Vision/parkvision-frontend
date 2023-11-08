@@ -487,7 +487,7 @@ function ParkingDetails(props) {
                                     <TextField
                                         sx={{ m: 1 }}
                                         fullWidth
-                                        value={parkingSpot.id || ""}
+                                        value={parkingSpot?.id || ""}
                                         id='outlined-basic'
                                         label='Parking spot'
                                         variant='outlined'
