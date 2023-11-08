@@ -1,32 +1,30 @@
 import axios from "axios";
-import authHeader from "./AuthenticationHeader";
 
 const urlConst = "/cars";
+
 class CarService {
     async getCars() {
-        return await axios.get(process.env.REACT_APP_BACKEND_URL + urlConst, { headers: authHeader() });
+        return await axios.get(urlConst);
     }
 
     async getUserCars() {
-        return await axios.get(process.env.REACT_APP_BACKEND_URL + urlConst + "/client", { headers: authHeader() });
+        return await axios.get(urlConst + "/client");
     }
 
     async getCarById(carId) {
-        return await axios.get(process.env.REACT_APP_BACKEND_URL + urlConst + "/" + carId, { headers: authHeader() });
+        return await axios.get(urlConst + "/" + carId);
     }
 
     async deleteCarById(carId) {
-        return await axios.delete(process.env.REACT_APP_BACKEND_URL + urlConst + "/" + carId, {
-            headers: authHeader(),
-        });
+        return await axios.delete(urlConst + "/" + carId);
     }
 
     async addCar(carData) {
-        return await axios.post(process.env.REACT_APP_BACKEND_URL + urlConst + "/", carData, { headers: authHeader() });
+        return await axios.post(urlConst + "/", carData);
     }
 
     async updateCar(carData) {
-        return await axios.put(process.env.REACT_APP_BACKEND_URL + urlConst, carData, { headers: authHeader() });
+        return await axios.put(urlConst, carData);
     }
 }
 export default new CarService();

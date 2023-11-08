@@ -134,7 +134,7 @@ export default function ReservationDetails(props) {
         }
     };
 
-    const handleEditClick = (event) => {
+    const handleBackClick = (event) => {
         navigate('/parking/' + parking.id);
     };
 

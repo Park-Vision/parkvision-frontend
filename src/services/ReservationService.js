@@ -1,31 +1,30 @@
 import axios from "axios";
-import authHeader from "./AuthenticationHeader";
 
 const urlConst = "/reservations";
 
 class ReservationService {
     async getReservations() {
-        return await axios.get(process.env.REACT_APP_BACKEND_URL + urlConst, { headers: authHeader() });
+        return await axios.get(urlConst);
     }
 
     async getUserReservations() {
-        return await axios.get(process.env.REACT_APP_BACKEND_URL + urlConst + "/client", { headers: authHeader() });
+        return await axios.get(urlConst + "/client");
     }
 
     async getReservationById(reservationId) {
-        return await axios.get(process.env.REACT_APP_BACKEND_URL + urlConst + "/" + reservationId, { headers: authHeader() });
+        return await axios.get(urlConst + "/" + reservationId);
     }
 
     async createReservation(reservationData) {
-        return await axios.post(process.env.REACT_APP_BACKEND_URL + urlConst, reservationData, { headers: authHeader() });
+        return await axios.post(urlConst, reservationData);
     }
 
     async updateReservation(reservationData) {
-        return await axios.put(process.env.REACT_APP_BACKEND_URL + urlConst + "/", reservationData, { headers: authHeader() });
+        return await axios.put(urlConst + "/", reservationData);
     }
 
     async deleteReservationById(reservationId) {
-        return await axios.delete(process.env.REACT_APP_BACKEND_URL + urlConst + "/" + reservationId, { headers: authHeader() });
+        return await axios.delete(urlConst + "/" + reservationId);
     }
 }
 export default new ReservationService();
