@@ -6,6 +6,7 @@ import {
     Paper,
     CardContent,
     Card,
+    Grid,
     TextField,
     Button,
     CircularProgress, FormControl, FormLabel, Input, Divider,
@@ -60,7 +61,8 @@ export default function ReservationDetails(props) {
     const handleReservation = (event) => {
         event.preventDefault();
         const currentYear = new Date().getFullYear().toString().slice(-2);
-        if (expYear < currentYear || expMonth < 1 || expMonth > 12) {
+        const currentMonth = new Date().getMonth() + 1;
+        if (expYear < currentYear || (expYear === currentYear && expMonth < currentMonth) || expMonth < 1 || expMonth > 12) {
             toast.error('Invalid expiration date');
         } else if (!cardRegex.test(cardNumber)) {
             toast.error('Card number should contain only digits');
@@ -191,23 +193,23 @@ export default function ReservationDetails(props) {
                     )}
                             </div>
                         <Card
-                            sx={{ m: 1 }} fullWidth
-                            variant="outlined"
+                            sx={{m: 1}}
                         >
-                        </div>
-                        <Typography sx={{ m: 1 }} fullWidth>
+
+
+                        <Typography style={{marginBottom: 10}} fullWidth>
                             Dates and times are based on parking time zone ({parking.timeZone}) compared to UTC.
                         </Typography>
-                        <TextField sx={{ m: 1 }} fullWidth
+                        <TextField style={{marginBottom: 10}} fullWidth
                                 value={`${new Date(reservation.startDate).toLocaleString()}`}
                                 id="outlined-basic"
                                 label="Start date"
-                                variant="outlined" 
+                                variant="outlined"
                                 InputProps={{
                                     readOnly: true,
                                 }}
                         />
-                        <TextField sx={{ m: 1 }} fullWidth
+                        <TextField style={{marginBottom: 10}} fullWidth
                             value={`${new Date(reservation.endDate).toLocaleString()}`}
                                 id="outlined-basic"
                                 label="End date"
@@ -216,7 +218,7 @@ export default function ReservationDetails(props) {
                                     readOnly: true,
                                 }}
                         />
-                        <TextField sx={{ m: 1 }} fullWidth
+                        <TextField style={{marginBottom: 10}} fullWidth
                                     value={reservation.registrationNumber}
                                     id="outlined-basic"
                                     label="Registration number"
@@ -225,7 +227,7 @@ export default function ReservationDetails(props) {
                                         readOnly: true,
                                     }}
                         />
-                        <TextField sx={{ m: 1 }} fullWidth
+                        <TextField style={{marginBottom: 10}} fullWidth
                                 value={`${parking.name}, ${parking.street}, ${parking.city}`}
                                     id="outlined-basic"
                                     label="Parking name"
@@ -234,7 +236,7 @@ export default function ReservationDetails(props) {
                                         readOnly: true,
                                     }}
                          />
-                         <TextField sx={{ m: 1 }} fullWidth
+                         <TextField style={{marginBottom: 10}} fullWidth
                                     value={1}
                                     id="outlined-basic"
                                     label="Parking spot"
@@ -278,6 +280,7 @@ export default function ReservationDetails(props) {
                                                 inputProps={{
                                                     maxLength: 2,
                                                 }}
+                                                placeholder={'month'}
                                                 endDecorator={<InfoOutlined />}
                                             />
                                             <Typography variant="h6" style={{ margin: '0 10px' }}>/</Typography>
@@ -289,6 +292,7 @@ export default function ReservationDetails(props) {
                                                 inputProps={{
                                                     maxLength: 2,
                                                 }}
+                                                placeholder={'year'}
                                                 endDecorator={<InfoOutlined />}
                                             />
                                         </div>
