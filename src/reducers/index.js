@@ -7,6 +7,7 @@ import pointReducer from "./pointReducer"
 import reservationReducer from "./reservationReducer"
 import userReducer from "./userReducer"
 import authenticationReducer from "./authenticationReducer.js"
+import paymentReducer from "./paymentReducer";
 
 
 export default combineReducers({
@@ -17,5 +18,6 @@ export default combineReducers({
     pointReducer,
     reservationReducer,
     userReducer,
-    authenticationReducer
+    authenticationReducer,
+    paymentReducer
 });

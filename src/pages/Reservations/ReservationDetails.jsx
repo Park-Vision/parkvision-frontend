@@ -1,47 +1,143 @@
 import { useNavigate} from 'react-router-dom';
-import { Container, Box, Typography, Paper, CardContent, TextField, Button, CircularProgress } from '@mui/material';
+import {
+    Container,
+    Box,
+    Typography,
+    Paper,
+    CardContent,
+    Card,
+    Grid,
+    TextField,
+    Button,
+    CircularProgress, FormControl, FormLabel, Input, Divider,
+} from '@mui/material';
 import { useDispatch, useSelector } from "react-redux";
 import { MapContainer, TileLayer, FeatureGroup, Polygon, Popup } from 'react-leaflet';
 import { addReservation } from '../../actions/reservationActions';
 import { toast } from "react-toastify";
 import { useState } from 'react';
+import {InfoOutlined} from "@material-ui/icons";
+import CreditCardIcon from '@mui/icons-material/CreditCard';
+import {addPayment} from "../../actions/paymentActions";
+import {addStripeCharge} from "../../actions/stripeChargeActions";
 
 export default function ReservationDetails(props) {
     const navigate = useNavigate();
+    const authenticationReducer = useSelector(state => state.authenticationReducer);
     const reservation = useSelector(state => state.reservationReducer.reservation);
     const parking = useSelector(state => state.parkingReducer.parking);
     const parkingSpotReducer = useSelector(state => state.parkingSpotReducer);
     const [loading, setLoading] = useState(false);
-
     const dispatch = useDispatch()
+    const [cardNumber, setCardNumber] = useState("");
+    const [expMonth, setExpMonth] = useState("");
+    const [expYear, setExpYear] = useState("");
+    const [cvc, setCvc] = useState("");
+    const cardRegex = /^\d+$/;
+    const cvcRegex = /^\d{3}$/;
 
-    const handleReseveClick = (event) => {
-        try {
-            setLoading(true);
-            dispatch(addReservation(reservation))
-                .then(response => {
-                    setLoading(false);
-                    toast.success('reservation created');
-                    navigate('/');
-                    dispatch({
-                        type: 'GET_PARKING_SPOT',
-                        value: {}
+    const handleCardNumber = (event) => {
+        setCardNumber(event.target.value);
+    }
+
+    const handleExpMonth = (event) => {
+        setExpMonth(event.target.value);
+    }
+
+    const handleExpYear = (event) => {
+        setExpYear(event.target.value);
+    }
+
+    const handleCvc = (event) => {
+        setCvc(event.target.value);
+    }
+
+    const handleSubmit = (event) => {
+        event.preventDefault();
+        // Do something with the form data, for example, submit it to a server
+        console.log('Form submitted with data:');
+    };
+
+    const handleReservation = (event) => {
+        event.preventDefault();
+        const currentYear = new Date().getFullYear().toString().slice(-2);
+        const currentMonth = new Date().getMonth() + 1;
+        if (expYear < currentYear || (expYear === currentYear && expMonth < currentMonth) || expMonth < 1 || expMonth > 12) {
+            toast.error('Invalid expiration date');
+        } else if (!cardRegex.test(cardNumber)) {
+            toast.error('Card number should contain only digits');
+        } else if (!cvcRegex.test(cvc)) {
+            toast.error('CVC should be 3 digits');
+        } else {
+            try {
+                setLoading(true);
+                dispatch(addReservation(reservation))
+                    .then((reservationResponse) => {
+                        const userId = authenticationReducer.decodedUser.userId;
+                        const newPayment = {
+                            user: {
+                                id: userId,
+                            },
+                            cardNumber: cardNumber,
+                            expMonth: expMonth,
+                            expYear: expYear,
+                            cvc: cvc,
+                        };
+                        dispatch(addPayment(newPayment))
+                            .then((paymentResponse) => {
+                                const newCharge = {
+                                    amount: "123",
+                                    currency: "PLN",
+                                    payment: {
+                                        id: paymentResponse.id,
+                                    },
+                                    reservation: {
+                                        id: reservationResponse.id,
+                                    },
+                                };
+                                dispatch(addStripeCharge(newCharge))
+                                    .then((chargeResponse) => {
+                                        setLoading(false);
+                                        toast.success('Reservation created');
+                                        navigate('/');
+                                        dispatch({
+                                            type: 'GET_PARKING_SPOT',
+                                            value: {},
+                                        });
+                                    })
+                                    .catch((error) => {
+                                        console.error('Error in adding stripe charge:', error);
+                                        setLoading(false);
+                                        toast.error('Error during payment process. Please try again.');
+                                        navigate('/');
+                                    });
+                            })
+                            .catch((error) => {
+                                console.error('Error in adding payment:', error);
+                                setLoading(false);
+                                toast.error('Error accesing payment provider. Please try again.');
+                                navigate('/');
+                            });
                     })
-                }
-                );
-        }
-        catch (e) {
-            console.log(e);
-            setLoading(false);
-            toast.error('coflict!');
+                    .catch((error) => {
+                        console.error('Error in adding reservation:', error);
+                        setLoading(false);
+                        toast.error('Error during reservation process. Please try again.');
+                        navigate('/');
+                    });
+            } catch (e) {
+                console.error('General error:', e);
+                setLoading(false);
+                toast.error('Something went wrong. Please try again.');
+                navigate('/');
+            }
         }
     };
 
     const handleBackClick = (event) => {
         navigate('/parking/' + parking.id);
     };
-    
-    
+
     return (
         <Container maxWidth="lg">
             <Box sx={{ my: 4 }}>
@@ -95,20 +191,25 @@ export default function ReservationDetails(props) {
 
                         </MapContainer>
                     )}
-                        </div>
-                        <Typography sx={{ m: 1 }} fullWidth>
+                            </div>
+                        <Card
+                            sx={{m: 1}}
+                        >
+
+
+                        <Typography style={{marginBottom: 10}} fullWidth>
                             Dates and times are based on parking time zone ({parking.timeZone}) compared to UTC.
                         </Typography>
-                        <TextField sx={{ m: 1 }} fullWidth
+                        <TextField style={{marginBottom: 10}} fullWidth
                                 value={`${new Date(reservation.startDate).toLocaleString()}`}
                                 id="outlined-basic"
                                 label="Start date"
-                                variant="outlined" 
+                                variant="outlined"
                                 InputProps={{
                                     readOnly: true,
                                 }}
                         />
-                        <TextField sx={{ m: 1 }} fullWidth
+                        <TextField style={{marginBottom: 10}} fullWidth
                             value={`${new Date(reservation.endDate).toLocaleString()}`}
                                 id="outlined-basic"
                                 label="End date"
@@ -117,41 +218,116 @@ export default function ReservationDetails(props) {
                                     readOnly: true,
                                 }}
                         />
-                            <TextField sx={{ m: 1 }} fullWidth
-                                value={reservation.registrationNumber}
-                                id="outlined-basic"
-                                label="Registration number"
-                                variant="outlined" 
-                                InputProps={{
-                                    readOnly: true,
-                                }}
+                        <TextField style={{marginBottom: 10}} fullWidth
+                                    value={reservation.registrationNumber}
+                                    id="outlined-basic"
+                                    label="Registration number"
+                                    variant="outlined"
+                                    InputProps={{
+                                        readOnly: true,
+                                    }}
                         />
-                        <TextField sx={{ m: 1 }} fullWidth
-                            value={`${parking.name}, ${parking.street}, ${parking.city}`}
-                                id="outlined-basic"
-                                label="Parking name"
-                                variant="outlined" 
-                                InputProps={{
-                                    readOnly: true,
-                                }}
+                        <TextField style={{marginBottom: 10}} fullWidth
+                                value={`${parking.name}, ${parking.street}, ${parking.city}`}
+                                    id="outlined-basic"
+                                    label="Parking name"
+                                    variant="outlined"
+                                    InputProps={{
+                                        readOnly: true,
+                                    }}
+                         />
+                         <TextField style={{marginBottom: 10}} fullWidth
+                                    value={1}
+                                    id="outlined-basic"
+                                    label="Parking spot"
+                                    variant="outlined"
+                                    InputProps={{
+                                        readOnly: true,
+                                    }}
                         />
-                            <TextField sx={{ m: 1 }} fullWidth
-                                value={1}
-                                id="outlined-basic"
-                                label="Parking spot"
-                                variant="outlined" 
-                                InputProps={{
-                                    readOnly: true,
-                                }}
-                        />
-                        <Button sx={{ m: 1 }} variant="contained" onClick={handleReseveClick} fullWidth>
-                            Reserve
-                        </Button>
-                        <Button sx={{ m: 1 }} variant="outlined" onClick={handleBackClick} fullWidth>
-                            Cancel
-                        </Button>
-                        
+                        </Card>
+                        <form onSubmit={handleReservation}>
+                            <Card
+                                sx={{ m: 1 }} fullWidth
+                                variant="outlined"
+                            >
+                                <Divider inset="none" />
+                                <CardContent
+                                    sx={{
+                                        display: 'grid',
+                                        gridTemplateColumns: 'repeat(2, minmax(80px, 1fr))',
+                                        gap: 1.5,
+                                    }}
+                                >
+                                    <FormControl sx={{ gridColumn: '1/-1' }}>
+                                        <FormLabel>Card number</FormLabel>
+                                        <Input
+                                            name="cardNumber"
+                                            required={true}
+                                            value={cardNumber}
+                                            onChange={handleCardNumber}
+                                            endDecorator={<CreditCardIcon />}
+                                        />
+                                    </FormControl>
+                                    <FormControl>
+                                        <FormLabel>Expiration date</FormLabel>
+                                        <div style={{ display: 'flex' }}>
+                                            <Input
+                                                name="expMonth"
+                                                required={true}
+                                                value={expMonth}
+                                                onChange={handleExpMonth}
+                                                inputProps={{
+                                                    maxLength: 2,
+                                                }}
+                                                placeholder={'month'}
+                                                endDecorator={<InfoOutlined />}
+                                            />
+                                            <Typography variant="h6" style={{ margin: '0 10px' }}>/</Typography>
+                                            <Input
+                                                name="expYear"
+                                                required={true}
+                                                value={expYear}
+                                                onChange={handleExpYear}
+                                                inputProps={{
+                                                    maxLength: 2,
+                                                }}
+                                                placeholder={'year'}
+                                                endDecorator={<InfoOutlined />}
+                                            />
+                                        </div>
+                                    </FormControl>
+                                    <FormControl>
+                                        <FormLabel>CVC/CVV</FormLabel>
+                                        <div  style={{ display: 'flex', maxWidth: '100%'}}>
+                                            <Input
+                                                name="cvc"
+                                                required={true}
+                                                value={cvc}
+                                                onChange={handleCvc}
+                                                inputProps={{
+                                                    maxLength: 3,
+                                                }}
+                                                endDecorator={<InfoOutlined />}
+                                            />
+                                        </div>
+                                    </FormControl>
+                                </CardContent>
+                                <Button
+                                    type="submit"
+                                    variant='contained'
+                                    fullWidth>
+                                    RESERVE
+                                </Button>
+                            </Card>
+                        </form>
                     </CardContent>
+                    <Button
+                        variant='contained'
+                        onClick={handleEditClick}
+                        fullWidth>
+                        EDIT
+                    </Button>
                 </Paper>
             </Box>
         </Container>
