@@ -18,7 +18,6 @@ class AuthenticationService {
 
     async logout() {
         await localStorage.removeItem(user);
-        console.log("Logout sucessful ls: " + localStorage.getItem(user));
     }
 
     async register(email, firstName, lastName, password) {
@@ -28,6 +27,10 @@ class AuthenticationService {
             lastName: lastName,
             password: password,
         });
+    }
+
+    async refresh(token) {
+        return await axios.post(process.env.REACT_APP_BACKEND_URL + urlConst + "/refreshToken", { token: token });
     }
 }
 export default new AuthenticationService();
