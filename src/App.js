@@ -18,7 +18,30 @@ import * as React from "react";
 import UserReservations from "./pages/User/UserReservations";
 import ParkingSpotDetails from "./pages/ParkingSpot/ParkingSpotDetails";
 import ParkingEditor from "./pages/Editor/Editor"
-const ColorModeContext = React.createContext({ toggleColorMode: () => {} });
+import axios from "axios";
+import useErrorHandler from "./utils/ErrorHandler";
+const ColorModeContext = React.createContext({ toggleColorMode: () => { } });
+
+axios.defaults.baseURL = process.env.REACT_APP_BACKEND_URL;
+
+axios.interceptors.response.use(
+    (response) => response,
+    (error) => useErrorHandler(error)
+);
+
+axios.interceptors.request.use(
+    (config) => {
+        const user = JSON.parse(localStorage.getItem("user"));
+        if (user && user.token) {
+            config.headers["Authorization"] = "Bearer " + user.token;
+        }
+        return config;
+    },
+    (error) => {
+        return Promise.reject(error);
+    }
+);
+
 
 function App() {
     const [mode, setMode] = React.useState("light");
