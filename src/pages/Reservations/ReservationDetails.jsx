@@ -36,6 +36,8 @@ export default function ReservationDetails(props) {
     const cardRegex = /^\d+$/;
     const cvcRegex = /^\d{3}$/;
 
+
+
     const handleCardNumber = (event) => {
         setCardNumber(event.target.value);
     }
@@ -52,14 +54,27 @@ export default function ReservationDetails(props) {
         setCvc(event.target.value);
     }
 
-    const handleSubmit = (event) => {
-        event.preventDefault();
-        // Do something with the form data, for example, submit it to a server
-        console.log('Form submitted with data:');
-    };
-
     const handleReservation = (event) => {
-        event.preventDefault();
+        if(authenticationReducer.isLoggedIn &&
+            authenticationReducer.decodedUser.role === "PARKING_MANAGER") {
+            dispatch(addReservation(reservation)).then((reservationResponse) => {
+                setLoading(false);
+                toast.success('Reservation created');
+                navigate('/parking/' + parking.id);
+                dispatch({
+                    type: 'GET_PARKING_SPOT',
+                    value: {},
+                });
+            }
+                
+            ).catch((error) => {
+                console.error('Error in adding reservation:', error);
+                setLoading(false);
+                toast.error('Error during reservation process. Please try again.');
+                navigate('/parking/' + parking.id);
+            });
+            return;
+        }
         const currentYear = new Date().getFullYear().toString().slice(-2);
         const currentMonth = new Date().getMonth() + 1;
         if (expYear < currentYear || (expYear === currentYear && expMonth < currentMonth) || expMonth < 1 || expMonth > 12) {
@@ -246,88 +261,88 @@ export default function ReservationDetails(props) {
                                     }}
                         />
                         </Card>
-                        <form onSubmit={handleReservation}>
-                            <Card
-                                sx={{ m: 1 }} fullWidth
-                                variant="outlined"
-                            >
-                                <Divider inset="none" />
-                                <CardContent
-                                    sx={{
-                                        display: 'grid',
-                                        gridTemplateColumns: 'repeat(2, minmax(80px, 1fr))',
-                                        gap: 1.5,
-                                    }}
+                        {authenticationReducer.isLoggedIn &&
+                        authenticationReducer.decodedUser.role !== "PARKING_MANAGER" && (
+                                <Card
+                                    sx={{ m: 1 }} fullWidth
+                                    variant="outlined"
                                 >
-                                    <FormControl sx={{ gridColumn: '1/-1' }}>
-                                        <FormLabel>Card number</FormLabel>
-                                        <Input
-                                            name="cardNumber"
-                                            required={true}
-                                            value={cardNumber}
-                                            onChange={handleCardNumber}
-                                            endDecorator={<CreditCardIcon />}
-                                        />
-                                    </FormControl>
-                                    <FormControl>
-                                        <FormLabel>Expiration date</FormLabel>
-                                        <div style={{ display: 'flex' }}>
+                                    <Divider inset="none" />
+                                    <CardContent
+                                        sx={{
+                                            display: 'grid',
+                                            gridTemplateColumns: 'repeat(2, minmax(80px, 1fr))',
+                                            gap: 1.5,
+                                        }}
+                                    >
+                                        <FormControl sx={{ gridColumn: '1/-1' }}>
+                                            <FormLabel>Card number</FormLabel>
                                             <Input
-                                                name="expMonth"
+                                                name="cardNumber"
                                                 required={true}
-                                                value={expMonth}
-                                                onChange={handleExpMonth}
-                                                inputProps={{
-                                                    maxLength: 2,
-                                                }}
-                                                placeholder={'month'}
-                                                endDecorator={<InfoOutlined />}
+                                                value={cardNumber}
+                                                onChange={handleCardNumber}
+                                                endDecorator={<CreditCardIcon />}
                                             />
-                                            <Typography variant="h6" style={{ margin: '0 10px' }}>/</Typography>
-                                            <Input
-                                                name="expYear"
-                                                required={true}
-                                                value={expYear}
-                                                onChange={handleExpYear}
-                                                inputProps={{
-                                                    maxLength: 2,
-                                                }}
-                                                placeholder={'year'}
-                                                endDecorator={<InfoOutlined />}
-                                            />
-                                        </div>
-                                    </FormControl>
-                                    <FormControl>
-                                        <FormLabel>CVC/CVV</FormLabel>
-                                        <div  style={{ display: 'flex', maxWidth: '100%'}}>
-                                            <Input
-                                                name="cvc"
-                                                required={true}
-                                                value={cvc}
-                                                onChange={handleCvc}
-                                                inputProps={{
-                                                    maxLength: 3,
-                                                }}
-                                                endDecorator={<InfoOutlined />}
-                                            />
-                                        </div>
-                                    </FormControl>
-                                </CardContent>
-                                <Button
-                                    type="submit"
-                                    variant='contained'
-                                    fullWidth>
-                                    RESERVE
-                                </Button>
-                            </Card>
-                        </form>
-                    </CardContent>
+                                        </FormControl>
+                                        <FormControl>
+                                            <FormLabel>Expiration date</FormLabel>
+                                            <div style={{ display: 'flex' }}>
+                                                <Input
+                                                    name="expMonth"
+                                                    required={true}
+                                                    value={expMonth}
+                                                    onChange={handleExpMonth}
+                                                    inputProps={{
+                                                        maxLength: 2,
+                                                    }}
+                                                    placeholder={'month'}
+                                                    endDecorator={<InfoOutlined />}
+                                                />
+                                                <Typography variant="h6" style={{ margin: '0 10px' }}>/</Typography>
+                                                <Input
+                                                    name="expYear"
+                                                    required={true}
+                                                    value={expYear}
+                                                    onChange={handleExpYear}
+                                                    inputProps={{
+                                                        maxLength: 2,
+                                                    }}
+                                                    placeholder={'year'}
+                                                    endDecorator={<InfoOutlined />}
+                                                />
+                                            </div>
+                                        </FormControl>
+                                        <FormControl>
+                                            <FormLabel>CVC/CVV</FormLabel>
+                                            <div style={{ display: 'flex', maxWidth: '100%' }}>
+                                                <Input
+                                                    name="cvc"
+                                                    required={true}
+                                                    value={cvc}
+                                                    onChange={handleCvc}
+                                                    inputProps={{
+                                                        maxLength: 3,
+                                                    }}
+                                                    endDecorator={<InfoOutlined />}
+                                                />
+                                            </div>
+                                        </FormControl>
+                                    </CardContent>
+                                </Card>
+                            )}
                     <Button
+                        onClick={handleReservation}
                         variant='contained'
+                        fullWidth>
+                        RESERVE
+                    </Button>
+                    <Button
                         onClick={handleBackClick}
                         fullWidth>
                         EDIT
                     </Button>
+                    </CardContent>
                 </Paper>
             </Box>
         </Container>

@@ -44,14 +44,11 @@ export default function Login() {
 
     const handleLogin = (e) => {
         e.preventDefault()
-        console.log('Email:', email);
-        console.log('Password:', password);
         if (!validateEmail(email) || !validatePassword(password)){
             toast.info('Please enter valid email and password');
         } else {
             dispatch(login(email, password))
                 .then(response => {
-                    console.log(response);
                     if (response.status === 200) {
                         setEmail("");
                         setPassword("");

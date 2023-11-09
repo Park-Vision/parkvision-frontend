@@ -51,10 +51,6 @@ export default function Register(){
 
     const handleRegister = (event) => {
         event.preventDefault()
-        console.log('Email:', email);
-        console.log('First:', firstName);
-        console.log('Last:', lastName);
-        console.log('Password:', password);
         if (!validateEmail(email)){
             toast.info('Wrong email');
         } else if (!validateName(firstName)){
