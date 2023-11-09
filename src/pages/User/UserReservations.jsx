@@ -40,6 +40,13 @@ export default function UserReservations() {
                     setPendingReservations(response.Pending);
                 });
         }
+        if (authenticationReducer.decodedUser && authenticationReducer.decodedUser.role === "PARKING_MANAGER") {
+            dispatch(getUserReservations())
+                .then((response) => {
+                    setArchivedReservations(response.Archived);
+                    setPendingReservations(response.Pending);
+                });
+        }
     }, [authenticationReducer.decodedUser, dispatch]);
 
     const handleShowArchived = () => {
@@ -56,7 +63,7 @@ export default function UserReservations() {
         return date.toLocaleString('en-US', options);
     }
 
-    if (!authenticationReducer.decodedUser || authenticationReducer.decodedUser.role !== 'USER') {
+    if (!authenticationReducer.decodedUser ) {
         navigate('/');
         return <Home />;
     }
