@@ -8,6 +8,7 @@ import { toast } from "react-toastify";
 import { useState, useEffect } from 'react';
 import { GET_PARKING_SPOT, GET_RESERVATIONS, UPDATE_RESERVATION } from '../../actions/types';
 import { set } from 'react-hook-form';
+import { validateRegistraionNumber } from '../../utils/validation';
 
 export default function ReservationEdit(props) {
     const { reservationId } = useParams();
@@ -36,8 +37,12 @@ export default function ReservationEdit(props) {
 
     const handleReseveClick = (event) => {
 
-        reservation.registrationNumber = registrationNumber;
+        if (!validateRegistraionNumber(registrationNumber)) {
+            toast.error('Please enter valid registration number: not empty and no white spaces.');
+            return;
+        }
 
+        reservation.registrationNumber = registrationNumber;
 
         try {
             setLoading(true);
@@ -61,6 +66,9 @@ export default function ReservationEdit(props) {
     };
 
     const handleChangeRegistrationNumber = (value) => {
+        if (!validateRegistraionNumber(value)){
+            toast.warning('Please enter valid registration number: not empty and no white spaces.');
+        }
         setRegistrationNumber(value);
     }
     
