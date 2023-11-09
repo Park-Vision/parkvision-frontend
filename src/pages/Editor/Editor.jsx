@@ -22,7 +22,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import {
     GET_PARKING_SPOT,
 } from "../../actions/types";
-
+import convertTime from "../../utils/convertTime";
 delete L.Icon.Default.prototype._getIconUrl;
 
 L.Icon.Default.mergeOptions({
@@ -171,13 +171,15 @@ function ParkingEditor(props) {
                                             }}
                                         />
                                         {parkingSpots.parkingSpots
-                                            .map((spot, index) => (
+                                            .map((spot) => (
                                                 <Polygon
+                                                    key={spot.id}
                                                     positions={spot.pointsDTO.map((point) => [
                                                         point.latitude,
                                                         point.longitude,
                                                     ])}
-                                                    color='blue'>
+                                                    color={spot.active ? "blue" : "#474747"}
+                                                >
                                                     <Popup>
                                                         <div style={{ minWidth: '200px', maxWidth: '250px', padding: '10px', textAlign: 'left' }}>
                                                             <div style={{ marginBottom: '5px', textAlign: 'center',
@@ -234,11 +236,14 @@ function ParkingEditor(props) {
                             <CardContent>
                                 <Typography variant='h4'>{parking.name}</Typography>
                                 <Typography variant='p'>{parking.description}</Typography>
+                                <Typography variant="h6">
+                                    Address: {parking.street},{parking.zipCode} {parking.city}
+                                </Typography>
+                                <Typography variant="h6">Open hours: {convertTime(parking.startTime, parking.timeZone)} -  {convertTime(parking.endTime, parking.timeZone)} </Typography>
                                 <Typography>
-                                    Address:{parking.street},{parking.zipCode} {parking.city}
+                                     Dates and times are based on parking time zone ({parking.timeZone}) compared to UTC.
                                 </Typography>
                                 <Typography>$/h: {parking.costRate}</Typography>
-                                <Typography>Open hours: {parking.openHours}</Typography>
                             </CardContent>
                             <Grid container>
                             <Button

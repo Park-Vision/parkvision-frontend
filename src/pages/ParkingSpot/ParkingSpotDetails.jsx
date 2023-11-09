@@ -128,7 +128,7 @@ export default function ParkingSpotDetails(props) {
     };
 
     const handleEditInfo = () => {
-
+        //TODO what if notjing changed?
         const editedParkingSpot = {
             id: parkingSpotReducer.parkingSpot.id,
             spotNumber: parkingSpotReducer.parkingSpot.spotNumber,
@@ -138,7 +138,14 @@ export default function ParkingSpotDetails(props) {
             pointsDTO: parkingSpotReducer.parkingSpot.pointsDTO
         }
 
-        dispatch(updateParkingSpot(editedParkingSpot));
+        dispatch(updateParkingSpot(editedParkingSpot)).then(() => {
+            dispatch({
+                type: 'GET_PARKING_SPOT',
+                value: editedParkingSpot
+            })
+            toast.success("Parking spot updated successfully!");
+            navigate('/parking/' + parkingSpotReducer.parkingSpot.parkingDTO.id + '/editor')
+        });
     };
 
     return (
@@ -196,7 +203,7 @@ export default function ParkingSpotDetails(props) {
                                                         point.longitude,
                                                         point.id
                                                     ])}
-                                                    color='blue'
+                                                    color={parkingSpotReducer.parkingSpot.active ? "blue" : "#474747"}
                                                 >
                                                 </Polygon>
                                             )}
