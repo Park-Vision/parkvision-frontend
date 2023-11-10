@@ -14,6 +14,9 @@ import Grid from "@mui/material/Grid";
 import Button from "@mui/material/Button";
 import ModeEditIcon from '@mui/icons-material/ModeEdit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import convertDate from "../../utils/convertDate";
+import IconButton from '@mui/material/IconButton';
+import { GET_PARKING_SPOT } from "../../actions/types";
 
 export default function UserReservations() {
     const authenticationReducer = useSelector((state) => state.authenticationReducer);
@@ -26,6 +29,10 @@ export default function UserReservations() {
     const dispatch = useDispatch();
 
     useEffect(() => {
+        dispatch({
+            type: GET_PARKING_SPOT,
+            value: null
+        });
         if (authenticationReducer.decodedUser && authenticationReducer.decodedUser.role === "USER") {
             dispatch(getUserReservations())
                 .then((response) => {
@@ -44,14 +51,19 @@ export default function UserReservations() {
     };
 
     function formatDate(dateString) {
-        const date = new Date(dateString);
-        const options = { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric', timeZone: 'UTC' };
+        const date = new Date(convertDate(dateString));
+        const options = { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric'};
         return date.toLocaleString('en-US', options);
     }
 
     if (!authenticationReducer.decodedUser || authenticationReducer.decodedUser.role !== 'USER') {
         navigate('/');
         return <Home />;
+    }
+
+    const handleEdit = (event) => {
+        console.log(event);
+        navigate('/reservation-edit/' + event.id);
     }
 
     return (
@@ -121,8 +133,12 @@ export default function UserReservations() {
                                 <Typography variant="body1">Registration Number: {reservation.registrationNumber}</Typography>
                                 <Typography variant="body1">Name: {reservation.userDTO.firstName} {reservation.userDTO.lastName}</Typography>
                                 <div style={{ textAlign: 'right' }}>
-                                    <ModeEditIcon style={{ fontSize: 30 }} />
-                                    <DeleteIcon style={{ fontSize: 30 }} />
+                                    <IconButton style={{ fontSize: 30 }} color="primary" aria-label="edit" onClick={() => handleEdit(reservation)}>
+                                        <ModeEditIcon />
+                                    </IconButton>
+                                    <IconButton style={{ fontSize: 30 }} color="primary" aria-label="cancel">
+                                        <DeleteIcon style={{ fontSize: 30 }} />
+                                    </IconButton>
                                 </div>
                             </Paper>
                         ))
