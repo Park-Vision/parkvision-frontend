@@ -28,6 +28,7 @@ import TextField from "@mui/material/TextField";
 import MenuItem from "@mui/material/MenuItem";
 import { getUser } from "../../actions/userActions";
 import { getUserCars } from "../../actions/carActions";
+import { validateRegistraionNumber } from "../../utils/validation";
 import {
     GET_RESERVATION,
     GET_PARKING_SPOT,
@@ -37,7 +38,6 @@ import { toast } from "react-toastify";
 import convertTime from "../../utils/convertTime";
 import convertDate from "../../utils/convertDate";
 delete L.Icon.Default.prototype._getIconUrl;
-
 L.Icon.Default.mergeOptions({
     iconRetinaUrl:
         "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.1/images/marker-icon.png",
@@ -225,6 +225,9 @@ function ParkingDetails(props) {
 
     const handleRegistrationTextFieldChange = (event) => {
         const registrationNumber = event.target.value;
+        if (!validateRegistraionNumber(registrationNumber)){
+            toast.info('Please enter valid registration number');
+        }
         setRegistrationNumber(registrationNumber);
         setSelectedCar("none");
     }
@@ -236,24 +239,24 @@ function ParkingDetails(props) {
             return;
         }
 
-        // if any of the fields are empty show toast
         if (!start || !end || !parkingSpot.id || !registrationNumber) {
-            // show toast with info what should be filled
-            let message = "";
             if (!start) {
-                message += "Start date, ";
+                toast.warning("Start date must be selected");
             }
             if (!end) {
-                message += "End date, ";
+                toast.warning("End date must be selected");
             }
             if (!parkingSpot.id) {
-                message += "Parking spot. ";
+                toast.warning("Parking spot must be selected");
             }
             if (!registrationNumber) {
-                message += "Registration number. ";
+                toast.warning("Registration number must be filled");
             }
-            message += "must be filled";
-            toast.warning(message);
+            return
+        }
+
+        if (!validateRegistraionNumber(registrationNumber)){
+            toast.warning('Registration number has no whitespaces');
             return;
         }
 
@@ -514,7 +517,7 @@ function ParkingDetails(props) {
                                     <TextField
                                         sx={{ m: 1 }}
                                         fullWidth
-                                        value={parkingSpot.id || ""}
+                                        value={parkingSpot?.id || ""}
                                         id='outlined-basic'
                                         label='Parking spot'
                                         variant='outlined'
