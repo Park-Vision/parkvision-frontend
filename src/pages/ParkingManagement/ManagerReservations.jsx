@@ -4,6 +4,7 @@ import {useNavigate} from "react-router-dom";
 import {getReservations} from "../../actions/reservationActions";
 import {Box} from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
+import convertDate from "../../utils/convertDate";
 
 export default function ManagerReservations() {
     const authenticationReducer = useSelector((state) => state.authenticationReducer);
@@ -21,24 +22,24 @@ export default function ManagerReservations() {
     console.log(reservations)
 
     const columns = [
-        { field: 'id', headerName: 'ID', width: 70 },
-        { field: 'startDate', headerName: 'Start Date', width: 200 },
-        { field: 'endDate', headerName: 'End Date', width: 200 },
-        { field: 'registrationNumber', headerName: 'Reg. Number', width: 150 },
-        { field: 'userDTO.firstName', headerName: 'First Name', width: 150 },
-        { field: 'userDTO.lastName', headerName: 'Last Name', width: 150 },
-        { field: 'userDTO.role', headerName: 'Role', width: 100 },
-        { field: 'parkingSpotDTO.spotNumber', headerName: 'Spot Number', width: 150 },
-        { field: 'parkingSpotDTO.occupied', headerName: 'Occupied', width: 120 },
-        { field: 'parkingSpotDTO.active', headerName: 'Active', width: 100 },
-        { field: 'parkingSpotDTO.parkingDTO.name', headerName: 'Parking Name', width: 200 },
-        { field: 'parkingSpotDTO.parkingDTO.city', headerName: 'City', width: 150 },
+        { field: 'id', headerName: 'ID', width: 50 },
+        { field: 'startDate', headerName: 'Start Date', width: 200,
+            valueGetter: ({row}) => convertDate(row.startDate)},
+        { field: 'endDate', headerName: 'End Date', width: 200, valueGetter: ({row}) => convertDate(row.endDate) },
+        { field: 'registrationNumber', headerName: 'Reg. Number', width: 100 },
+        { field: 'userName', headerName: 'Name', width: 300,
+            valueGetter: ({row}) => row.userDTO.firstName + " " + row.userDTO.lastName},
+
+        { field: 'spotNumber', headerName: 'Spot Number', width: 50,
+            valueGetter: ({row}) => row.parkingSpotDTO.spotNumber},
+        { field: 'parkingName', headerName: 'Parking Name', width: 100,
+            valueGetter: ({row}) => row.parkingSpotDTO.parkingDTO.name },
     ];
 
 
     return (
-        <Box sx={{ height: 400, width: "100%" }}>
-            <div style={{ height: 400, width: "100%" }}>
+        <Box>
+            <div>
                 <DataGrid
                     rows={reservations}
                     columns={columns}
