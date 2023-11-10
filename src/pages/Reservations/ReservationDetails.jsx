@@ -324,7 +324,7 @@ export default function ReservationDetails(props) {
                     </CardContent>
                     <Button
                         variant='contained'
-                        onClick={handleEditClick}
+                        onClick={handleBackClick}
                         fullWidth>
                         EDIT
                     </Button>
