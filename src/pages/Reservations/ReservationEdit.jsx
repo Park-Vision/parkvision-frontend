@@ -7,7 +7,6 @@ import { getParkingSpot } from '../../actions/parkingSpotActions';
 import { toast } from "react-toastify";
 import { useState, useEffect } from 'react';
 import { GET_PARKING_SPOT, GET_RESERVATIONS, UPDATE_RESERVATION } from '../../actions/types';
-import { set } from 'react-hook-form';
 import { validateRegistraionNumber } from '../../utils/validation';
 
 export default function ReservationEdit(props) {

@@ -210,7 +210,6 @@ export default function ReservationDetails(props) {
                             sx={{ m: 1 }}
                         >
 
-
                             <Typography style={{ marginBottom: 10 }} fullWidth>
                                 Dates and times are based on parking time zone ({parking.timeZone}) compared to UTC.
                             </Typography>
@@ -266,18 +265,7 @@ export default function ReservationDetails(props) {
                                     sx={{ m: 1 }} fullWidth
                                     variant="outlined"
                                 >
-                                    <FormControl sx={{ gridColumn: '1/-1' }}>
-                                        <FormLabel>Card number</FormLabel>
-                                        <Input
-                                            name="cardNumber"
-                                            required={true}
-                                            value={cardNumber}
-                                            onChange={handleCardNumber}
-                                        />
-                                    </FormControl>
-                                    <FormControl>
-                                        <FormLabel>Expiration date</FormLabel>
-                                        <div style={{ display: 'flex' }}>
+
                                             <Divider inset="none" />
                                             <CardContent
                                                 sx={{
@@ -291,24 +279,35 @@ export default function ReservationDetails(props) {
                                                     <Input
                                                         name="cardNumber"
                                                         required={true}
-                                                        value={expMonth}
-                                                        onChange={handleExpMonth}
-                                                        inputProps={{
-                                                            maxLength: 2,
-                                                        }}
-                                                        placeholder={'month'}
+                                                        value={cardNumber}
+                                                        onChange={handleCardNumber}
                                                     />
-                                                    <Typography variant="h6" style={{ margin: '0 10px' }}>/</Typography>
-                                                    <Input
-                                                        name="expYear"
-                                                        required={true}
-                                                        value={expYear}
-                                                        onChange={handleExpYear}
-                                                        inputProps={{
-                                                            maxLength: 2,
-                                                        }}
-                                                        placeholder={'year'}
-                                                    />
+                                                </FormControl>
+                                                <FormControl>
+                                                    <FormLabel>Expiration date</FormLabel>
+                                                    <div style={{ display: 'flex' }}>
+                                                        <Input
+                                                            name="expMonth"
+                                                            required={true}
+                                                            value={expMonth}
+                                                            onChange={handleExpMonth}
+                                                            inputProps={{
+                                                                maxLength: 2,
+                                                            }}
+                                                            placeholder={'month'}
+                                                        />
+                                                        <Typography variant="h6" style={{ margin: '0 10px' }}>/</Typography>
+                                                        <Input
+                                                            name="expYear"
+                                                            required={true}
+                                                            value={expYear}
+                                                            onChange={handleExpYear}
+                                                            inputProps={{
+                                                                maxLength: 2,
+                                                            }}
+                                                            placeholder={'year'}
+                                                        />
+                                                    </div>
                                                 </FormControl>
                                                 <FormControl>
                                                     <FormLabel>CVC/CVV</FormLabel>
@@ -324,24 +323,20 @@ export default function ReservationDetails(props) {
                                                         />
                                                     </div>
                                                 </FormControl>
-
                                             </CardContent>
-                                    </div>
-                                    </FormControl>
-
-                                        <Button
-                                            type="submit"
-                                            variant='contained'
-                                            fullWidth>
-                                            RESERVE
-                                </Button>
-                            <Button
-                        onClick={handleBackClick}
-                        fullWidth>
-                        EDIT
-                    </Button>
                                 </Card>
                             )}
+                        <Button
+                            onClick={handleReservation}
+                            variant='contained'
+                            fullWidth>
+                            RESERVE
+                        </Button>
+                        <Button
+                            onClick={handleBackClick}
+                            fullWidth>
+                            EDIT
+                        </Button>
                     </CardContent >
                 </Paper >
             </Box >
