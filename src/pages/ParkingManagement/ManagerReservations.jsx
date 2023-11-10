@@ -1,21 +1,10 @@
 import {useDispatch, useSelector} from "react-redux";
-import {useEffect, useState} from "react";
+import {useEffect} from "react";
 import {useNavigate} from "react-router-dom";
-import {getReservations, getUserReservations} from "../../actions/reservationActions";
+import {getReservations} from "../../actions/reservationActions";
 import {Box} from "@mui/material";
-import * as PropTypes from "prop-types";
+import { DataGrid } from "@mui/x-data-grid";
 
-function DataGrid(props) {
-    return null;
-}
-
-DataGrid.propTypes = {
-    initialState: PropTypes.shape({pagination: PropTypes.shape({paginationModel: PropTypes.shape({pageSize: PropTypes.number})})}),
-    pageSizeOptions: PropTypes.arrayOf(PropTypes.number),
-    columns: PropTypes.any,
-    checkboxSelection: PropTypes.bool,
-    disableRowSelectionOnClick: PropTypes.bool
-};
 export default function ManagerReservations() {
     const authenticationReducer = useSelector((state) => state.authenticationReducer);
 
@@ -32,47 +21,31 @@ export default function ManagerReservations() {
     console.log(reservations)
 
     const columns = [
-        { field: 'id', headerName: 'ID', width: 90 },
-        {
-            field: 'firstName',
-            headerName: 'First name',
-            width: 150,
-            editable: true,
-        },
-        {
-            field: 'lastName',
-            headerName: 'Last name',
-            width: 150,
-            editable: true,
-        },
-        {
-            field: 'age',
-            headerName: 'Age',
-            type: 'number',
-            width: 110,
-            editable: true,
-        },
-        {
-            field: 'fullName',
-            headerName: 'Full name',
-            description: 'This column has a value getter and is not sortable.',
-            sortable: false,
-            width: 160,
-            valueGetter: (params) =>
-                `${params.row.firstName || ''} ${params.row.lastName || ''}`,
-        },
+        { field: 'id', headerName: 'ID', width: 70 },
+        { field: 'startDate', headerName: 'Start Date', width: 200 },
+        { field: 'endDate', headerName: 'End Date', width: 200 },
+        { field: 'registrationNumber', headerName: 'Reg. Number', width: 150 },
+        { field: 'userDTO.firstName', headerName: 'First Name', width: 150 },
+        { field: 'userDTO.lastName', headerName: 'Last Name', width: 150 },
+        { field: 'userDTO.role', headerName: 'Role', width: 100 },
+        { field: 'parkingSpotDTO.spotNumber', headerName: 'Spot Number', width: 150 },
+        { field: 'parkingSpotDTO.occupied', headerName: 'Occupied', width: 120 },
+        { field: 'parkingSpotDTO.active', headerName: 'Active', width: 100 },
+        { field: 'parkingSpotDTO.parkingDTO.name', headerName: 'Parking Name', width: 200 },
+        { field: 'parkingSpotDTO.parkingDTO.city', headerName: 'City', width: 150 },
     ];
 
 
     return (
-        <Box sx={{ height: 400, width: '100%' }}>
-            <DataGrid
-                rows={reservations}
-
-                pageSizeOptions={[5]}
-                checkboxSelection
-                disableRowSelectionOnClick
-            />
+        <Box sx={{ height: 400, width: "100%" }}>
+            <div style={{ height: 400, width: "100%" }}>
+                <DataGrid
+                    rows={reservations}
+                    columns={columns}
+                    pageSize={5}
+                    checkboxSelection
+                />
+            </div>
         </Box>
     )
 }

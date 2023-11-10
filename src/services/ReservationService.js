@@ -4,6 +4,7 @@ const urlConst = "/reservations";
 
 class ReservationService {
     async getReservations() {
+        console.log(await axios.get(urlConst));
         return await axios.get(urlConst);
     }
 
