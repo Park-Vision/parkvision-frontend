@@ -1,7 +1,7 @@
 FROM node:14.8.0-alpine as build
 WORKDIR /app
 COPY package*.json /app/
-RUN npm install sockjs-client && npm install --force
+RUN npm install sockjs-client && npm install
 COPY . /app/
 RUN npm run build
 
