@@ -13,7 +13,7 @@ import {useDispatch} from "react-redux";
 import {logout, register} from "../../actions/authenticationActions";
 import {toast} from "react-toastify";
 import {useNavigate} from "react-router-dom";
-import {validatePassword, validateEmail, validateName} from "./validation";
+import {validatePassword, validateEmail, validateName} from "../../utils/validation";
 
 
 export default function Register(){
