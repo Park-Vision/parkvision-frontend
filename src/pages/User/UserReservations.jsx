@@ -14,6 +14,9 @@ import Grid from "@mui/material/Grid";
 import Button from "@mui/material/Button";
 import ModeEditIcon from '@mui/icons-material/ModeEdit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import convertDate from "../../utils/convertDate";
+import IconButton from '@mui/material/IconButton';
+import { GET_PARKING_SPOT } from "../../actions/types";
 
 export default function UserReservations() {
     const authenticationReducer = useSelector((state) => state.authenticationReducer);
@@ -33,6 +36,13 @@ export default function UserReservations() {
                     setPendingReservations(response.Pending);
                 });
         }
+        if (authenticationReducer.decodedUser && authenticationReducer.decodedUser.role === "PARKING_MANAGER") {
+            dispatch(getUserReservations())
+                .then((response) => {
+                    setArchivedReservations(response.Archived);
+                    setPendingReservations(response.Pending);
+                });
+        }
     }, [authenticationReducer.decodedUser, dispatch]);
 
     const handleShowArchived = () => {
@@ -43,15 +53,15 @@ export default function UserReservations() {
         setShowArchived(false);
     };
 
-    function formatDate(dateString) {
-        const date = new Date(dateString);
-        const options = { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric', timeZone: 'UTC' };
-        return date.toLocaleString('en-US', options);
-    }
 
-    if (!authenticationReducer.decodedUser) {
+    if (!authenticationReducer.decodedUser ) {
         navigate('/');
         return <Home />;
+    }
+
+    const handleEdit = (event) => {
+        console.log(event);
+        navigate('/reservation-edit/' + event.id);
     }
 
     return (
@@ -93,8 +103,8 @@ export default function UserReservations() {
                                         </Typography>
                                         <Typography variant="body1">Parking: {reservation.parkingSpotDTO.parkingDTO.name}</Typography>
                                         <Typography variant="body1">Spot Number: {reservation.parkingSpotDTO.spotNumber}</Typography>
-                                        <Typography variant="body1">Start: {formatDate(reservation.startDate)}</Typography>
-                                        <Typography variant="body1">End: {formatDate(reservation.endDate)}</Typography>
+                                        <Typography variant="body1">Start: {convertDate(reservation.startDate)}</Typography>
+                                        <Typography variant="body1">End: {convertDate(reservation.endDate)}</Typography>
                                         <Typography variant="body1">Registration Number: {reservation.registrationNumber}</Typography>
                                         <Typography variant="body1">Name: {reservation.userDTO.firstName} {reservation.userDTO.lastName}</Typography>
                                         <Typography variant="body1">Amount: {reservation.amount} {reservation.parkingSpotDTO.parkingDTO.currency}</Typography>
@@ -118,14 +128,18 @@ export default function UserReservations() {
                                 </Typography>
                                 <Typography variant="body1">Parking: {reservation.parkingSpotDTO.parkingDTO.name}</Typography>
                                 <Typography variant="body1">Spot Number: {reservation.parkingSpotDTO.spotNumber}</Typography>
-                                <Typography variant="body1">Start: {formatDate(reservation.startDate)}</Typography>
-                                <Typography variant="body1">End: {formatDate(reservation.endDate)}</Typography>
+                                <Typography variant="body1">Start: {convertDate(reservation.startDate)}</Typography>
+                                <Typography variant="body1">End: {convertDate(reservation.endDate)}</Typography>
                                 <Typography variant="body1">Registration Number: {reservation.registrationNumber}</Typography>
                                 <Typography variant="body1">Name: {reservation.userDTO.firstName} {reservation.userDTO.lastName}</Typography>
                                 <Typography variant="body1">Amount: {reservation.amount} {reservation.parkingSpotDTO.parkingDTO.currency}</Typography>
                                 <div style={{ textAlign: 'right' }}>
-                                    <ModeEditIcon style={{ fontSize: 30 }} />
-                                    <DeleteIcon style={{ fontSize: 30 }} />
+                                    <IconButton style={{ fontSize: 30 }} color="primary" aria-label="edit" onClick={() => handleEdit(reservation)}>
+                                        <ModeEditIcon />
+                                    </IconButton>
+                                    <IconButton style={{ fontSize: 30 }} color="primary" aria-label="cancel">
+                                        <DeleteIcon style={{ fontSize: 30 }} />
+                                    </IconButton>
                                 </div>
                             </Paper>
                         ))

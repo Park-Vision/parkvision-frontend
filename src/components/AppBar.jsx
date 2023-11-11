@@ -55,11 +55,13 @@ function ResponsiveAppBar() {
   }
 
   const handleProfile = () => {
-      navigate('/profile');
+    navigate('/profile');
+    handleCloseUserMenu();
   }
 
   const handleReservations = () => {
-      navigate('/profile/reservations');
+    navigate('/profile/reservations');
+    handleCloseUserMenu();
   }
 
   const getInitials = () => {

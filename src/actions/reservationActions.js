@@ -42,7 +42,7 @@ export const getUserReservations = () => async (dispatch) => {
 }
 export const getReservation = (reservationId) => async (dispatch) => {
     try {
-        const response = await ReservationService.getReservationById(reservationId)
+        const response = await ReservationService.getReservationById(reservationId);
         dispatch({
             type: GET_RESERVATION,
             value: response.data

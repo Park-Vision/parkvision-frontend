@@ -20,7 +20,7 @@ class ReservationService {
     }
 
     async updateReservation(reservationData) {
-        return await axios.put(urlConst + "/", reservationData);
+        return await axios.put(urlConst, reservationData);
     }
 
     async deleteReservationById(reservationId) {
