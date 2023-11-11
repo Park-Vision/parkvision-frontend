@@ -23,6 +23,9 @@ import {
     GET_PARKING_SPOT,
 } from "../../actions/types";
 import convertTime from "../../utils/convertTime";
+import decodeToken from "../../utils/decodeToken";
+import { getUser } from "../../actions/userActions";
+import { toast } from "react-toastify";
 delete L.Icon.Default.prototype._getIconUrl;
 
 L.Icon.Default.mergeOptions({
@@ -44,10 +47,27 @@ function ParkingEditor(props) {
     const stagedParkingSpots = useSelector((state) => state.parkingSpotReducer.stagedParkingSpots);
     const parkingSpot = useSelector((state) => state.parkingSpotReducer.parkingSpot);
 
+    const userjson = JSON.parse(localStorage.getItem("user"));
+    const user = decodeToken(userjson?.token);
+
+
     useEffect(() => {
-        dispatch(getParking(parkingId));
-        dispatch(getParkingSpotsByParkingId(parkingId));
-        unsetParkingSpot();
+        const checkAuthorization = async () => {
+            if (user && user.role === "PARKING_MANAGER") {
+                const userResponse = await dispatch(getUser(user.userId));
+                const parkingResponse = await dispatch(getParking(parkingId));
+                if (userResponse.parkingDTO.id !== parkingResponse.id) {
+                    toast.error("You are not authorized to view this page!");
+                    navigate('/');
+                }
+                dispatch(getParkingSpotsByParkingId(parkingId));
+                unsetParkingSpot();
+            } else {
+                toast.error("You are not authorized to view this page!");
+                navigate('/');
+            }
+        }
+        checkAuthorization();
     }, []);
 
 
