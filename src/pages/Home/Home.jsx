@@ -19,10 +19,13 @@ import {getParkingFreeSpotsNumber, getParkingSpotsNumber, getParkings} from "../
 import convertTime  from '../../utils/convertTime';
 import { useNavigate } from "react-router-dom";
 import {MapContainer, Marker, Popup, TileLayer, useMap} from 'react-leaflet';
-import {renderToString} from "react-dom/server";
+import { renderToString } from "react-dom/server";
+import {getUser} from "../../actions/userActions";
+import decodeToken from '../../utils/decodeToken';
 
 export default function Home() {
     const parkings = useSelector(state => state.parkingReducer.parkings)
+    const userReducer = useSelector((state) => state.userReducer);
     useSelector(state => state.parkingReducer.parking = {})
     const dispatch = useDispatch()
     const authenticationReducer = useSelector((state) => state.authenticationReducer);
@@ -33,25 +36,40 @@ export default function Home() {
     const [listOfParkings, setListOfParkings] = useState([]);
     let navigate = useNavigate();
 
+
     useEffect(() => {
-        dispatch(getParkings()).then((response) => {
-                response.map((parking, index) => {
-                    dispatch(getParkingFreeSpotsNumber(parking.id, new Date().toISOString()))
-                    dispatch(getParkingSpotsNumber(parking.id))
+        const user = decodeToken(JSON.parse(localStorage.getItem("user"))?.token);
+        if (user && user.role === "PARKING_MANAGER") {
+            dispatch(getUser(user.userId))
+                .then((response) => {
+                    navigate(`/parking/${response.parkingDTO.id}`);
                 })
-            }
-        ).catch((error) => {
-            console.log(error);
-        });
+                .catch((error) => {
+                    console.log(error);
+                });
+        } else {
+            dispatch(getParkings()).then((response) => {
+                    response.map((parking, index) => {
+                        dispatch(getParkingFreeSpotsNumber(parking.id, new Date().toISOString()))
+                        dispatch(getParkingSpotsNumber(parking.id))
+                    })
+                }
+            ).catch((error) => {
+                console.log(error);
+            });
+        }
     }, []);
 
     useEffect(() => {
-        if (parkings.length === 0) {
-            dispatch(getParkings()).catch((error) => {
-                console.log(error);
-            });
-        } else {
-            setListOfParkings(parkings);
+        const user = decodeToken(JSON.parse(localStorage.getItem("user"))?.token);
+        if (!user || user.role !== "PARKING_MANAGER") {
+            if (parkings.length === 0) {
+                dispatch(getParkings()).catch((error) => {
+                    console.log(error);
+                });
+            } else {
+                setListOfParkings(parkings);
+            }
         }
     }, [dispatch, parkings])
 

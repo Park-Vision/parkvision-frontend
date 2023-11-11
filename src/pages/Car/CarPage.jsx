@@ -11,8 +11,6 @@ export default function CarPage() {
         dispatch(getCars())
     }, []);
 
-    console.log(cars)
-
     return (
         <div>
             <h2>Car List</h2>
