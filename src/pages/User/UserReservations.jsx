@@ -26,7 +26,7 @@ export default function UserReservations() {
     const dispatch = useDispatch();
 
     useEffect(() => {
-        if (authenticationReducer.decodedUser && authenticationReducer.decodedUser.role === "USER") {
+        if (authenticationReducer.decodedUser) {
             dispatch(getUserReservations())
                 .then((response) => {
                     setArchivedReservations(response.Archived);
@@ -49,7 +49,7 @@ export default function UserReservations() {
         return date.toLocaleString('en-US', options);
     }
 
-    if (!authenticationReducer.decodedUser || authenticationReducer.decodedUser.role !== 'USER') {
+    if (!authenticationReducer.decodedUser) {
         navigate('/');
         return <Home />;
     }

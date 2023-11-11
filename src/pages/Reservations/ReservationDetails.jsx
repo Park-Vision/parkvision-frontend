@@ -52,11 +52,6 @@ export default function ReservationDetails(props) {
         setCvc(event.target.value);
     }
 
-    const handleSubmit = (event) => {
-        event.preventDefault();
-        // Do something with the form data, for example, submit it to a server
-        console.log('Form submitted with data:');
-    };
 
     const handleReservation = (event) => {
         event.preventDefault();

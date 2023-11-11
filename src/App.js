@@ -143,11 +143,11 @@ function App() {
                                 element={<ParkingSpotDetails />}
                             />
                             <Route 
-                            path={"/reservation-details"}  
-                            element={<ReservationDetails />}
+                                path={"/reservation-details"}
+                                element={<ReservationDetails />}
                             />
                             <Route
-                                path={"/parking/reservations"}
+                                path={"/parking/:parkingId/reservations"}
                                 element={<ManagerReservations />}
                             />
                         </Routes>

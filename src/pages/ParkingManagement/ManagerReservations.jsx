@@ -1,12 +1,15 @@
 import {useDispatch, useSelector} from "react-redux";
-import {useEffect} from "react";
-import {useNavigate} from "react-router-dom";
-import {getReservations} from "../../actions/reservationActions";
-import {Box} from "@mui/material";
+import React, {useEffect} from "react";
+import {useNavigate, useParams} from "react-router-dom";
+import {deleteReservation, getReservations, getReservationsByParking} from "../../actions/reservationActions";
+import {Box, Button, Container} from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import convertDate from "../../utils/convertDate";
+import Home from "../Home/Home";
 
-export default function ManagerReservations() {
+export default function ManagerReservations(props) {
+    const { parkingId } = useParams();
+    console.log(parkingId)
     const authenticationReducer = useSelector((state) => state.authenticationReducer);
 
     const reservations = useSelector((state) => state.reservationReducer.reservations);
@@ -15,11 +18,14 @@ export default function ManagerReservations() {
 
     useEffect(() => {
         if (authenticationReducer.decodedUser && authenticationReducer.decodedUser.role === "PARKING_MANAGER") {
-            dispatch(getReservations());
+            dispatch(getReservationsByParking(parkingId));
         }
     }, []);
 
-    console.log(reservations)
+    if (!authenticationReducer.decodedUser && authenticationReducer.decodedUser.role === "PARKING_MANAGER") {
+        navigate('/');
+        return <Home />;
+    }
 
     const columns = [
         { field: 'id', headerName: 'ID', width: 50 },
@@ -30,23 +36,40 @@ export default function ManagerReservations() {
         { field: 'userName', headerName: 'Name', width: 300,
             valueGetter: ({row}) => row.userDTO.firstName + " " + row.userDTO.lastName},
 
-        { field: 'spotNumber', headerName: 'Spot Number', width: 50,
+        { field: 'spotNumber', headerName: 'Spot Number', width: 150,
             valueGetter: ({row}) => row.parkingSpotDTO.spotNumber},
-        { field: 'parkingName', headerName: 'Parking Name', width: 100,
+        { field: 'parkingName', headerName: 'Parking Name', width: 300,
             valueGetter: ({row}) => row.parkingSpotDTO.parkingDTO.name },
+        {
+            field: 'actions',
+            headerName: 'Actions',
+            width: 150,
+            renderCell: (params) => (
+                <Button
+                    variant="contained"
+                    onClick={() => handleDelete(params.row.id)}
+                >
+                    Delete
+                </Button>
+            ),
+        },
     ];
+
+    const handleDelete = (reservationId) => {
+        dispatch(deleteReservation(reservationId));
+    };
 
 
     return (
-        <Box>
-            <div>
-                <DataGrid
-                    rows={reservations}
-                    columns={columns}
-                    pageSize={5}
-                    checkboxSelection
-                />
-            </div>
-        </Box>
+            <Box style={{ height: "100%" }}>
+                <div style={{ height: "100%" }}>
+                    <DataGrid
+                        rows={reservations}
+                        columns={columns}
+                        pageSize={5}
+                        checkboxSelection
+                    />
+                </div>
+            </Box>
     )
 }

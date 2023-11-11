@@ -3,7 +3,7 @@ import {
     DELETE_RESERVATION,
     GET_RESERVATION,
     UPDATE_RESERVATION,
-    GET_RESERVATIONS, GET_USER_RESERVATIONS,
+    GET_RESERVATIONS, GET_USER_RESERVATIONS, GET_PARKING_RESERVATIONS,
 } from "../actions/types";
 
 const initialState = {
@@ -47,6 +47,11 @@ const reservationReducer = (state = initialState, action) => {
             return {
                 ...state,
                 reservation: action.value,
+            };
+        case GET_PARKING_RESERVATIONS:
+            return {
+                ...state,
+                reservations: action.value,
             };
         default:
             return state;
