@@ -45,6 +45,10 @@ export default function ReservationEdit(props) {
 
         try {
             setLoading(true);
+
+            reservation.startDate = new Date(reservation.startDate).toISOString();
+            reservation.endDate = new Date(reservation.endDate).toISOString(); 
+            //TODO fix when changing time with time zone
             dispatch(updateReservation(reservation))
                 .then(response => {
                     setLoading(false);
