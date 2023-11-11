@@ -63,11 +63,6 @@ export default function UserReservations() {
         return date.toLocaleString('en-US', options);
     }
 
-    if (!authenticationReducer.decodedUser || authenticationReducer.decodedUser.role !== 'USER') {
-        navigate('/');
-        return <Home />;
-    }
-
     const handleEdit = (event) => {
         console.log(event);
         navigate('/reservation-edit/' + event.id);

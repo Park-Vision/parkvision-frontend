@@ -55,7 +55,15 @@ function ParkingEditor(props) {
         const checkAuthorization = async () => {
             if (user && user.role === "PARKING_MANAGER") {
                 const userResponse = await dispatch(getUser(user.userId));
-                const parkingResponse = await dispatch(getParking(parkingId));
+                let parkingResponse;
+                try {
+                    parkingResponse = await dispatch(getParking(parkingId));
+                }
+                catch (error) {
+                    toast.error("You are not authorized to view this page!");
+                    navigate('/');
+                    return;
+                }
                 if (userResponse.parkingDTO.id !== parkingResponse.id) {
                     toast.error("You are not authorized to view this page!");
                     navigate('/');
