@@ -309,7 +309,7 @@ function ParkingDetails(props) {
                                 <MapContainer
                                     style={{ width: "100%", height: "100%" }}
                                     center={[parking.latitude, parking.longitude]}
-                                    zoom={20}
+                                    zoom={19}
                                     scrollWheelZoom={true}
                                     whenCreated={(map) => (mapRef.current = map)}
                                 >
@@ -371,8 +371,8 @@ function ParkingDetails(props) {
                                     </FeatureGroup>
 
                                     <TileLayer
-                                        maxNativeZoom={22}
-                                        maxZoom={22}
+                                        maxNativeZoom={23}
+                                        maxZoom={23}
                                         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                                         url='http://mt0.google.com/vt/lyrs=s&x={x}&y={y}&z={z}'
                                     />
@@ -424,8 +424,8 @@ function ParkingDetails(props) {
                         <Paper className='reserve'>
                             <CardContent>
                                 <Typography variant='h4'>{parking.name}</Typography>
-                                <Typography variant='h5'>Free: {numOfFreeSpotsList[parking.id]}</Typography>
-                                <Typography variant='h5'>All: {numOfSpotsList[parking.id]}</Typography>
+                                <Typography variant='h5'>Free: {numOfFreeSpotsList[parking?.id]}</Typography>
+                                <Typography variant='h5'>All: {numOfSpotsList[parking?.id]}</Typography>
                                 <Typography variant='p'>{parking.description}</Typography>
                                 <Typography variant="h6">
                                     Address: {parking.street},{parking.zipCode} {parking.city}

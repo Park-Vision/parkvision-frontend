@@ -40,6 +40,13 @@ export default function UserReservations() {
                     setPendingReservations(response.Pending);
                 });
         }
+        if (authenticationReducer.decodedUser && authenticationReducer.decodedUser.role === "PARKING_MANAGER") {
+            dispatch(getUserReservations())
+                .then((response) => {
+                    setArchivedReservations(response.Archived);
+                    setPendingReservations(response.Pending);
+                });
+        }
     }, [authenticationReducer.decodedUser, dispatch]);
 
     const handleShowArchived = () => {
@@ -50,13 +57,7 @@ export default function UserReservations() {
         setShowArchived(false);
     };
 
-    function formatDate(dateString) {
-        const date = new Date(convertDate(dateString));
-        const options = { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric'};
-        return date.toLocaleString('en-US', options);
-    }
-
-    if (!authenticationReducer.decodedUser || authenticationReducer.decodedUser.role !== 'USER') {
+    if (!authenticationReducer.decodedUser ) {
         navigate('/');
         return <Home />;
     }
@@ -105,8 +106,8 @@ export default function UserReservations() {
                                         </Typography>
                                         <Typography variant="body1">Parking: {reservation.parkingSpotDTO.parkingDTO.name}</Typography>
                                         <Typography variant="body1">Spot Number: {reservation.parkingSpotDTO.spotNumber}</Typography>
-                                        <Typography variant="body1">Start: {formatDate(reservation.startDate)}</Typography>
-                                        <Typography variant="body1">End: {formatDate(reservation.endDate)}</Typography>
+                                        <Typography variant="body1">Start: {convertDate(reservation.startDate)}</Typography>
+                                        <Typography variant="body1">End: {convertDate(reservation.endDate)}</Typography>
                                         <Typography variant="body1">Registration Number: {reservation.registrationNumber}</Typography>
                                         <Typography variant="body1">Name: {reservation.userDTO.firstName} {reservation.userDTO.lastName}</Typography>
                                     </Paper>
@@ -128,8 +129,8 @@ export default function UserReservations() {
                                 </Typography>
                                 <Typography variant="body1">Parking: {reservation.parkingSpotDTO.parkingDTO.name}</Typography>
                                 <Typography variant="body1">Spot Number: {reservation.parkingSpotDTO.spotNumber}</Typography>
-                                <Typography variant="body1">Start: {formatDate(reservation.startDate)}</Typography>
-                                <Typography variant="body1">End: {formatDate(reservation.endDate)}</Typography>
+                                <Typography variant="body1">Start: {convertDate(reservation.startDate)}</Typography>
+                                <Typography variant="body1">End: {convertDate(reservation.endDate)}</Typography>
                                 <Typography variant="body1">Registration Number: {reservation.registrationNumber}</Typography>
                                 <Typography variant="body1">Name: {reservation.userDTO.firstName} {reservation.userDTO.lastName}</Typography>
                                 <div style={{ textAlign: 'right' }}>
