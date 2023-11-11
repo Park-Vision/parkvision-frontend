@@ -97,6 +97,8 @@ export default function UserReservations() {
                                         <Typography variant="body1">End: {formatDate(reservation.endDate)}</Typography>
                                         <Typography variant="body1">Registration Number: {reservation.registrationNumber}</Typography>
                                         <Typography variant="body1">Name: {reservation.userDTO.firstName} {reservation.userDTO.lastName}</Typography>
+                                        <Typography variant="body1">Amount: {reservation.amount} {reservation.parkingSpotDTO.parkingDTO.currency}</Typography>
+
                                     </Paper>
                                 ))}
                             </List>
@@ -120,6 +122,7 @@ export default function UserReservations() {
                                 <Typography variant="body1">End: {formatDate(reservation.endDate)}</Typography>
                                 <Typography variant="body1">Registration Number: {reservation.registrationNumber}</Typography>
                                 <Typography variant="body1">Name: {reservation.userDTO.firstName} {reservation.userDTO.lastName}</Typography>
+                                <Typography variant="body1">Amount: {reservation.amount} {reservation.parkingSpotDTO.parkingDTO.currency}</Typography>
                                 <div style={{ textAlign: 'right' }}>
                                     <ModeEditIcon style={{ fontSize: 30 }} />
                                     <DeleteIcon style={{ fontSize: 30 }} />

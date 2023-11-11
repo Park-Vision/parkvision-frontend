@@ -81,8 +81,8 @@ export default function ReservationDetails(props) {
                         dispatch(addPayment(newPayment))
                             .then((paymentResponse) => {
                                 const newCharge = {
-                                    amount: "123",
-                                    currency: "PLN",
+                                    amount: reservationResponse.amount,
+                                    currency: reservationResponse.parkingSpotDTO.parkingDTO.currency,
                                     payment: {
                                         id: paymentResponse.id,
                                     },

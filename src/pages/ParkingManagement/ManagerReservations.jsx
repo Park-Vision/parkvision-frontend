@@ -28,22 +28,20 @@ export default function ManagerReservations(props) {
     }
 
     const columns = [
-        { field: 'id', headerName: 'ID', width: 50 },
+        { field: 'id', headerName: 'ID', width: 50, align: 'right', },
         { field: 'startDate', headerName: 'Start Date', width: 200,
             valueGetter: ({row}) => convertDate(row.startDate)},
         { field: 'endDate', headerName: 'End Date', width: 200, valueGetter: ({row}) => convertDate(row.endDate) },
         { field: 'registrationNumber', headerName: 'Reg. Number', width: 100 },
+        {field: 'amount', headerName: 'Amount', width: 200, align: 'right',
+            valueGetter: ({row}) => row.amount + " " + row.parkingSpotDTO.parkingDTO.currency },
         { field: 'userName', headerName: 'Name', width: 300,
             valueGetter: ({row}) => row.userDTO.firstName + " " + row.userDTO.lastName},
-
-        { field: 'spotNumber', headerName: 'Spot Number', width: 150,
+        { field: 'spotNumber', headerName: 'Spot Number', width: 150, align: 'right',
             valueGetter: ({row}) => row.parkingSpotDTO.spotNumber},
         { field: 'parkingName', headerName: 'Parking Name', width: 300,
             valueGetter: ({row}) => row.parkingSpotDTO.parkingDTO.name },
-        {
-            field: 'actions',
-            headerName: 'Actions',
-            width: 150,
+        { field: 'actions', headerName: 'Actions', width: 150,
             renderCell: (params) => (
                 <Button
                     variant="contained"
