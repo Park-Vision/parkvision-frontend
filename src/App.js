@@ -12,6 +12,7 @@ import ParkingDetails from "./pages/Home/ParkingDetails";
 import Toolbar from "@mui/material/Toolbar";
 import Register from "./pages/Login/Register";
 import ReservationDetails from "./pages/Reservations/ReservationDetails";
+import ReservationEdit from "./pages/Reservations/ReservationEdit";
 import ManagerProfile from "./pages/ParkingManagement/ManagerProfile";
 import UserProfile from "./pages/User/UserProfile";
 import * as React from "react";
@@ -144,6 +145,10 @@ function App() {
                             <Route 
                             path={"/reservation-details"}  
                             element={<ReservationDetails />}
+                            />
+                            <Route
+                                path={"/reservation-edit/:reservationId"}
+                                element={<ReservationEdit />}
                             />
                         </Routes>
                     </div>

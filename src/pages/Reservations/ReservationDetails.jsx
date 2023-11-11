@@ -16,7 +16,6 @@ import { MapContainer, TileLayer, FeatureGroup, Polygon, Popup } from 'react-lea
 import { addReservation } from '../../actions/reservationActions';
 import { toast } from "react-toastify";
 import { useState } from 'react';
-import {InfoOutlined} from "@material-ui/icons";
 import CreditCardIcon from '@mui/icons-material/CreditCard';
 import {addPayment} from "../../actions/paymentActions";
 import {addStripeCharge} from "../../actions/stripeChargeActions";
@@ -266,7 +265,6 @@ export default function ReservationDetails(props) {
                                             required={true}
                                             value={cardNumber}
                                             onChange={handleCardNumber}
-                                            endDecorator={<CreditCardIcon />}
                                         />
                                     </FormControl>
                                     <FormControl>
@@ -281,7 +279,6 @@ export default function ReservationDetails(props) {
                                                     maxLength: 2,
                                                 }}
                                                 placeholder={'month'}
-                                                endDecorator={<InfoOutlined />}
                                             />
                                             <Typography variant="h6" style={{ margin: '0 10px' }}>/</Typography>
                                             <Input
@@ -293,7 +290,6 @@ export default function ReservationDetails(props) {
                                                     maxLength: 2,
                                                 }}
                                                 placeholder={'year'}
-                                                endDecorator={<InfoOutlined />}
                                             />
                                         </div>
                                     </FormControl>
@@ -308,7 +304,6 @@ export default function ReservationDetails(props) {
                                                 inputProps={{
                                                     maxLength: 3,
                                                 }}
-                                                endDecorator={<InfoOutlined />}
                                             />
                                         </div>
                                     </FormControl>

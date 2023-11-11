@@ -19,7 +19,7 @@ import {login} from "../../actions/authenticationActions";
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom';
-import {validateEmail, validatePassword} from "./validation";
+import {validateEmail, validatePassword} from "../../utils/validation";
 import decodeToken from "../../utils/decodeToken";
 
 
