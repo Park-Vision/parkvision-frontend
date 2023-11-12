@@ -59,6 +59,11 @@ function ResponsiveAppBar() {
     handleCloseUserMenu();
   }
 
+    const handleCars = () => {
+        navigate('/cars');
+        handleCloseUserMenu();
+    }
+
   const handleReservations = () => {
     navigate('/profile/reservations');
     handleCloseUserMenu();
@@ -220,6 +225,9 @@ function ResponsiveAppBar() {
                         </MenuItem>
                         <MenuItem onClick={handleReservations}>
                             <Typography textAlign="center">Reservations</Typography>
+                        </MenuItem>
+                        <MenuItem onClick={handleCars}>
+                            <Typography textAlign="center">Cars</Typography>
                         </MenuItem>
                         <MenuItem onClick={handleLogout}>
                             <Typography textAlign="center">Logout</Typography>

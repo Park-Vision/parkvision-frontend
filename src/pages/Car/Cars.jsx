@@ -39,13 +39,16 @@ export default function Cars() {
     const [openEditDialog, setOpenEditDialog] = useState(false);
     const [openAddDialog, setOpenAddDialog] = useState(false);
 
+    useEffect(() => {
+        if (authenticationReducer.decodedUser && authenticationReducer.decodedUser.role === "USER") {
+            dispatch(getUserCars())
+        }
+    }, []);
+
     if (!authenticationReducer.decodedUser || authenticationReducer.decodedUser.role !== "USER") {
         navigate('/');
         return <Home />;
-    } else {
-        dispatch(getUserCars());
     }
-
     const handleEdit = (car) => {
         setEditCar(car);
         setOpenEditDialog(true);
@@ -100,6 +103,9 @@ export default function Cars() {
             toast.error('Something went wrong. Please try again.');
             setOpenAddDialog(false);
         }
+        setRegistrationNumber("");
+        setColor("");
+        setBrand("");
     };
 
     const handleRegistrationNumber = (event) => {
