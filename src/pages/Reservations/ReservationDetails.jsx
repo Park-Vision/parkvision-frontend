@@ -152,6 +152,15 @@ export default function ReservationDetails(props) {
         navigate('/parking/' + parking.id);
     };
 
+    const handleAmount = (start, end, rate) => {
+        const startDate = new Date(start);
+        const endDate = new Date(end);
+        const timeDifferenceMillis = endDate.getTime() - startDate.getTime();
+        const timeDifferenceHours = timeDifferenceMillis / (1000 * 60 * 60);
+        console.log(timeDifferenceHours)
+        return timeDifferenceHours * rate;
+    }
+
     return (
         <Container maxWidth="lg">
             <Box sx={{ my: 4 }}>
@@ -258,6 +267,16 @@ export default function ReservationDetails(props) {
                                            readOnly: true,
                                        }}
                             />
+                            <Typography style={{ margin: 10, fontWeight: 'bold',
+                                fontSize: '1.2rem',
+                                textAlign: 'right' }} fullWidth>
+                                Amount to pay:
+                                {'  '}
+                                {handleAmount(reservation.startDate, reservation.endDate, parking.costRate)
+                                    .toFixed(2)}
+                                {' '}
+                                {parking.currency}
+                            </Typography>
                         </Card>
                         {authenticationReducer.isLoggedIn &&
                             authenticationReducer.decodedUser.role !== "PARKING_MANAGER" && (
