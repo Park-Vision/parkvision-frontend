@@ -8,6 +8,8 @@ import { toast } from "react-toastify";
 import { useState, useEffect } from 'react';
 import { GET_PARKING_SPOT, GET_RESERVATIONS, UPDATE_RESERVATION } from '../../actions/types';
 import { validateRegistraionNumber } from '../../utils/validation';
+import decodeToken from '../../utils/decodeToken';
+import { getUserReservations } from '../../actions/reservationActions';
 
 export default function ReservationEdit(props) {
     const { reservationId } = useParams();
@@ -20,17 +22,22 @@ export default function ReservationEdit(props) {
 
     const dispatch = useDispatch()
 
+    const userjson = JSON.parse(localStorage.getItem("user"));
+    const user = decodeToken(userjson?.token);
+
     useEffect(() => {
         dispatch(getReservation(reservationId)).then((response) => {
             dispatch(getParkingSpot(response.parkingSpotDTO.id));
-
             setRegistrationNumber(response.registrationNumber);
-        }
-        );
-        dispatch({
-            type: GET_RESERVATIONS,
-            value: []
         });
+        if (user) {
+            dispatch(getUserReservations())
+                .then(() => {
+                });
+        } else {
+            navigate('/');
+            return;
+        }
     }, []);
 
 

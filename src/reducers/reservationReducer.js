@@ -7,6 +7,8 @@ import {
 } from "../actions/types";
 
 const initialState = {
+    reservationsPending: [],
+    reservationsArchived: [],
     reservations: [],
     reservation: {},
 };
@@ -18,30 +20,54 @@ const reservationReducer = (state = initialState, action) => {
         case ADD_RESERVATION:
             return {
                 ...state,
+                reservationsPending: [...state.reservationsPending, action.value],
                 reservations: [...state.reservations, action.value],
                 reservation: action.value,
             };
         case GET_RESERVATIONS:
             return {
                 ...state,
-                reservations: action.value,
+                reservationsPending: action.value.Pending,
+                reservationsArchived: action.value.Archived,
             };
         case GET_USER_RESERVATIONS:
             return {
                 ...state,
-                reservations: action.value,
+                reservationsPending: action.value.Pending,
+                reservationsArchived: action.value.Archived,
             };
         case UPDATE_RESERVATION:
             const reservation = action.value;
             return {
                 ...state,
-                reservations: state.reservations.map((item) => (item.id === reservation.id ? reservation : item)),
-                reservation: {},
+                reservationsPending: state.reservationsPending.map((item) => {
+                    if (item.id === reservation.id) {
+                        return reservation;
+                    }
+                    return item;
+                }),
+                reservationsArchived: state.reservationsArchived.map((item) => {
+                    if (item.id === reservation.id) {
+                        return reservation;
+                    }
+                    return item;
+                }),
+                reservations: state.reservations.map((item) => {
+                    if (item.id === reservation.id) {
+                        return reservation;
+                    }
+                    return item;
+                })
             };
         case DELETE_RESERVATION:
             return {
                 ...state,
-                reservations: state.reservations.filter((item) => item.id !== parseInt(action.value)),
+                reservationsPending: state.reservationsPending.filter(
+                    (item) => item.id !== action.value
+                ),
+                reservationsArchived: state.reservationsArchived.filter(
+                    (item) => item.id !== action.value
+                ),
             };
         case GET_RESERVATION:
             return {
