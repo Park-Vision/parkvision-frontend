@@ -19,7 +19,7 @@ import {login} from "../../actions/authenticationActions";
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom';
-import {validateEmail, validatePassword} from "./validation";
+import {validateEmail, validatePassword} from "../../utils/validation";
 import decodeToken from "../../utils/decodeToken";
 
 
@@ -44,14 +44,11 @@ export default function Login() {
 
     const handleLogin = (e) => {
         e.preventDefault()
-        console.log('Email:', email);
-        console.log('Password:', password);
         if (!validateEmail(email) || !validatePassword(password)){
             toast.info('Please enter valid email and password');
         } else {
             dispatch(login(email, password))
                 .then(response => {
-                    console.log(response);
                     if (response.status === 200) {
                         setEmail("");
                         setPassword("");

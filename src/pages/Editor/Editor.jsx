@@ -99,8 +99,6 @@ function ParkingEditor(props) {
             pointsDTO: pointsDTO
         }
 
-        console.log(newParkingSpot);
-
         dispatch(addStagedParkingSpot(newParkingSpot));
     };
 

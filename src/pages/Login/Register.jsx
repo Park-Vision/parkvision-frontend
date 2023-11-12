@@ -13,7 +13,7 @@ import {useDispatch} from "react-redux";
 import {logout, register} from "../../actions/authenticationActions";
 import {toast} from "react-toastify";
 import {useNavigate} from "react-router-dom";
-import {validatePassword, validateEmail, validateName} from "./validation";
+import {validatePassword, validateEmail, validateName} from "../../utils/validation";
 
 
 export default function Register(){
@@ -51,10 +51,6 @@ export default function Register(){
 
     const handleRegister = (event) => {
         event.preventDefault()
-        console.log('Email:', email);
-        console.log('First:', firstName);
-        console.log('Last:', lastName);
-        console.log('Password:', password);
         if (!validateEmail(email)){
             toast.info('Wrong email');
         } else if (!validateName(firstName)){
