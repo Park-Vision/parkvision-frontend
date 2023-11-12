@@ -20,7 +20,7 @@ class CarService {
     }
 
     async addCar(carData) {
-        return await axios.post(urlConst + "/", carData);
+        return await axios.post(urlConst, carData);
     }
 
     async updateCar(carData) {
