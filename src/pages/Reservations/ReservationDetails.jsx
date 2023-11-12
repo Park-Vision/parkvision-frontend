@@ -35,8 +35,6 @@ export default function ReservationDetails(props) {
     const cardRegex = /^\d+$/;
     const cvcRegex = /^\d{3}$/;
 
-
-
     const handleCardNumber = (event) => {
         setCardNumber(event.target.value);
     }

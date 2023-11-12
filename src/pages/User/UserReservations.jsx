@@ -14,6 +14,7 @@ import Grid from "@mui/material/Grid";
 import Button from "@mui/material/Button";
 import ModeEditIcon from '@mui/icons-material/ModeEdit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import decodeToken from "../../utils/decodeToken";
 import convertDate from "../../utils/convertDate";
 import IconButton from '@mui/material/IconButton';
 import { GET_PARKING_SPOT } from "../../actions/types";
@@ -28,22 +29,26 @@ export default function UserReservations() {
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
+    const userjson = JSON.parse(localStorage.getItem("user"));
+    const user = decodeToken(userjson?.token);
+
     useEffect(() => {
-        if (authenticationReducer.decodedUser) {
-            dispatch(getUserReservations())
-                .then((response) => {
-                    setArchivedReservations(response.Archived);
-                    setPendingReservations(response.Pending);
-                });
-        }
         if (authenticationReducer.decodedUser && authenticationReducer.decodedUser.role === "PARKING_MANAGER") {
+        dispatch({
+            type: GET_PARKING_SPOT,
+            value: null
+        });
+        if (user) {
             dispatch(getUserReservations())
                 .then((response) => {
                     setArchivedReservations(response.Archived);
                     setPendingReservations(response.Pending);
                 });
+        } else {
+            navigate('/');
+            return;
         }
-    }, [authenticationReducer.decodedUser, dispatch]);
+    }, [user, dispatch]);
 
     const handleShowArchived = () => {
         setShowArchived(true);
@@ -52,7 +57,6 @@ export default function UserReservations() {
     const handleShowPending = () => {
         setShowArchived(false);
     };
-
 
     if (!authenticationReducer.decodedUser ) {
         navigate('/');

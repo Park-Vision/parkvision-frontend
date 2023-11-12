@@ -251,8 +251,7 @@ export default function Home() {
                                             <Typography gutterBottom variant="h5" component="h2">
                                                 {parking.name}
                                             </Typography>
-                                             <Typography variant='h5'>Free: {numOfFreeSpotsList[parking.id]}</Typography>
-                                             <Typography variant='h5'>All: {numOfSpotsList[parking.id]}</Typography>
+                                            <Typography variant='h5'>Available: {numOfFreeSpotsList[parking.id]}/{numOfSpotsList[parking.id]}</Typography>
                                             <Typography>Address: {parking.street}, {parking.zipCode} {parking.city}</Typography>
                                             <Typography>Open hours: {convertTime(parking.startTime, parking.timeZone)} -  {convertTime(parking.endTime, parking.timeZone)} </Typography>
                                             <Typography>$/h: {parking.costRate}</Typography>
