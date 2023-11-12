@@ -34,19 +34,20 @@ export default function UserReservations() {
 
     useEffect(() => {
         if (authenticationReducer.decodedUser && authenticationReducer.decodedUser.role === "PARKING_MANAGER") {
-        dispatch({
-            type: GET_PARKING_SPOT,
-            value: null
-        });
-        if (user) {
-            dispatch(getUserReservations())
-                .then((response) => {
-                    setArchivedReservations(response.Archived);
-                    setPendingReservations(response.Pending);
-                });
-        } else {
-            navigate('/');
-            return;
+            dispatch({
+                type: GET_PARKING_SPOT,
+                value: null
+            });
+            if (user) {
+                dispatch(getUserReservations())
+                    .then((response) => {
+                        setArchivedReservations(response.Archived);
+                        setPendingReservations(response.Pending);
+                    });
+            } else {
+                navigate('/');
+                return;
+            }
         }
     }, [user, dispatch]);
 
