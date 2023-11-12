@@ -336,11 +336,12 @@ function ParkingDetails(props) {
                                             )
                                             .map((parkingSpot) => (
                                                 <Polygon
+                                                    key={parkingSpot.id}
                                                     positions={parkingSpot.pointsDTO.map((point) => [
                                                         point.latitude,
                                                         point.longitude,
                                                     ])}
-                                                    color='red'
+                                                    color={parkingSpot.active ? "red" : "#474747"}
                                                     interactive>
                                                     {occupiedParkingSpotsMap && occupiedParkingSpotsMap[parkingSpot.id] && (
                                                         <Popup>
@@ -424,8 +425,7 @@ function ParkingDetails(props) {
                         <Paper className='reserve'>
                             <CardContent>
                                 <Typography variant='h4'>{parking.name}</Typography>
-                                <Typography variant='h5'>Free: {numOfFreeSpotsList[parking?.id]}</Typography>
-                                <Typography variant='h5'>All: {numOfSpotsList[parking?.id]}</Typography>
+                                <Typography variant='h5'>Available: {numOfFreeSpotsList[parking.id]}/{numOfSpotsList[parking.id]}</Typography>
                                 <Typography variant='p'>{parking.description}</Typography>
                                 <Typography variant="h6">
                                     Address: {parking.street},{parking.zipCode} {parking.city}
