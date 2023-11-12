@@ -1,15 +1,18 @@
 import {useSelector} from "react-redux";
 import {useNavigate} from "react-router-dom";
 import Home from "../Home/Home";
+import decodeToken from "../../utils/decodeToken";
 
 export default function UserProfile() {
     const authenticationReducer = useSelector((state) => state.authenticationReducer);
     const navigate = useNavigate()
 
-    if (!authenticationReducer.decodedUser ||
-        authenticationReducer.decodedUser.role !== "USER") {
+    const userjson = JSON.parse(localStorage.getItem("user"));
+    const user = decodeToken(userjson?.token);
+
+    if (!user) {
         navigate('/');
-        return <Home />;
+        return;
     }
 
     return (

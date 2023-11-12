@@ -2,8 +2,11 @@ import { toast } from 'react-toastify';
 import axios from 'axios';
 import AuthenticationService from "../services/AuthenticationService";
 
+let retryCounter = 0;
+const maxRetries = 1;
+
 async function useErrorHandler(error) {
-    if (error.response && error.response.status === 403) {
+    if (error.response && error.response.status === 403 && retryCounter < maxRetries) {
         const user = JSON.parse(localStorage.getItem("user"));
         const refreshToken = user.token;
 
@@ -14,6 +17,7 @@ async function useErrorHandler(error) {
                 const newAccessToken = responseData.token;
                 localStorage.setItem("user", JSON.stringify(responseData));
                 error.config.headers['Authorization'] = 'Bearer ' + newAccessToken;
+                retryCounter++;
                 return axios(error.config);
             } catch (refreshError) {
                 console.error('Token refresh failed:', refreshError);
@@ -29,7 +33,7 @@ async function useErrorHandler(error) {
     } else {
         toast.error("An error occurred. Please try again.");
     }
-
+    retryCounter = 0;
     return Promise.reject("Failure: The promise has failed!");
 }
 

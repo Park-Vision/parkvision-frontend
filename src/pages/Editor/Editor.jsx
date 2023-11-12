@@ -22,7 +22,10 @@ import CircularProgress from "@mui/material/CircularProgress";
 import {
     GET_PARKING_SPOT,
 } from "../../actions/types";
-
+import convertTime from "../../utils/convertTime";
+import decodeToken from "../../utils/decodeToken";
+import { getUser } from "../../actions/userActions";
+import { toast } from "react-toastify";
 delete L.Icon.Default.prototype._getIconUrl;
 
 L.Icon.Default.mergeOptions({
@@ -44,10 +47,35 @@ function ParkingEditor(props) {
     const stagedParkingSpots = useSelector((state) => state.parkingSpotReducer.stagedParkingSpots);
     const parkingSpot = useSelector((state) => state.parkingSpotReducer.parkingSpot);
 
+    const userjson = JSON.parse(localStorage.getItem("user"));
+    const user = decodeToken(userjson?.token);
+
+
     useEffect(() => {
-        dispatch(getParking(parkingId));
-        dispatch(getParkingSpotsByParkingId(parkingId));
-        unsetParkingSpot();
+        const checkAuthorization = async () => {
+            if (user && user.role === "PARKING_MANAGER") {
+                const userResponse = await dispatch(getUser(user.userId));
+                let parkingResponse;
+                try {
+                    parkingResponse = await dispatch(getParking(parkingId));
+                }
+                catch (error) {
+                    toast.error("You are not authorized to view this page!");
+                    navigate('/');
+                    return;
+                }
+                if (userResponse.parkingDTO.id !== parkingResponse.id) {
+                    toast.error("You are not authorized to view this page!");
+                    navigate('/');
+                }
+                dispatch(getParkingSpotsByParkingId(parkingId));
+                unsetParkingSpot();
+            } else {
+                toast.error("You are not authorized to view this page!");
+                navigate('/');
+            }
+        }
+        checkAuthorization();
     }, []);
 
 
@@ -171,13 +199,15 @@ function ParkingEditor(props) {
                                             }}
                                         />
                                         {parkingSpots.parkingSpots
-                                            .map((spot, index) => (
+                                            .map((spot) => (
                                                 <Polygon
+                                                    key={spot.id}
                                                     positions={spot.pointsDTO.map((point) => [
                                                         point.latitude,
                                                         point.longitude,
                                                     ])}
-                                                    color='blue'>
+                                                    color={spot.active ? "blue" : "#474747"}
+                                                >
                                                     <Popup>
                                                         <div style={{ minWidth: '200px', maxWidth: '250px', padding: '10px', textAlign: 'left' }}>
                                                             <div style={{ marginBottom: '5px', textAlign: 'center',
@@ -234,11 +264,14 @@ function ParkingEditor(props) {
                             <CardContent>
                                 <Typography variant='h4'>{parking.name}</Typography>
                                 <Typography variant='p'>{parking.description}</Typography>
+                                <Typography variant="h6">
+                                    Address: {parking.street},{parking.zipCode} {parking.city}
+                                </Typography>
+                                <Typography variant="h6">Open hours: {convertTime(parking.startTime, parking.timeZone)} -  {convertTime(parking.endTime, parking.timeZone)} </Typography>
                                 <Typography>
-                                    Address:{parking.street},{parking.zipCode} {parking.city}
+                                     Dates and times are based on parking time zone ({parking.timeZone}) compared to UTC.
                                 </Typography>
                                 <Typography>$/h: {parking.costRate}</Typography>
-                                <Typography>Open hours: {parking.openHours}</Typography>
                             </CardContent>
                             <Grid container>
                             <Button

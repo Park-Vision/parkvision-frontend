@@ -1,5 +1,5 @@
 import { useNavigate, useParams } from 'react-router-dom';
-import { Container, Box, Typography, Paper, CardContent, TextField, Button, CircularProgress, RadioGroup, Grid} from '@mui/material';
+import { Container, Box, Typography, Paper, CardContent, TextField, Button, CircularProgress, RadioGroup, Grid, Switch} from '@mui/material';
 import { useDispatch, useSelector } from "react-redux";
 import { MapContainer, TileLayer, FeatureGroup, Polygon, Popup } from 'react-leaflet';
 import { EditControl } from "react-leaflet-draw";
@@ -12,6 +12,8 @@ import Radio from '@mui/material/Radio';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from '@mui/material/FormControl';
 import FormLabel from '@mui/material/FormLabel';
+import decodeToken from '../../utils/decodeToken';
+import { getUser } from '../../actions/userActions';
 delete L.Icon.Default.prototype._getIconUrl;
 
 L.Icon.Default.mergeOptions({
@@ -31,8 +33,24 @@ export default function ParkingSpotDetails(props) {
     const dispatch = useDispatch()
     const params = useParams();
 
+    const userjson = JSON.parse(localStorage.getItem("user"));
+    const user = decodeToken(userjson?.token);
+
     useEffect(() => {
-        dispatch(getParkingSpot(params.parkingSpotId));
+        const checkAuthorization = async () => {
+            if (user && user.role === "PARKING_MANAGER") {
+                const userResponse = await dispatch(getUser(user.userId));
+                const parkingSpotResponse = await dispatch(getParkingSpot(params.parkingSpotId));
+                if (userResponse.parkingDTO.id !== parkingSpotResponse.parkingDTO.id) {
+                    toast.error("You are not authorized to view this page!");
+                    navigate('/');
+                }
+            } else {
+                toast.error("You are not authorized to view this page!");
+                navigate('/');
+            }
+        }
+        checkAuthorization();
     }, [])
 
 
@@ -128,7 +146,7 @@ export default function ParkingSpotDetails(props) {
     };
 
     const handleEditInfo = () => {
-
+        //TODO what if notjing changed?
         const editedParkingSpot = {
             id: parkingSpotReducer.parkingSpot.id,
             spotNumber: parkingSpotReducer.parkingSpot.spotNumber,
@@ -138,7 +156,14 @@ export default function ParkingSpotDetails(props) {
             pointsDTO: parkingSpotReducer.parkingSpot.pointsDTO
         }
 
-        dispatch(updateParkingSpot(editedParkingSpot));
+        dispatch(updateParkingSpot(editedParkingSpot)).then(() => {
+            dispatch({
+                type: 'GET_PARKING_SPOT',
+                value: editedParkingSpot
+            })
+            toast.success("Parking spot updated successfully!");
+            navigate('/parking/' + parkingSpotReducer.parkingSpot.parkingDTO.id + '/editor')
+        });
     };
 
     return (
@@ -196,7 +221,7 @@ export default function ParkingSpotDetails(props) {
                                                         point.longitude,
                                                         point.id
                                                     ])}
-                                                    color='blue'
+                                                    color={parkingSpotReducer.parkingSpot.active ? "blue" : "#474747"}
                                                 >
                                                 </Polygon>
                                             )}
@@ -236,37 +261,19 @@ export default function ParkingSpotDetails(props) {
                                 label="Parking spot number"
                                 variant="outlined"
                             />
-                            <FormControl sx={{ m: 1 }} fullWidth>
-                                <FormLabel id="demo-radio-buttons-group-label">Active</FormLabel>
-                                <RadioGroup
-                                    aria-labelledby="demo-radio-buttons-group-label"
-                                    value={parkingSpotReducer.parkingSpot.active.toString()}
-                                    name="radio-buttons-group"
-                                    onChange={(event) => {
-                                        const newValue = event.target.value === "true";
-                                        setActive(newValue);
-                                    }}
-                                >
-                                    <FormControlLabel value="true" control={<Radio />} label="Active" />
-                                    <FormControlLabel value="false" control={<Radio />} label="Disabled" />
-                                </RadioGroup>
-                            </FormControl>
-                            <FormControl sx={{ m: 1 }} fullWidth>
-                                <FormLabel id="demo-radio-buttons-group-label">Occupied</FormLabel>
-                                <RadioGroup
-                                    aria-labelledby="demo-radio-buttons-group-label"
-                                    value={parkingSpotReducer.parkingSpot.occupied.toString()}
-                                    name="radio-buttons-group"
-                                    onChange={(event) => {
-                                        const newValue = event.target.value === "true";
-                                        setOccupied(newValue);
-                                    }}
-                                >
-                                    <FormControlLabel value="true" control={<Radio />} label="Occupied" />
-                                    <FormControlLabel value="false" control={<Radio />} label="Free" />
-                                </RadioGroup>
-                            </FormControl>
-
+                                <FormControl sx={{ m: 1 }} fullWidth>
+                                    <FormControlLabel control={
+                                    <Switch 
+                                        checked={parkingSpotReducer.parkingSpot.active}
+                                        onChange={(event) => {
+                                            const newValue = event.target.checked;
+                                            setActive(newValue);
+                                        }}
+                                        inputProps={{ 'aria-label': 'controlled' }}
+                                    />
+                                }
+                                label="Active" />
+                                </FormControl>
                             <Button sx={{ m: 1 }} variant='contained' onClick={handleEditInfo} fullWidth>
                                 Edit
                             </Button>
