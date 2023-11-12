@@ -28,20 +28,20 @@ export default function ManagerReservations(props) {
     }
 
     const columns = [
-        { field: 'id', headerName: 'ID', width: 50, align: 'right', },
-        { field: 'startDate', headerName: 'Start Date', width: 200,
+        { field: 'id', headerName: 'ID', flex: 0.3, align: 'right', },
+        { field: 'startDate', headerName: 'Start Date', flex: 0.8,
             valueGetter: ({row}) => convertDate(row.startDate)},
-        { field: 'endDate', headerName: 'End Date', width: 200, valueGetter: ({row}) => convertDate(row.endDate) },
-        { field: 'registrationNumber', headerName: 'Reg. Number', width: 100 },
-        {field: 'amount', headerName: 'Amount', width: 200, align: 'right',
+        { field: 'endDate', headerName: 'End Date', flex: 0.8, valueGetter: ({row}) => convertDate(row.endDate) },
+        { field: 'registrationNumber', headerName: 'Reg. Number', flex: 1 },
+        {field: 'amount', headerName: 'Amount', flex: 0.6, align: 'right',
             valueGetter: ({row}) => row.amount + " " + row.parkingSpotDTO.parkingDTO.currency },
-        { field: 'userName', headerName: 'Name', width: 300,
+        { field: 'userName', headerName: 'Name', flex: 1,
             valueGetter: ({row}) => row.userDTO.firstName + " " + row.userDTO.lastName},
-        { field: 'spotNumber', headerName: 'Spot Number', width: 150, align: 'right',
+        { field: 'spotNumber', headerName: 'Spot Number', flex: 1, align: 'right',
             valueGetter: ({row}) => row.parkingSpotDTO.spotNumber},
-        { field: 'parkingName', headerName: 'Parking Name', width: 300,
+        { field: 'parkingName', headerName: 'Parking Name', flex: 1,
             valueGetter: ({row}) => row.parkingSpotDTO.parkingDTO.name },
-        { field: 'actions', headerName: 'Actions', width: 150,
+        { field: 'actions', headerName: 'Actions', flex: 0.5,
             renderCell: (params) => (
                 <Button
                     variant="contained"
@@ -59,7 +59,8 @@ export default function ManagerReservations(props) {
 
 
     return (
-            <Box style={{ height: "100%" }}>
+        <Container maxWidth="xl">
+            <Box >
                 <div style={{ height: "100%" }}>
                     <DataGrid
                         rows={reservations}
@@ -69,5 +70,6 @@ export default function ManagerReservations(props) {
                     />
                 </div>
             </Box>
+        </Container>
     )
 }
