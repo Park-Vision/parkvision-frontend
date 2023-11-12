@@ -7,7 +7,7 @@ import {BrowserRouter, Route, Routes} from "react-router-dom";
 import Reservations from "./pages/Reservations/Reservations";
 import About from "./pages/About/About";
 import Contact from "./pages/Contact/Contact";
-import CarPage from "./pages/Car/CarPage";
+import Cars from "./pages/Car/Cars";
 import ParkingDetails from "./pages/Home/ParkingDetails";
 import Toolbar from "@mui/material/Toolbar";
 import Register from "./pages/Login/Register";
@@ -112,7 +112,7 @@ function App() {
                             />
                             <Route
                                 path={"/cars"}
-                                element={<CarPage />}
+                                element={<Cars />}
                             />
                             <Route
                                 path={"/parking/:parkingId"}

@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import {useDispatch, useSelector} from "react-redux";
-import {addCar, getCars, getCar, deleteCar, updateCar} from "../../actions/carActions"
-import {getParking} from "../../actions/parkingActions";
+import {addCar, getCar, deleteCar, updateCar, getUserCars} from "../../actions/carActions"
 
-export default function CarPage() {
+export default function Cars() {
     const cars = useSelector(state => state.carReducer.cars)
+    const authenticationReducer = useSelector((state) => state.authenticationReducer);
     const dispatch = useDispatch()
 
     useEffect(() => {
-        dispatch(getCars())
+        if (authenticationReducer.decodedUser && authenticationReducer.decodedUser.role === "USER") {
+            dispatch(getUserCars())
+        }
     }, []);
 
     return (
