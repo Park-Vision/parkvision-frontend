@@ -189,7 +189,7 @@ export default function Home() {
                                                         <span style={{ fontWeight: 'bold' }}>Open hours:</span> {convertTime(parking.startTime, parking.timeZone)} -  {convertTime(parking.endTime, parking.timeZone)}
                                                     </div>
                                                     <div style={{ marginBottom: '10px' }}>
-                                                        <span style={{ fontWeight: 'bold' }}>$</span>/h: {parking.costRate}
+                                                        <span style={{ fontWeight: 'bold' }}>{parking.currency}/h:</span> {parking.costRate}
                                                     </div>
                                                     <Button
                                                         variant="contained"
@@ -254,8 +254,7 @@ export default function Home() {
                                             <Typography variant='h5'>Available: {numOfFreeSpotsList[parking.id]}/{numOfSpotsList[parking.id]}</Typography>
                                             <Typography>Address: {parking.street}, {parking.zipCode} {parking.city}</Typography>
                                             <Typography>Open hours: {convertTime(parking.startTime, parking.timeZone)} -  {convertTime(parking.endTime, parking.timeZone)} </Typography>
-                                            <Typography>$/h: {parking.costRate}</Typography>
-                                            {/*<Typography>{[parking.latitude, parking.longitude]}</Typography>*/}
+                                            <Typography>{parking.currency}/h: {parking.costRate}</Typography>
                                         </CardContent>
                                     </Grid>
                                     <Grid item xs={6} sm={6} md={6} style={{ margin: 10, padding: 10}}>

@@ -438,7 +438,7 @@ function ParkingDetails(props) {
                                 <Typography>
                                      Dates and times are based on parking time zone ({parking.timeZone}) compared to UTC.
                                 </Typography>
-                                <Typography>$/h: {parking.costRate}</Typography>
+                                <Typography>{parking.currency}/h: {parking.costRate}</Typography>
                             </CardContent>
                             <Grid container>
                                 {  user && user.parkingDTO &&
