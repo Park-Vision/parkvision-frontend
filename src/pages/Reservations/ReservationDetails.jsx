@@ -269,7 +269,7 @@ export default function ReservationDetails(props) {
                                        }}
                             />
                             <TextField style={{ marginBottom: 10 }} fullWidth
-                                       value={1}
+                                       value={`${parkingSpotReducer.parkingSpot.spotNumber}`}
                                        id="outlined-basic"
                                        label="Parking spot"
                                        variant="outlined"
