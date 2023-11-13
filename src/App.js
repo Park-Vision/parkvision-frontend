@@ -21,6 +21,7 @@ import ParkingSpotDetails from "./pages/ParkingSpot/ParkingSpotDetails";
 import ParkingEditor from "./pages/Editor/Editor"
 import axios from "axios";
 import useErrorHandler from "./utils/ErrorHandler";
+import ManagerReservations from "./pages/ParkingManagement/ManagerReservations";
 const ColorModeContext = React.createContext({ toggleColorMode: () => { } });
 
 axios.defaults.baseURL = process.env.REACT_APP_BACKEND_URL;
@@ -143,8 +144,12 @@ function App() {
                                 element={<ParkingSpotDetails />}
                             />
                             <Route 
-                            path={"/reservation-details"}  
-                            element={<ReservationDetails />}
+                                path={"/reservation-details"}
+                                element={<ReservationDetails />}
+                            />
+                            <Route
+                                path={"/parking/:parkingId/reservations"}
+                                element={<ManagerReservations />}
                             />
                             <Route
                                 path={"/reservation-edit/:reservationId"}

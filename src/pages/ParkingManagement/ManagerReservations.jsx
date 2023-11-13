@@ -1,22 +1,15 @@
 import {useDispatch, useSelector} from "react-redux";
-import {useEffect, useState} from "react";
-import {useNavigate} from "react-router-dom";
-import {getReservations, getUserReservations} from "../../actions/reservationActions";
-import {Box} from "@mui/material";
-import * as PropTypes from "prop-types";
+import React, {useEffect} from "react";
+import {useNavigate, useParams} from "react-router-dom";
+import {deleteReservation, getReservations, getReservationsByParking} from "../../actions/reservationActions";
+import {Box, Button, Container} from "@mui/material";
+import { DataGrid } from "@mui/x-data-grid";
+import convertDate from "../../utils/convertDate";
+import Home from "../Home/Home";
 
-function DataGrid(props) {
-    return null;
-}
-
-DataGrid.propTypes = {
-    initialState: PropTypes.shape({pagination: PropTypes.shape({paginationModel: PropTypes.shape({pageSize: PropTypes.number})})}),
-    pageSizeOptions: PropTypes.arrayOf(PropTypes.number),
-    columns: PropTypes.any,
-    checkboxSelection: PropTypes.bool,
-    disableRowSelectionOnClick: PropTypes.bool
-};
-export default function ManagerReservations() {
+export default function ManagerReservations(props) {
+    const { parkingId } = useParams();
+    console.log(parkingId)
     const authenticationReducer = useSelector((state) => state.authenticationReducer);
 
     const reservations = useSelector((state) => state.reservationReducer.reservations);
@@ -25,54 +18,58 @@ export default function ManagerReservations() {
 
     useEffect(() => {
         if (authenticationReducer.decodedUser && authenticationReducer.decodedUser.role === "PARKING_MANAGER") {
-            dispatch(getReservations());
+            dispatch(getReservationsByParking(parkingId));
         }
     }, []);
 
-    console.log(reservations)
+    if (!authenticationReducer.decodedUser && authenticationReducer.decodedUser.role === "PARKING_MANAGER") {
+        navigate('/');
+        return <Home />;
+    }
 
     const columns = [
-        { field: 'id', headerName: 'ID', width: 90 },
-        {
-            field: 'firstName',
-            headerName: 'First name',
-            width: 150,
-            editable: true,
-        },
-        {
-            field: 'lastName',
-            headerName: 'Last name',
-            width: 150,
-            editable: true,
-        },
-        {
-            field: 'age',
-            headerName: 'Age',
-            type: 'number',
-            width: 110,
-            editable: true,
-        },
-        {
-            field: 'fullName',
-            headerName: 'Full name',
-            description: 'This column has a value getter and is not sortable.',
-            sortable: false,
-            width: 160,
-            valueGetter: (params) =>
-                `${params.row.firstName || ''} ${params.row.lastName || ''}`,
+        { field: 'id', headerName: 'ID', flex: 0.3, align: 'right', },
+        { field: 'startDate', headerName: 'Start Date', flex: 0.8,
+            valueGetter: ({row}) => convertDate(row.startDate)},
+        { field: 'endDate', headerName: 'End Date', flex: 0.8, valueGetter: ({row}) => convertDate(row.endDate) },
+        { field: 'registrationNumber', headerName: 'Reg. Number', flex: 1 },
+        {field: 'amount', headerName: 'Amount', flex: 0.6, align: 'right',
+            valueGetter: ({row}) => row.amount + " " + row.parkingSpotDTO.parkingDTO.currency },
+        { field: 'userName', headerName: 'Name', flex: 1,
+            valueGetter: ({row}) => row.userDTO.firstName + " " + row.userDTO.lastName},
+        { field: 'spotNumber', headerName: 'Spot Number', flex: 1, align: 'right',
+            valueGetter: ({row}) => row.parkingSpotDTO.spotNumber},
+        { field: 'parkingName', headerName: 'Parking Name', flex: 1,
+            valueGetter: ({row}) => row.parkingSpotDTO.parkingDTO.name },
+        { field: 'actions', headerName: 'Actions', flex: 0.5,
+            renderCell: (params) => (
+                <Button
+                    variant="contained"
+                    onClick={() => handleDelete(params.row.id)}
+                >
+                    Delete
+                </Button>
+            ),
         },
     ];
 
+    const handleDelete = (reservationId) => {
+        dispatch(deleteReservation(reservationId));
+    };
+
 
     return (
-        <Box sx={{ height: 400, width: '100%' }}>
-            <DataGrid
-                rows={reservations}
-
-                pageSizeOptions={[5]}
-                checkboxSelection
-                disableRowSelectionOnClick
-            />
-        </Box>
+        <Container maxWidth="xl">
+            <Box >
+                <div style={{ height: "100%" }}>
+                    <DataGrid
+                        rows={reservations}
+                        columns={columns}
+                        pageSize={5}
+                        checkboxSelection
+                    />
+                </div>
+            </Box>
+        </Container>
     )
 }

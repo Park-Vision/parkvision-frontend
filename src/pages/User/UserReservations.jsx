@@ -33,19 +33,21 @@ export default function UserReservations() {
     const user = decodeToken(userjson?.token);
 
     useEffect(() => {
-        dispatch({
-            type: GET_PARKING_SPOT,
-            value: null
-        });
-        if (user) {
-            dispatch(getUserReservations())
-                .then((response) => {
-                    setArchivedReservations(response.Archived);
-                    setPendingReservations(response.Pending);
-                });
-        } else {
-            navigate('/');
-            return;
+        if (authenticationReducer.decodedUser && authenticationReducer.decodedUser.role === "PARKING_MANAGER") {
+            dispatch({
+                type: GET_PARKING_SPOT,
+                value: null
+            });
+            if (user) {
+                dispatch(getUserReservations())
+                    .then((response) => {
+                        setArchivedReservations(response.Archived);
+                        setPendingReservations(response.Pending);
+                    });
+            } else {
+                navigate('/');
+                return;
+            }
         }
     }, [user, dispatch]);
 
@@ -57,10 +59,9 @@ export default function UserReservations() {
         setShowArchived(false);
     };
 
-    function formatDate(dateString) {
-        const date = new Date(dateString);
-        const options = { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric', timeZone: 'UTC' };
-        return date.toLocaleString('en-US', options);
+    if (!authenticationReducer.decodedUser ) {
+        navigate('/');
+        return <Home />;
     }
 
     const handleEdit = (event) => {
@@ -111,6 +112,8 @@ export default function UserReservations() {
                                         <Typography variant="body1">End: {convertDate(reservation.endDate)}</Typography>
                                         <Typography variant="body1">Registration Number: {reservation.registrationNumber}</Typography>
                                         <Typography variant="body1">Name: {reservation.userDTO.firstName} {reservation.userDTO.lastName}</Typography>
+                                        <Typography variant="body1">Amount: {reservation.amount} {reservation.parkingSpotDTO.parkingDTO.currency}</Typography>
+
                                     </Paper>
                                 ))}
                             </List>
@@ -134,6 +137,7 @@ export default function UserReservations() {
                                 <Typography variant="body1">End: {convertDate(reservation.endDate)}</Typography>
                                 <Typography variant="body1">Registration Number: {reservation.registrationNumber}</Typography>
                                 <Typography variant="body1">Name: {reservation.userDTO.firstName} {reservation.userDTO.lastName}</Typography>
+                                <Typography variant="body1">Amount: {reservation.amount} {reservation.parkingSpotDTO.parkingDTO.currency}</Typography>
                                 <div style={{ textAlign: 'right' }}>
                                     <IconButton style={{ fontSize: 30 }} color="primary" aria-label="edit" onClick={() => handleEdit(reservation)}>
                                         <ModeEditIcon />

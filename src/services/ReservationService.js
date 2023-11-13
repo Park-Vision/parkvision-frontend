@@ -26,5 +26,9 @@ class ReservationService {
     async deleteReservationById(reservationId) {
         return await axios.delete(urlConst + "/" + reservationId);
     }
+
+    async getReservationsByParkingId(parkingId) {
+        return await axios.get(urlConst + "/parking/" + parkingId);
+    }
 }
 export default new ReservationService();

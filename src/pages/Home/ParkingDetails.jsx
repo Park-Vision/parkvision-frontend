@@ -287,6 +287,10 @@ function ParkingDetails(props) {
         navigate(`/parking/${parkingId}/editor`);
     };
 
+    const handleGoToReservations = () => {
+        navigate(`/parking/${parkingId}/reservations`);
+    };
+
     return (
         <Container
             maxWidth='xl'
@@ -434,21 +438,31 @@ function ParkingDetails(props) {
                                 <Typography>
                                      Dates and times are based on parking time zone ({parking.timeZone}) compared to UTC.
                                 </Typography>
-                                <Typography>$/h: {parking.costRate}</Typography>
+                                <Typography>{parking.currency}/h: {parking.costRate}</Typography>
                             </CardContent>
                             <Grid container>
                                 {  user && user.parkingDTO &&
                                     user.parkingDTO.id === parking.id
                                     && authenticationReducer.isLoggedIn
                                     && authenticationReducer.decodedUser.role === "PARKING_MANAGER" ? (
-                                    <Button
-                                        sx={{ m: 1 }}
-                                        variant='contained'
-                                        onClick={handleGoToMission}
-                                        fullWidth
-                                    >
-                                        Parking editor
-                                    </Button>
+                                    <Grid container>
+                                        <Button
+                                            sx={{ m: 1 }}
+                                            variant='contained'
+                                            onClick={handleGoToMission}
+                                            fullWidth
+                                        >
+                                            Parking editor
+                                        </Button>
+                                        <Button
+                                            sx={{ m: 1 }}
+                                            variant='contained'
+                                            onClick={handleGoToReservations}
+                                            fullWidth
+                                        >
+                                            Parking reservations
+                                        </Button>
+                                    </Grid>
                                 ) : (
                                     <div></div>
                                 )}
