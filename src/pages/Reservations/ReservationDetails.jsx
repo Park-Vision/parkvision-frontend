@@ -32,6 +32,7 @@ export default function ReservationDetails(props) {
     const [expMonth, setExpMonth] = useState("");
     const [expYear, setExpYear] = useState("");
     const [cvc, setCvc] = useState("");
+    const [amount, setAmount] = useState("");
     const cardRegex = /^\d+$/;
     const cvcRegex = /^\d{3}$/;
 
@@ -98,7 +99,7 @@ export default function ReservationDetails(props) {
                         dispatch(addPayment(newPayment))
                             .then((paymentResponse) => {
                                 const newCharge = {
-                                    amount: reservationResponse.amount,
+                                    amount: amount,
                                     currency: reservationResponse.parkingSpotDTO.parkingDTO.currency,
                                     payment: {
                                         id: paymentResponse.id,
@@ -155,8 +156,10 @@ export default function ReservationDetails(props) {
         const endDate = new Date(end);
         const timeDifferenceMillis = endDate.getTime() - startDate.getTime();
         const timeDifferenceHours = timeDifferenceMillis / (1000 * 60 * 60);
-        console.log(timeDifferenceHours)
-        return timeDifferenceHours * rate;
+        const calculatedAmount = timeDifferenceHours * rate;
+        const amountToPay = Math.max(calculatedAmount, 2);
+        setAmount(amountToPay);
+        return amountToPay;
     }
 
     return (
