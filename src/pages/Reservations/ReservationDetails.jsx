@@ -15,7 +15,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { MapContainer, TileLayer, FeatureGroup, Polygon, Popup } from 'react-leaflet';
 import { addReservation } from '../../actions/reservationActions';
 import { toast } from "react-toastify";
-import { useState } from 'react';
+import {useEffect, useState} from 'react';
 import CreditCardIcon from '@mui/icons-material/CreditCard';
 import { addPayment } from "../../actions/paymentActions";
 import { addStripeCharge } from "../../actions/stripeChargeActions";
@@ -35,6 +35,11 @@ export default function ReservationDetails(props) {
     const [amount, setAmount] = useState("");
     const cardRegex = /^\d+$/;
     const cvcRegex = /^\d{3}$/;
+
+    useEffect(() => {
+        const calculatedAmount = handleAmount();
+        setAmount(calculatedAmount.toFixed(2));
+    }, [reservation.startDate, reservation.endDate, parking.costRate]);
 
     const handleCardNumber = (event) => {
         setCardNumber(event.target.value);
@@ -84,7 +89,11 @@ export default function ReservationDetails(props) {
         } else {
             try {
                 setLoading(true);
-                dispatch(addReservation(reservation))
+                const reservationWithAmount = {
+                    ...reservation,
+                    amount: amount,
+                };
+                dispatch(addReservation(reservationWithAmount))
                     .then((reservationResponse) => {
                         const userId = authenticationReducer.decodedUser.userId;
                         const newPayment = {
@@ -151,12 +160,12 @@ export default function ReservationDetails(props) {
         navigate('/parking/' + parking.id);
     };
 
-    const handleAmount = (start, end, rate) => {
-        const startDate = new Date(start);
-        const endDate = new Date(end);
+    const handleAmount = () => {
+        const startDate = new Date(reservation.startDate);
+        const endDate = new Date(reservation.endDate);
         const timeDifferenceMillis = endDate.getTime() - startDate.getTime();
         const timeDifferenceHours = timeDifferenceMillis / (1000 * 60 * 60);
-        const calculatedAmount = timeDifferenceHours * rate;
+        const calculatedAmount = timeDifferenceHours * parking.costRate;
         const amountToPay = Math.max(calculatedAmount, 2);
         setAmount(amountToPay);
         return amountToPay;
@@ -268,16 +277,18 @@ export default function ReservationDetails(props) {
                                            readOnly: true,
                                        }}
                             />
+                            {authenticationReducer.isLoggedIn &&
+                                authenticationReducer.decodedUser.role !== "PARKING_MANAGER" && (
                             <Typography style={{ margin: 10, fontWeight: 'bold',
                                 fontSize: '1.2rem',
                                 textAlign: 'right' }} fullWidth>
                                 Amount to pay:
                                 {'  '}
-                                {handleAmount(reservation.startDate, reservation.endDate, parking.costRate)
-                                    .toFixed(2)}
+                                {amount}
                                 {' '}
                                 {parking.currency}
                             </Typography>
+                                )}
                         </Card>
                         {authenticationReducer.isLoggedIn &&
                             authenticationReducer.decodedUser.role !== "PARKING_MANAGER" && (
