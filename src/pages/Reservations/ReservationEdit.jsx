@@ -61,7 +61,11 @@ export default function ReservationEdit(props) {
                     setLoading(false);
                     toast.success('reservation updated');
                     navigate('/profile/reservations');
-                }
+                }, error => {
+                    setLoading(false);
+                    console.log(error);
+                    toast.error(error.message);
+                    }
                 );
         }
         catch (e) {

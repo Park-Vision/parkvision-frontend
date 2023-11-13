@@ -28,7 +28,7 @@ export default function UserReservations() {
     const authenticationReducer = useSelector((state) => state.authenticationReducer);
 
     const pendingReservations = useSelector((state) => state.reservationReducer.reservationsPending);
-    const archivedReservations = useSelector((state) => state.reservationReducer.resevationsArchived);
+    const archivedReservations = useSelector((state) => state.reservationReducer.reservationsArchived);
     const [showArchived, setShowArchived] = useState(false);
 
     const [openDialog, setOpenDialog] = useState(false);
@@ -156,14 +156,16 @@ export default function UserReservations() {
                                 <Typography variant="body1">Registration Number: {reservation.registrationNumber}</Typography>
                                 <Typography variant="body1">Name: {reservation.userDTO.firstName} {reservation.userDTO.lastName}</Typography>
                                 <Typography variant="body1">Amount: {reservation.amount} {reservation.parkingSpotDTO.parkingDTO.currency}</Typography>
-                                <div style={{ textAlign: 'right' }}>
-                                    <IconButton style={{ fontSize: 30 }} color="primary" aria-label="edit" onClick={() => handleEdit(reservation)}>
-                                        <ModeEditIcon />
-                                    </IconButton>
-                                    <IconButton style={{ fontSize: 30 }} color="primary" aria-label="cancel" onClick={() => handleCancel(reservation)}>
-                                        <DeleteIcon style={{ fontSize: 30 }} />
-                                    </IconButton>
-                                </div>
+                                {new Date(reservation.startDate) > new Date() && (
+                                    <div style={{ textAlign: 'right' }}>
+                                        <IconButton style={{ fontSize: 30 }} color="primary" aria-label="edit" onClick={() => handleEdit(reservation)}>
+                                            <ModeEditIcon />
+                                        </IconButton>
+                                        <IconButton style={{ fontSize: 30 }} color="primary" aria-label="cancel" onClick={() => handleCancel(reservation)}>
+                                            <DeleteIcon style={{ fontSize: 30 }} />
+                                        </IconButton>
+                                    </div>
+                                )}
                             </Paper>
                         ))
                     ) : (
@@ -198,5 +200,6 @@ export default function UserReservations() {
                 </DialogActions>
             </Dialog>
         </Container>
+
         );
 }
