@@ -95,7 +95,6 @@ export default function Cars() {
             toast.info('Invalid registration number');
             return;
         }
-        debugger
         if ((brand.length <= 0 || color.length <= 0)){
             toast.info('Invalid car details');
             return;
@@ -143,7 +142,6 @@ export default function Cars() {
     }
 
     const handleDelete = (car) => {
-        console.log(car);
         dispatch(deleteCar(car.id))
     }
 
