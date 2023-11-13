@@ -69,14 +69,19 @@ export default function Cars() {
 
     const handleAddDialogClose = () => {
         setOpenAddDialog(false);
+        setRegistrationNumber("");
+        setColor("");
+        setBrand("");
     };
 
     const handleAddSubmit = () => {
         if (!validateRegistraionNumber(registrationNumber)){
             toast.info('Invalid registration number');
+            return;
         }
         if (!(brand.length > 0 || color.length > 0)){
             toast.info('Invalid car details');
+            return;
         }
         try {
             const userId = authenticationReducer.decodedUser.userId;
