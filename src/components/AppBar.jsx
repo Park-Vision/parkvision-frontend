@@ -46,12 +46,14 @@ function ResponsiveAppBar() {
 
     const handleLogin = () => {
       navigate('/login');
+      handleCloseNavMenu();
   }
 
   const handleLogout = () => {
       dispatch(logout());
       navigate('/');
       handleCloseUserMenu();
+      handleCloseNavMenu();
   }
 
   const handleProfile = () => {
@@ -74,12 +76,16 @@ function ResponsiveAppBar() {
         return result.toUpperCase();
   }
 
+  const handleClick = (path) => {
+    navigate(path);
+    handleCloseNavMenu();
+  }
+
 
     return (
     <AppBar position="fixed">
       <Container maxWidth="xl">
         <Toolbar disableGutters>
-          {/* <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} /> */}
           <Typography
             variant="h6"
             noWrap
@@ -127,21 +133,22 @@ function ResponsiveAppBar() {
               }}
             >
               {pages.map((page, index) => (
-                  <MenuItem key={page} onClick={handleCloseNavMenu}>
-                      <Link href={links[index]} style={{ textDecoration: 'none' }}>
+                <MenuItem key={page} onClick={() => handleClick(links[index])} >
+                      <Link style={{ textDecoration: 'none' }} >
                           <Typography textAlign="center">{page}</Typography>
                       </Link>
                   </MenuItem>
+                        
               ))}
                 {!isLoggedIn ? (
-                    <MenuItem onClick={handleCloseNavMenu}>
-                        <Link style={{ textDecoration: 'none' }} onClick={handleLogin}>
+                    <MenuItem onClick={handleLogin}>
+                        <Link style={{ textDecoration: 'none' }}>
                             Login
                         </Link>
                     </MenuItem>
                 ) : (
-                    <MenuItem onClick={handleCloseNavMenu}>
-                        <Link style={{ textDecoration: 'none' }} onClick={handleLogout} >
+                    <MenuItem onClick={handleLogout}>
+                        <Link style={{ textDecoration: 'none' }}>
                             Logout
                         </Link>
                     </MenuItem>
@@ -171,18 +178,18 @@ function ResponsiveAppBar() {
             {pages.map((page, index) => (
               <Button
                 key={page}
-                onClick={handleCloseNavMenu}
+                onClick={() => handleClick(links[index])}
                 sx={{ my: 2, color: 'white', display: 'block' }}>
-                  <Link href={links[index]} style={{ textDecoration: 'none', color: 'inherit' }}>
+                  <Link style={{ textDecoration: 'none', color: 'inherit' }}>
                       {page}
                   </Link>
               </Button>
             ))}
               {!isLoggedIn ? (
                   <Button
-                      onClick={handleCloseNavMenu}
+                      onClick={handleLogin}
                       sx={{ my: 2, color: 'white', display: 'block' }}>
-                      <Link href={'/login'} style={{ textDecoration: 'none', color: 'inherit' }}>
+                      <Link style={{ textDecoration: 'none', color: 'inherit' }}>
                           Login
                       </Link>
                   </Button>
@@ -190,7 +197,7 @@ function ResponsiveAppBar() {
                   <Button
                       onClick={handleLogout}
                       sx={{ my: 2, color: 'white', display: 'block' }}>
-                      <Link href={'/'} style={{ textDecoration: 'none', color: 'inherit' }}>
+                      <Link style={{ textDecoration: 'none', color: 'inherit' }}>
                           Logout
                       </Link>
                   </Button>
