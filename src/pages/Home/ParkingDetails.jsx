@@ -173,18 +173,19 @@ function ParkingDetails(props) {
 
 
     const handleSearch = (startDay, startTime, endDay, endTime) => {
-        const timeZone = parking.timeZone; // "Europe/Warsaw"
 
-        console.log(new Date(startDay.toDate()).toISOString().split("T")[0] + "T" + new Date(startTime.toDate()).toISOString().split("T")[1])
+        if(parkingSpot) {
+            handleClickOnSelectedSpot(parkingSpot);
+        }
 
-
+        console.log(parseInt(parking.timeZone));
+        const test = new Date(startTime.toDate()).setHours(new Date(startTime.toDate()).getHours() + parseInt(parking.timeZone));
+        console.log(new Date(test).toISOString());
         const start =
             new Date(startDay.toDate()).toISOString().split("T")[0] + "T" + new Date(startTime.toDate()).toISOString().split("T")[1];
         
-        
         setStart(start);
         const end = new Date(endDay.toDate()).toISOString().split("T")[0] + "T" + new Date(endTime.toDate()).toISOString().split("T")[1];
-        // startDay.toDate().toISOString().split("T")[0] + "T" + startTime.toDate().toLocaleTimeString();
         setEnd(end);
 
         const startTimeDate = new Date(start);
@@ -193,8 +194,8 @@ function ParkingDetails(props) {
             toast.warning("Start time must be before end time");
             return;
         }
-        dispatch(getFreeParkingSpotsByParkingId(parkingId, start, end));
-        dispatch(getOccupiedParkingSpotsMapByParkingId(parkingId, start));
+        // dispatch(getFreeParkingSpotsByParkingId(parkingId, start, end));
+        // dispatch(getOccupiedParkingSpotsMapByParkingId(parkingId, start));
     };
 
     const handleClickOnFreeParkingSpot = (event) => {
@@ -353,6 +354,11 @@ function ParkingDetails(props) {
                                                             {`This spot will be available to: ${convertDate(occupiedParkingSpotsMap[parkingSpot.id].earliestEnd)}`}
                                                         </Popup>
                                                     )}
+                                                    {occupiedParkingSpotsMap && occupiedParkingSpotsMap[parkingSpot.id] == null && (
+                                                        <Popup>
+                                                            {`This spot will not be available for the rest of the day.`}
+                                                        </Popup>
+                                                    )}
                                                 </Polygon>
                                             ))}
                                                 {freeParkingSpots.map((spot, index) => (
@@ -363,7 +369,7 @@ function ParkingDetails(props) {
                                                         point.latitude,
                                                         point.longitude,
                                                     ])}
-                                                    color="green" // Set the color to green for excluded polygons
+                                                    color="green"
                                                     eventHandlers={{
                                                         click: () => {
                                                         handleClickOnFreeParkingSpot(spot);
