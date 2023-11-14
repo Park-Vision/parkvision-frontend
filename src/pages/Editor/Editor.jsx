@@ -85,22 +85,23 @@ function ParkingEditor(props) {
 
 
     const toggleDrag = () => {
-        debugger
         const newDrag = !drag;
         setDrag(newDrag); // Toggle the drag state
         console.log(drag);
-        debugger;
         const polygon = polygonRef.current;
-        if (polygon) {
-            if (newDrag) {
-                polygon.dragging.enable();
-                console.log('enable drag')
+        const map = mapRef.current;
+        map.eachLayer((layer) => {
+            if (layer instanceof L.Polygon) {
+                if (newDrag) {
+                    layer.dragging.enable();
+                    console.log('enable drag')
+                }
+                else {
+                    layer.dragging.disable();
+                    console.log('disable drag')
+                }
             }
-            else {
-                polygon.dragging.disable();
-                console.log('disable drag')
-            }
-        }
+        });
     };
 
     const clearLayerWithNoIds = () => {
