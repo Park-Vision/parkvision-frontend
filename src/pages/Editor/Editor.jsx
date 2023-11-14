@@ -26,6 +26,7 @@ import convertTime from "../../utils/convertTime";
 import decodeToken from "../../utils/decodeToken";
 import { getUser } from "../../actions/userActions";
 import { toast } from "react-toastify";
+import 'leaflet-path-drag'
 delete L.Icon.Default.prototype._getIconUrl;
 
 L.Icon.Default.mergeOptions({
@@ -46,10 +47,13 @@ function ParkingEditor(props) {
     const parkingSpots = useSelector((state) => state.parkingSpotReducer);
     const stagedParkingSpots = useSelector((state) => state.parkingSpotReducer.stagedParkingSpots);
     const parkingSpot = useSelector((state) => state.parkingSpotReducer.parkingSpot);
+    const [drag, setDrag] = React.useState(false);
 
     const userjson = JSON.parse(localStorage.getItem("user"));
     const user = decodeToken(userjson?.token);
 
+    const mapRef = useRef(null);
+    const polygonRef = useRef(null);
 
     useEffect(() => {
         const checkAuthorization = async () => {
@@ -75,7 +79,9 @@ function ParkingEditor(props) {
                 navigate('/');
             }
         }
+
         checkAuthorization();
+        
     }, []);
 
 
@@ -86,7 +92,47 @@ function ParkingEditor(props) {
         });
     };
 
-    const mapRef = useRef(null);
+    const handleEditStart = () => {
+        console.log("edit start")
+        setDrag(true);
+
+        //get polygon ref
+        const polygon = polygonRef.current;
+        polygon.dragging.enable();
+
+
+        debugger
+        //get all polygons
+        const polygons = mapRef.current._layers;
+        //get all polygon points
+        const points = Object.values(polygons).map((polygon) => {
+            return polygon.toGeoJSON()
+        });
+        //print all points
+        console.log(points);
+
+    };
+
+    const handleEditStop = () => {
+        console.log("edit stop")
+        setDrag(false);
+
+        debugger
+        const polygon = polygonRef.current;
+        polygon.dragging.disable();
+
+        // //get all polygons
+        // const polygons = mapRef.current._layers;
+        // //get all polygon points
+        // const points = Object.values(polygons).map((polygon) => {
+        //     return polygon.toGeoJSON()
+        // });
+        // //print all points
+        // console.log(points);
+    };
+
+
+
 
 
     const handleSaveToDB = (event) => {
@@ -142,6 +188,7 @@ function ParkingEditor(props) {
 
     };
 
+
     return (
         <Container
             maxWidth='xl'
@@ -165,12 +212,13 @@ function ParkingEditor(props) {
                                     center={[parking.latitude, parking.longitude]}
                                     zoom={20}
                                     scrollWheelZoom={true}
+                                    ref={mapRef}
                                 >
                                     <FeatureGroup>
                                         <EditControl
                                             position='topright'
                                             draw={{
-                                                rectangle: false,
+                                                rectangle: true,
                                                 circle: false,
                                                 circlemarker: false,
                                                 marker: false,
@@ -187,7 +235,7 @@ function ParkingEditor(props) {
                                                 },
                                             }}
                                             edit={{
-                                                edit: false,
+                                                edit: true,
                                                 remove: false, //TODO zmiana na disabled?
                                                 featureGroup: mapRef.current?.leafletElement,
                                             }}
@@ -195,8 +243,10 @@ function ParkingEditor(props) {
                                                 const eventJson = (e.layer.toGeoJSON())
                                                 console.log(eventJson.geometry.coordinates)
                                                 mapPonitsToParkingSpot(eventJson.geometry.coordinates);
-
                                             }}
+                                            // onEditStart={() => { console.log(e); handleEditStart(); } }
+                                            // onEditStop={() => { console.log(e); handleEditStop(); }}
+
                                         />
                                         {parkingSpots.parkingSpots
                                             .map((spot) => (
@@ -207,6 +257,16 @@ function ParkingEditor(props) {
                                                         point.longitude,
                                                     ])}
                                                     color={spot.active ? "blue" : "#474747"}
+                                                    ref={polygonRef}
+                                                    draggable={true}
+                                                    eventHandlers={{
+                                                        dragend: (e) => {
+                                                            console.log(e);
+                                                        },
+                                                        dragstart: (e) => {
+                                                            console.log(e);
+                                                        }
+                                                    }}
                                                 >
                                                     <Popup>
                                                         <div style={{ minWidth: '200px', maxWidth: '250px', padding: '10px', textAlign: 'left' }}>
@@ -290,7 +350,13 @@ function ParkingEditor(props) {
                                 fullWidth
                             >
                                 Exit editor
-                            </Button>
+                                </Button>
+                                <Button onClick={() => handleEditStart()}>
+                                    DRAG
+                                </Button>
+                                <Button onClick={() => handleEditStop()}>
+                                    STOP
+                                </Button>
                             </Grid>
                         </Paper>
                     </Grid>
