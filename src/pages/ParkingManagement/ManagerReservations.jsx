@@ -48,18 +48,12 @@ export default function ManagerReservations(props) {
             renderCell: (params) => (
                 new Date(params.row.startDate) > new Date() && (
                     <>
-                    {/* <Button
-                        variant="contained"
-                        onClick={() => handleDelete(params.row.id)}
-                    >
-                        Delete
-                    </Button> */}
-                    <IconButton style={{ fontSize: 30 }} color="primary" aria-label="edit" onClick={() => handleEdit(params.row.id)}>
-                        <ModeEditIcon />
-                    </IconButton>
-                    <IconButton style={{ fontSize: 30 }} color="primary" aria-label="cancel"  onClick={() => handleDelete(params.row.id)}>
-                        <DeleteIcon style={{ fontSize: 30 }} />
-                    </IconButton>
+                        <IconButton style={{ fontSize: 30 }} color="primary" aria-label="edit" onClick={() => handleEdit(params.row.id)}>
+                            <ModeEditIcon />
+                        </IconButton>
+                        <IconButton style={{ fontSize: 30 }} color="primary" aria-label="cancel"  onClick={() => handleDelete(params.row.id)}>
+                            <DeleteIcon style={{ fontSize: 30 }} />
+                        </IconButton>
                     </>
 
                 )
