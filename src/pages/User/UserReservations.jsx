@@ -23,10 +23,11 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import { toast } from "react-toastify";
 
 export default function UserReservations() {
     const authenticationReducer = useSelector((state) => state.authenticationReducer);
-
+    const hourRule = process.env.REACT_APP_HOUR_RULE;
     const pendingReservations = useSelector((state) => state.reservationReducer.reservationsPending);
     const archivedReservations = useSelector((state) => state.reservationReducer.reservationsArchived);
     const [showArchived, setShowArchived] = useState(false);
@@ -36,6 +37,10 @@ export default function UserReservations() {
 
     const navigate = useNavigate();
     const dispatch = useDispatch();
+
+    const twoHoursFromNow = new Date();
+    twoHoursFromNow.setHours(twoHoursFromNow.getHours() + parseInt(hourRule));
+
 
     const userjson = JSON.parse(localStorage.getItem("user"));
     const user = decodeToken(userjson?.token);
@@ -83,7 +88,11 @@ export default function UserReservations() {
     }
 
     const cancelReservation = () => {
-        dispatch(deleteReservation(selectedReservation.id));
+        dispatch(deleteReservation(selectedReservation.id)).then(() => {
+            toast.success('Reservation deleted successfully.');
+        }).catch((error) => {
+            toast.error('Error deleting reservation: '+ error.message);
+        });
     }
 
 
@@ -156,7 +165,7 @@ export default function UserReservations() {
                                 <Typography variant="body1">Registration Number: {reservation.registrationNumber}</Typography>
                                 <Typography variant="body1">Name: {reservation.userDTO.firstName} {reservation.userDTO.lastName}</Typography>
                                 <Typography variant="body1">Amount: {reservation.amount} {reservation.parkingSpotDTO.parkingDTO.currency}</Typography>
-                                {new Date(reservation.startDate) > new Date() && (
+                                {new Date(reservation.startDate) > (user.role === "USER" ? twoHoursFromNow : new Date()) && (
                                     <div style={{ textAlign: 'right' }}>
                                         <IconButton style={{ fontSize: 30 }} color="primary" aria-label="edit" onClick={() => handleEdit(reservation)}>
                                             <ModeEditIcon />

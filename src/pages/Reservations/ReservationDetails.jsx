@@ -349,7 +349,7 @@ export default function ReservationDetails(props) {
                                                     value={cvc}
                                                     onChange={handleCvc}
                                                     inputProps={{
-                                                        maxLength: 3,
+                                                        maxLength: 4,
                                                     }}
                                                 />
                                             </div>

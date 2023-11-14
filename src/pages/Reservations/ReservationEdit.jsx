@@ -41,8 +41,7 @@ export default function ReservationEdit(props) {
     }, []);
 
 
-    const handleReseveClick = (event) => {
-
+    const handleEditClick = (event) => {
         if (!validateRegistraionNumber(registrationNumber)) {
             toast.error('Please enter valid registration number: not empty and no white spaces.');
             return;
@@ -60,7 +59,7 @@ export default function ReservationEdit(props) {
                 .then(response => {
                     setLoading(false);
                     toast.success('reservation updated');
-                    navigate('/profile/reservations');
+                    navigate(-1);
                 }, error => {
                     setLoading(false);
                     console.log(error);
@@ -75,8 +74,8 @@ export default function ReservationEdit(props) {
         }
     };
 
-    const handleEditClick = (event) => {
-            navigate('/profile/reservations')
+    const handleExitClick = () => {
+        navigate(-1);
     };
 
     const handleChangeRegistrationNumber = (value) => {
@@ -142,7 +141,7 @@ export default function ReservationEdit(props) {
                     )}
                         </div>
                         <Typography sx={{ m: 1 }} fullWidth>
-                            Dates and times are based on parking time zone ({parking.timeZone}) compared to UTC.
+                            Dates and times are based on parking time zone ({reservation?.parkingSpotDTO?.parkingDTO?.timeZone}) compared to UTC.
                         </Typography>
                         <TextField sx={{ m: 1 }} fullWidth
                                 value={`${new Date(reservation.startDate).toLocaleString()}`}
@@ -185,13 +184,14 @@ export default function ReservationEdit(props) {
                                 variant="outlined" 
                                 InputProps={{
                                     readOnly: true,
+                                    shrink: true,
                                 }}
                         />
-                        <Button sx={{ m: 1 }} variant="contained" onClick={handleReseveClick} fullWidth>
+                        <Button sx={{ m: 1 }} variant="contained" onClick={handleEditClick} fullWidth>
                             Save
                         </Button>
-                        <Button sx={{ m: 1 }} variant="outlined" onClick={handleEditClick} fullWidth>
-                            Cancel
+                        <Button sx={{ m: 1 }} variant="outlined" onClick={handleExitClick} fullWidth>
+                            Exit
                         </Button>
                         
                     </CardContent>

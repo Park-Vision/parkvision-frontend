@@ -68,6 +68,9 @@ const reservationReducer = (state = initialState, action) => {
                 reservationsArchived: state.reservationsArchived.filter(
                     (item) => item.id !== action.value
                 ),
+                reservations: state.reservations.filter(
+                    (item) => item.id !== action.value
+                ),
             };
         case GET_RESERVATION:
             return {
