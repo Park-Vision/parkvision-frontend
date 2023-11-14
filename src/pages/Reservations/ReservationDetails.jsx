@@ -120,12 +120,17 @@ export default function ReservationDetails(props) {
                                 dispatch(addStripeCharge(newCharge))
                                     .then((chargeResponse) => {
                                         setLoading(false);
-                                        toast.success('Reservation created');
+                                        if (chargeResponse.reservation !== null){
+                                            toast.success('Reservation created');
+                                        } else {
+                                            toast.error('Payment declined. Please try again.');
+                                        }
                                         navigate('/');
                                         dispatch({
                                             type: 'GET_PARKING_SPOT',
                                             value: {},
                                         });
+
                                     })
                                     .catch((error) => {
                                         console.error('Error in adding stripe charge:', error);
