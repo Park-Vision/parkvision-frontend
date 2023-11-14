@@ -20,7 +20,7 @@ import { getParkingSpotsByParkingId, addStagedParkingSpot, addParkingSpot } from
 import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
 import {
-    GET_PARKING_SPOT,
+    GET_PARKING_SPOT, UPDATE_PARKING_SPOT,
 } from "../../actions/types";
 import convertTime from "../../utils/convertTime";
 import decodeToken from "../../utils/decodeToken";
@@ -47,13 +47,13 @@ function ParkingEditor(props) {
     const parkingSpots = useSelector((state) => state.parkingSpotReducer);
     const stagedParkingSpots = useSelector((state) => state.parkingSpotReducer.stagedParkingSpots);
     const parkingSpot = useSelector((state) => state.parkingSpotReducer.parkingSpot);
-    const [drag, setDrag] = React.useState(false);
+    const [drag, setDrag] = React.useState(true);
 
     const userjson = JSON.parse(localStorage.getItem("user"));
     const user = decodeToken(userjson?.token);
 
-    const mapRef = useRef(null);
-    const polygonRef = useRef(null);
+    const mapRef = useRef();
+    const polygonRef = useRef();
 
     useEffect(() => {
         const checkAuthorization = async () => {
@@ -81,9 +81,40 @@ function ParkingEditor(props) {
         }
 
         checkAuthorization();
-        
     }, []);
 
+
+    const toggleDrag = () => {
+        debugger
+        const newDrag = !drag;
+        setDrag(newDrag); // Toggle the drag state
+        console.log(drag);
+        debugger;
+        const polygon = polygonRef.current;
+        if (polygon) {
+            if (newDrag) {
+                polygon.dragging.enable();
+                console.log('enable drag')
+            }
+            else {
+                polygon.dragging.disable();
+                console.log('disable drag')
+            }
+        }
+    };
+
+    const clearLayerWithNoIds = () => {
+        const map = mapRef.current;
+        map.eachLayer((layer) => {
+            if (layer instanceof L.FeatureGroup) {
+                layer.eachLayer((polyObject) => {
+                    if (polyObject.options.id === undefined) {
+                        polyObject.remove();
+                    }
+                });
+            }
+        });
+    };
 
     const unsetParkingSpot = () => {
         dispatch({
@@ -93,46 +124,18 @@ function ParkingEditor(props) {
     };
 
     const handleEditStart = () => {
-        console.log("edit start")
-        setDrag(true);
-
-        //get polygon ref
         const polygon = polygonRef.current;
         polygon.dragging.enable();
-
-
-        debugger
-        //get all polygons
-        const polygons = mapRef.current._layers;
-        //get all polygon points
-        const points = Object.values(polygons).map((polygon) => {
-            return polygon.toGeoJSON()
-        });
-        //print all points
-        console.log(points);
+        console.log('stop')
 
     };
 
     const handleEditStop = () => {
-        console.log("edit stop")
-        setDrag(false);
-
-        debugger
         const polygon = polygonRef.current;
         polygon.dragging.disable();
+        console.log('stop')
 
-        // //get all polygons
-        // const polygons = mapRef.current._layers;
-        // //get all polygon points
-        // const points = Object.values(polygons).map((polygon) => {
-        //     return polygon.toGeoJSON()
-        // });
-        // //print all points
-        // console.log(points);
     };
-
-
-
 
 
     const handleSaveToDB = (event) => {
@@ -143,14 +146,19 @@ function ParkingEditor(props) {
         navigate(`/parking/${parking.id}`);
     };
 
-    const mapPonitsToParkingSpot = (points) => {
-
+    const mapPonitsToParkingSpot = (points,editedSpot=null) => {
+        if (points[0].length !== 5) {
+            toast.error("You must draw a 4 points!");
+            clearLayerWithNoIds();
+            return;
+        }
         const mappedPoints = points[0].map((coord) => {
             console.log(coord);
-            return { latitude: coord[1], longitude: coord[0] };
+            return { latitude: coord[1], longitude: coord[0], id: coord[2]  };
         });
 
         mappedPoints.pop();
+        console.log(mappedPoints);
 
         const pointsDTO = mappedPoints.map((point) => {
             return {
@@ -160,13 +168,23 @@ function ParkingEditor(props) {
                     id: parking.id
                 }
             }
+        });
+         
+        if (editedSpot !== null) {
+            const editedParkingSpot = parkingSpots.parkingSpots.find((spot) => spot.id === editedSpot.id);
+            editedParkingSpot.pointsDTO = mappedPoints;
+            dispatch({
+                type: UPDATE_PARKING_SPOT,
+                value: editedParkingSpot,
+            })
+            clearLayerWithNoIds();
+            return;
         }
-        );
+
 
         const newParkingSpot = {
             spotNumber: "newly created spot",
-            occupied: false,
-            active: true,
+            active: false,
             parkingDTO: {
                 id: parking.id
             },
@@ -174,6 +192,7 @@ function ParkingEditor(props) {
         }
 
         dispatch(addStagedParkingSpot(newParkingSpot));
+        clearLayerWithNoIds();
     };
 
     const handleEditClick = (event) => {
@@ -214,11 +233,22 @@ function ParkingEditor(props) {
                                     scrollWheelZoom={true}
                                     ref={mapRef}
                                 >
+                                    <Button
+                                        variant="contained"
+                                        color="primary"
+                                        onClick={toggleDrag}
+                                        style={{
+                                            position: "absolute",
+                                            top: "10px",
+                                            right: "50px",
+                                            zIndex: "9999"
+                                        }}>{drag ? "Disable Drag" : "Enable Drag"}</Button>
+
                                     <FeatureGroup>
                                         <EditControl
                                             position='topright'
                                             draw={{
-                                                rectangle: true,
+                                                rectangle: false,
                                                 circle: false,
                                                 circlemarker: false,
                                                 marker: false,
@@ -231,12 +261,14 @@ function ParkingEditor(props) {
                                                     },
                                                     shapeOptions: {
                                                         color: "#97009c",
+                                                        borderColor: "#97009c",
                                                     },
+                                                    
                                                 },
                                             }}
                                             edit={{
                                                 edit: true,
-                                                remove: false, //TODO zmiana na disabled?
+                                                remove: false,
                                                 featureGroup: mapRef.current?.leafletElement,
                                             }}
                                             onCreated={e => {
@@ -244,28 +276,31 @@ function ParkingEditor(props) {
                                                 console.log(eventJson.geometry.coordinates)
                                                 mapPonitsToParkingSpot(eventJson.geometry.coordinates);
                                             }}
-                                            // onEditStart={() => { console.log(e); handleEditStart(); } }
-                                            // onEditStop={() => { console.log(e); handleEditStop(); }}
-
                                         />
                                         {parkingSpots.parkingSpots
                                             .map((spot) => (
                                                 <Polygon
+                                                    id={spot.id}
                                                     key={spot.id}
                                                     positions={spot.pointsDTO.map((point) => [
                                                         point.latitude,
                                                         point.longitude,
+                                                        point.id
                                                     ])}
                                                     color={spot.active ? "blue" : "#474747"}
                                                     ref={polygonRef}
                                                     draggable={true}
                                                     eventHandlers={{
                                                         dragend: (e) => {
-                                                            console.log(e);
+                                                            const eventJson = (e.target.toGeoJSON())
+                                                            let list = eventJson.geometry.coordinates[0]
+                                                            let index = 0;
+                                                            for (let i = 0; index < eventJson.geometry.coordinates[0].length - 1 ; i = (i + 1)% 4) {
+                                                                list[index].push(spot.pointsDTO[i].id);
+                                                                index = index + 1;
+                                                            }
+                                                            mapPonitsToParkingSpot(eventJson.geometry.coordinates, spot);
                                                         },
-                                                        dragstart: (e) => {
-                                                            console.log(e);
-                                                        }
                                                     }}
                                                 >
                                                     <Popup>
@@ -298,6 +333,44 @@ function ParkingEditor(props) {
                                         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                                         url='http://mt0.google.com/vt/lyrs=s&x={x}&y={y}&z={z}'
                                     />
+                                    {stagedParkingSpots
+                                            .map((spot) => (
+                                                <Polygon
+                                                    id={spot.id}
+                                                    key={spot.id}
+                                                    positions={spot.pointsDTO.map((point) => [
+                                                        point.latitude,
+                                                        point.longitude,
+                                                        point.id
+                                                    ])}
+                                                    color={"#474747"}
+                                                    ref={polygonRef}
+                                                    draggable={true}
+                                                    eventHandlers={{
+                                                        dragend: (e) => {
+                                                            const polygonKey = e.target.options.id;
+                                                            console.log(polygonKey) 
+                                                            const eventJson = (e.target.toGeoJSON())
+                                                            console.log(eventJson.geometry.coordinates)
+                                                            mapPonitsToParkingSpot(eventJson.geometry.coordinates, polygonKey);
+                                                        },
+                                                    }}
+                                                >
+                                                    <Popup>
+                                                        <div style={{ minWidth: '200px', maxWidth: '250px', padding: '10px', textAlign: 'left' }}>
+                                                            <div style={{ marginBottom: '5px', textAlign: 'center',
+                                                                fontSize: `${Math.min(20, 450 / parking.name.length)}px`, fontWeight: 'bold',
+                                                                whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                                                Spot: {spot.id}
+                                                            </div>
+                                                            <div style={{ marginBottom: '5px' }}>
+                                                                Save parking staged spots to edit them.
+                                                            </div>
+                                                        </div>
+                                                    </Popup>
+                                                </Polygon>
+                                            ))}
+
                                 </MapContainer>
                             ) : (
                                 <Box
@@ -350,12 +423,6 @@ function ParkingEditor(props) {
                                 fullWidth
                             >
                                 Exit editor
-                                </Button>
-                                <Button onClick={() => handleEditStart()}>
-                                    DRAG
-                                </Button>
-                                <Button onClick={() => handleEditStop()}>
-                                    STOP
                                 </Button>
                             </Grid>
                         </Paper>
