@@ -6,7 +6,10 @@ import {Box, Button, Container} from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import convertDate from "../../utils/convertDate";
 import Home from "../Home/Home";
-
+import ModeEditIcon from '@mui/icons-material/ModeEdit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import IconButton from '@mui/material/IconButton';
+import { toast } from "react-toastify";
 export default function ManagerReservations(props) {
     const { parkingId } = useParams();
     console.log(parkingId)
@@ -43,20 +46,32 @@ export default function ManagerReservations(props) {
             valueGetter: ({row}) => row.parkingSpotDTO.parkingDTO.name },
         { field: 'actions', headerName: 'Actions', flex: 0.5,
             renderCell: (params) => (
-                <Button
-                    variant="contained"
-                    onClick={() => handleDelete(params.row.id)}
-                >
-                    Delete
-                </Button>
+                new Date(params.row.startDate) > new Date() && (
+                    <>
+                        <IconButton style={{ fontSize: 30 }} color="primary" aria-label="edit" onClick={() => handleEdit(params.row.id)}>
+                            <ModeEditIcon />
+                        </IconButton>
+                        <IconButton style={{ fontSize: 30 }} color="primary" aria-label="cancel"  onClick={() => handleDelete(params.row.id)}>
+                            <DeleteIcon style={{ fontSize: 30 }} />
+                        </IconButton>
+                    </>
+
+                )
             ),
         },
     ];
 
     const handleDelete = (reservationId) => {
-        dispatch(deleteReservation(reservationId));
+        dispatch(deleteReservation(reservationId)).then(() => {
+            toast.success('Reservation deleted successfully.');
+        }).catch((error) => {
+            toast.error('Error deleting reservation:' + error.message);
+        });
     };
 
+    const handleEdit = (reservationId) => {
+        navigate('/reservation-edit/' + reservationId);
+    }
 
     return (
         <Container maxWidth="xl">
@@ -66,7 +81,6 @@ export default function ManagerReservations(props) {
                         rows={reservations}
                         columns={columns}
                         pageSize={5}
-                        checkboxSelection
                     />
                 </div>
             </Box>

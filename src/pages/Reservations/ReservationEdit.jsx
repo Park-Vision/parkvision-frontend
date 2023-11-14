@@ -8,6 +8,8 @@ import { toast } from "react-toastify";
 import { useState, useEffect } from 'react';
 import { GET_PARKING_SPOT, GET_RESERVATIONS, UPDATE_RESERVATION } from '../../actions/types';
 import { validateRegistraionNumber } from '../../utils/validation';
+import decodeToken from '../../utils/decodeToken';
+import { getUserReservations } from '../../actions/reservationActions';
 
 export default function ReservationEdit(props) {
     const { reservationId } = useParams();
@@ -20,22 +22,26 @@ export default function ReservationEdit(props) {
 
     const dispatch = useDispatch()
 
+    const userjson = JSON.parse(localStorage.getItem("user"));
+    const user = decodeToken(userjson?.token);
+
     useEffect(() => {
         dispatch(getReservation(reservationId)).then((response) => {
             dispatch(getParkingSpot(response.parkingSpotDTO.id));
-
             setRegistrationNumber(response.registrationNumber);
-        }
-        );
-        dispatch({
-            type: GET_RESERVATIONS,
-            value: []
         });
+        if (user) {
+            dispatch(getUserReservations())
+                .then(() => {
+                });
+        } else {
+            navigate('/');
+            return;
+        }
     }, []);
 
 
-    const handleReseveClick = (event) => {
-
+    const handleEditClick = (event) => {
         if (!validateRegistraionNumber(registrationNumber)) {
             toast.error('Please enter valid registration number: not empty and no white spaces.');
             return;
@@ -53,8 +59,12 @@ export default function ReservationEdit(props) {
                 .then(response => {
                     setLoading(false);
                     toast.success('reservation updated');
-                    navigate('/profile/reservations');
-                }
+                    navigate(-1);
+                }, error => {
+                    setLoading(false);
+                    console.log(error);
+                    toast.error(error.message);
+                    }
                 );
         }
         catch (e) {
@@ -64,8 +74,8 @@ export default function ReservationEdit(props) {
         }
     };
 
-    const handleEditClick = (event) => {
-            navigate('/profile/reservations')
+    const handleExitClick = () => {
+        navigate(-1);
     };
 
     const handleChangeRegistrationNumber = (value) => {
@@ -131,7 +141,7 @@ export default function ReservationEdit(props) {
                     )}
                         </div>
                         <Typography sx={{ m: 1 }} fullWidth>
-                            Dates and times are based on parking time zone ({parking.timeZone}) compared to UTC.
+                            Dates and times are based on parking time zone ({reservation?.parkingSpotDTO?.parkingDTO?.timeZone}) compared to UTC.
                         </Typography>
                         <TextField sx={{ m: 1 }} fullWidth
                                 value={`${new Date(reservation.startDate).toLocaleString()}`}
@@ -174,13 +184,14 @@ export default function ReservationEdit(props) {
                                 variant="outlined" 
                                 InputProps={{
                                     readOnly: true,
+                                    shrink: true,
                                 }}
                         />
-                        <Button sx={{ m: 1 }} variant="contained" onClick={handleReseveClick} fullWidth>
+                        <Button sx={{ m: 1 }} variant="contained" onClick={handleEditClick} fullWidth>
                             Save
                         </Button>
-                        <Button sx={{ m: 1 }} variant="outlined" onClick={handleEditClick} fullWidth>
-                            Cancel
+                        <Button sx={{ m: 1 }} variant="outlined" onClick={handleExitClick} fullWidth>
+                            Exit
                         </Button>
                         
                     </CardContent>
