@@ -429,7 +429,9 @@ function ParkingDetails(props) {
                         <Paper className='reserve'>
                             <CardContent>
                                 <Typography variant='h4'>{parking.name}</Typography>
-                                <Typography variant='h5'>Available: {numOfFreeSpotsList[parking.id]}/{numOfSpotsList[parking.id]}</Typography>
+                                {numOfFreeSpotsList && numOfSpotsList && parking.id  &&   (
+                                <Typography variant='h5'>Available: {numOfFreeSpotsList[parking.id.toString()]}/{numOfSpotsList[parking.id.toString()]}</Typography>
+                                )}
                                 <Typography variant='p'>{parking.description}</Typography>
                                 <Typography variant="h6">
                                     Address: {parking.street},{parking.zipCode} {parking.city}
