@@ -15,7 +15,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { MapContainer, TileLayer, FeatureGroup, Polygon, Popup } from 'react-leaflet';
 import { addReservation } from '../../actions/reservationActions';
 import { toast } from "react-toastify";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import CreditCardIcon from '@mui/icons-material/CreditCard';
 import { addPayment } from "../../actions/paymentActions";
 import { addStripeCharge } from "../../actions/stripeChargeActions";
