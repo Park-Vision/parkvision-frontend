@@ -15,10 +15,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { MapContainer, TileLayer, FeatureGroup, Polygon, Popup } from 'react-leaflet';
 import { addReservation } from '../../actions/reservationActions';
 import { toast } from "react-toastify";
-import {useEffect, useState} from 'react';
+import { useState } from 'react';
 import CreditCardIcon from '@mui/icons-material/CreditCard';
 import { addPayment } from "../../actions/paymentActions";
 import { addStripeCharge } from "../../actions/stripeChargeActions";
+import getLocalISOTime from '../../utils/getLocalISOTime';
 
 export default function ReservationDetails(props) {
     const navigate = useNavigate();
@@ -57,10 +58,20 @@ export default function ReservationDetails(props) {
         setCvc(event.target.value);
     }
 
+    const transformResevationDates = (reservation) => {
+        const start = getLocalISOTime(reservation.startDate, parking.timeZone);
+        const end = getLocalISOTime(reservation.endDate, parking.timeZone);
+        return {
+            ...reservation,
+            startDate: start,
+            endDate: end,
+        };
+    }
+
     const handleReservation = (event) => {
         if (authenticationReducer.isLoggedIn &&
             authenticationReducer.decodedUser.role === "PARKING_MANAGER") {
-            dispatch(addReservation(reservation)).then((reservationResponse) => {
+            dispatch(addReservation(transformResevationDates(reservation))).then((reservationResponse) => {
                     setLoading(false);
                     toast.success('Reservation created');
                     navigate('/parking/' + parking.id);
@@ -93,7 +104,7 @@ export default function ReservationDetails(props) {
                     ...reservation,
                     amount: amount,
                 };
-                dispatch(addReservation(reservationWithAmount))
+                dispatch(addReservation(transformResevationDates(reservation)))
                     .then((reservationResponse) => {
                         const userId = authenticationReducer.decodedUser.userId;
                         const newPayment = {

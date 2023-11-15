@@ -10,6 +10,7 @@ import { GET_PARKING_SPOT, GET_RESERVATIONS, UPDATE_RESERVATION } from '../../ac
 import { validateRegistraionNumber } from '../../utils/validation';
 import decodeToken from '../../utils/decodeToken';
 import { getUserReservations } from '../../actions/reservationActions';
+import convertDate from '../../utils/convertDate';
 
 export default function ReservationEdit(props) {
     const { reservationId } = useParams();
@@ -103,7 +104,8 @@ export default function ReservationEdit(props) {
                                     style={{ width: "100%", height: "100%" }}
                                 >
                                     <CircularProgress />
-                                </Box>}
+                </Box>}
+            {reservation && reservation.id && (
                 <Paper>
                     <CardContent>
                         <div style={{ height: '500px'}}>
@@ -144,7 +146,7 @@ export default function ReservationEdit(props) {
                             Dates and times are based on parking time zone ({reservation?.parkingSpotDTO?.parkingDTO?.timeZone}) compared to UTC.
                         </Typography>
                         <TextField sx={{ m: 1 }} fullWidth
-                                value={`${new Date(reservation.startDate).toLocaleString()}`}
+                                value={convertDate(reservation.startDate)}
                                 id="outlined-basic"
                                 label="Start date"
                                 variant="outlined" 
@@ -153,7 +155,7 @@ export default function ReservationEdit(props) {
                                 }}
                         />
                         <TextField sx={{ m: 1 }} fullWidth
-                            value={`${new Date(reservation.endDate).toLocaleString()}`}
+                            value={convertDate(reservation.endDate)}
                                 id="outlined-basic"
                                 label="End date"
                                 variant="outlined" 
@@ -195,7 +197,8 @@ export default function ReservationEdit(props) {
                         </Button>
                         
                     </CardContent>
-                </Paper>
+                    </Paper>
+            )}
             </Box>
         </Container>
     )

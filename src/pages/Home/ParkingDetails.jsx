@@ -33,10 +33,12 @@ import {
     GET_RESERVATION,
     GET_PARKING_SPOT,
     GET_FREE_PARKING_SPOTS_BY_PARKING_ID,
+    GET_PARKING,
 } from "../../actions/types";
 import { toast } from "react-toastify";
 import convertTime from "../../utils/convertTime";
 import convertDate from "../../utils/convertDate";
+import getLocalISOTime from "../../utils/getLocalISOTime";
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
     iconRetinaUrl:
@@ -77,10 +79,10 @@ function ParkingDetails(props) {
 
 
     useEffect(() => {
-        dispatch(getParking(parkingId)).then((response) => {
-            handleSearch(startDay, startTime, endDay, endTime);
+        dispatch(getParking(parkingId)).then((res) => {
             dispatch(getParkingFreeSpotsNumber(parkingId, new Date().toISOString()))
             dispatch(getParkingSpotsNumber(parkingId))
+            handleSearch(startDay, startTime, endDay, endTime, res);
         });
         dispatch(getParkingSpotsByParkingId(parkingId));
         unsetParkingSpot();
@@ -165,28 +167,25 @@ function ParkingDetails(props) {
             endDay = startDay;
         }
         setEndDay(endDay);
-
-        handleSearch(startDay, startTime, endDay, endTime);
+        handleSearch(startDay, startTime, endDay, endTime, parking);
     }
 
 
 
-
-    const handleSearch = (startDay, startTime, endDay, endTime) => {
-
-        if(parkingSpot) {
+    const handleSearch = (startDay, startTime, endDay, endTime, parking) => {
+        if (parkingSpot) {
             handleClickOnSelectedSpot(parkingSpot);
         }
+        if (!parking.timeZone) {
+            return;
+        }
+        setStart(startTime);
 
-        console.log(parseInt(parking.timeZone));
-        const test = new Date(startTime.toDate()).setHours(new Date(startTime.toDate()).getHours() + parseInt(parking.timeZone));
-        console.log(new Date(test).toISOString());
         const start =
-            new Date(startDay.toDate()).toISOString().split("T")[0] + "T" + new Date(startTime.toDate()).toISOString().split("T")[1];
-        
-        setStart(start);
-        const end = new Date(endDay.toDate()).toISOString().split("T")[0] + "T" + new Date(endTime.toDate()).toISOString().split("T")[1];
-        setEnd(end);
+            new Date(startDay.toDate()).toISOString().split("T")[0] + "T" + getLocalISOTime(startTime, parking.timeZone).split("T")[1];
+
+        setEnd(endTime);
+        const end = new Date(endDay.toDate()).toISOString().split("T")[0] + "T" + getLocalISOTime(endTime, parking.timeZone).split("T")[1];
 
         const startTimeDate = new Date(start);
         const endTimeDate = new Date(end);
@@ -194,8 +193,10 @@ function ParkingDetails(props) {
             toast.warning("Start time must be before end time");
             return;
         }
-        // dispatch(getFreeParkingSpotsByParkingId(parkingId, start, end));
-        // dispatch(getOccupiedParkingSpotsMapByParkingId(parkingId, start));
+        console.log(start, end)
+
+        dispatch(getFreeParkingSpotsByParkingId(parkingId, start, end));
+        dispatch(getOccupiedParkingSpotsMapByParkingId(parkingId, start));
     };
 
     const handleClickOnFreeParkingSpot = (event) => {
@@ -335,7 +336,7 @@ function ParkingDetails(props) {
                                                 featureGroup: mapRef.current?.leafletElement,
                                             }}
                                         />
-                                        {parkingSpots.parkingSpots
+                                        {parkingSpots.parkingSpots && parkingSpots.parkingSpots
                                             .filter(
                                                 (spot) => !freeParkingSpots.map((spot) => spot.id).includes(spot.id)
                                             )
