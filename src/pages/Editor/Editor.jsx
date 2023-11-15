@@ -16,7 +16,7 @@ import "./Editor.css"; // Create a CSS file for styling
 import { useNavigate } from "react-router-dom";
 
 import { MapContainer, Polygon, Popup, TileLayer, FeatureGroup } from "react-leaflet";
-import { getParkingSpotsByParkingId, addStagedParkingSpot, addParkingSpot } from "../../actions/parkingSpotActions";
+import { getParkingSpotsByParkingId, addStagedParkingSpot, addParkingSpot, updateParkingSpot, getParkingSpot } from "../../actions/parkingSpotActions";
 import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
 import {
@@ -42,12 +42,13 @@ function ParkingEditor(props) {
     const { parkingId } = useParams();
     const dispatch = useDispatch();
     const navigate = useNavigate();
-
+    const spots = useSelector((state) => state.parkingSpotReducer.parkingSpots);
     const parking = useSelector((state) => state.parkingReducer.parking);
     const parkingSpots = useSelector((state) => state.parkingSpotReducer);
     const stagedParkingSpots = useSelector((state) => state.parkingSpotReducer.stagedParkingSpots);
     const parkingSpot = useSelector((state) => state.parkingSpotReducer.parkingSpot);
     const [drag, setDrag] = React.useState(true);
+    const [spotsCopy, setSpotsCopy] = React.useState([]);
 
     const userjson = JSON.parse(localStorage.getItem("user"));
     const user = decodeToken(userjson?.token);
@@ -72,7 +73,8 @@ function ParkingEditor(props) {
                     toast.error("You are not authorized to view this page!");
                     navigate('/');
                 }
-                dispatch(getParkingSpotsByParkingId(parkingId));
+                let spots = await dispatch(getParkingSpotsByParkingId(parkingId))
+                setSpotsCopy(spots);
                 unsetParkingSpot();
             } else {
                 toast.error("You are not authorized to view this page!");
@@ -117,6 +119,21 @@ function ParkingEditor(props) {
         });
     };
 
+
+    const clearLayerWithId = (id) => {
+        const map = mapRef.current;
+        map.eachLayer((layer) => {
+            if (layer instanceof L.FeatureGroup) {
+                layer.eachLayer((polyObject) => {
+                    if (polyObject.options.id === id) {
+                        polyObject.remove();
+                    }
+                });
+            }
+        });
+    };
+
+
     const unsetParkingSpot = () => {
         dispatch({
             type: GET_PARKING_SPOT,
@@ -147,10 +164,16 @@ function ParkingEditor(props) {
         navigate(`/parking/${parking.id}`);
     };
 
-    const mapPonitsToParkingSpot = (points,editedSpot=null) => {
+
+
+    const mapPonitsToParkingSpot = (points, editedSpot = null) => {
+        debugger
         if (points[0].length !== 5) {
             toast.error("You must draw a 4 points!");
             clearLayerWithNoIds();
+            if (editedSpot !== null && !isNaN(editedSpot)) {
+                clearLayerWithId(editedSpot);
+            }
             return;
         }
         const mappedPoints = points[0].map((coord) => {
@@ -159,7 +182,6 @@ function ParkingEditor(props) {
         });
 
         mappedPoints.pop();
-        console.log(mappedPoints);
 
         const pointsDTO = mappedPoints.map((point) => {
             return {
@@ -171,19 +193,20 @@ function ParkingEditor(props) {
             }
         });
          
-        if (editedSpot !== null) {
+        if (editedSpot !== null && isNaN(editedSpot)) {
             const editedParkingSpot = parkingSpots.parkingSpots.find((spot) => spot.id === editedSpot.id);
             editedParkingSpot.pointsDTO = mappedPoints;
-            dispatch({
-                type: UPDATE_PARKING_SPOT,
-                value: editedParkingSpot,
-            })
+            dispatch(updateParkingSpot(editedParkingSpot)).then(() => {
+                dispatch(getParkingSpot(editedSpot.id));
+            });
             clearLayerWithNoIds();
             return;
-        }
+        } 
 
 
-        const newParkingSpot = {
+
+            const newParkingSpot = {
+                id: editedSpot,
             spotNumber: "newly created spot",
             active: false,
             parkingDTO: {
@@ -277,12 +300,19 @@ function ParkingEditor(props) {
                                                 console.log(eventJson.geometry.coordinates)
                                                 mapPonitsToParkingSpot(eventJson.geometry.coordinates);
                                             }}
+                                                onEdited={e => {
+                                                    e.layers.eachLayer(a => {
+                                                        console.log(a.options.id)
+                                                        const eventJson = (a.toGeoJSON())
+                                                        mapPonitsToParkingSpot(eventJson.geometry.coordinates, a.options.id);
+                                                    });
+                                            }}
                                         />
                                         {parkingSpots.parkingSpots
                                             .map((spot) => (
                                                 <Polygon
                                                     id={spot.id}
-                                                    key={spot.id}
+                                                    key={Math.random()}
                                                     positions={spot.pointsDTO.map((point) => [
                                                         point.latitude,
                                                         point.longitude,
@@ -291,6 +321,7 @@ function ParkingEditor(props) {
                                                     color={spot.active ? "blue" : "#474747"}
                                                     ref={polygonRef}
                                                     draggable={true}
+                                                    interactive
                                                     eventHandlers={{
                                                         dragend: (e) => {
                                                             const eventJson = (e.target.toGeoJSON())
@@ -302,6 +333,14 @@ function ParkingEditor(props) {
                                                             }
                                                             mapPonitsToParkingSpot(eventJson.geometry.coordinates, spot);
                                                         },
+                                                        mouseover: (e) => {
+                                                            console.log(spot)
+                                                            dispatch({
+                                                                type: GET_PARKING_SPOT,
+                                                                value: spot,
+                                                            });
+                                                        }
+                                                        
                                                     }}
                                                 >
                                                     <Popup>
@@ -333,6 +372,7 @@ function ParkingEditor(props) {
                                         maxZoom={22}
                                         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                                         url='http://mt0.google.com/vt/lyrs=s&x={x}&y={y}&z={z}'
+                                        
                                     />
                                     {stagedParkingSpots
                                             .map((spot) => (
@@ -345,7 +385,6 @@ function ParkingEditor(props) {
                                                         point.id
                                                     ])}
                                                     color={"#474747"}
-                                                    ref={polygonRef}
                                                     draggable={true}
                                                     eventHandlers={{
                                                         dragend: (e) => {
@@ -354,7 +393,7 @@ function ParkingEditor(props) {
                                                             const eventJson = (e.target.toGeoJSON())
                                                             console.log(eventJson.geometry.coordinates)
                                                             mapPonitsToParkingSpot(eventJson.geometry.coordinates, polygonKey);
-                                                        },
+                                                        }
                                                     }}
                                                 >
                                                     <Popup>
