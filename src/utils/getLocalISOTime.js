@@ -1,6 +1,5 @@
     const getLocalISOTime = (time, timeZoneOffset) => {
         const date = new Date(time.toDate());
-
         const dateWithoutTimeZone = new Date(Date.UTC(
             date.getFullYear(),
             date.getMonth(),
