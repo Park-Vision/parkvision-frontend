@@ -183,6 +183,9 @@ export default function Home() {
                                                         {parking.name}
                                                     </div>
                                                     <div style={{ marginBottom: '5px' }}>
+                                                        <span style={{ fontWeight: 'bold' }}>Available:</span> {numOfFreeSpotsList[parking.id]}/{numOfSpotsList[parking.id]}
+                                                    </div>
+                                                    <div style={{ marginBottom: '5px' }}>
                                                         <span style={{ fontWeight: 'bold' }}>Address:</span> {parking.street}, {parking.zipCode} {parking.city}
                                                     </div>
                                                     <div style={{ marginBottom: '5px' }}>
