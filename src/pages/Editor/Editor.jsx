@@ -129,6 +129,58 @@ function ParkingEditor(props) {
         const layers = e.layers;
         const editedLayers = layers.getLayers();
         const allSpots = [...parkingSpots, ...stagedParkingSpots];
+        const map = mapRef.current;
+        const list = [];
+        map.eachLayer((layer) => {
+            if (layer instanceof L.FeatureGroup) {
+                layer.eachLayer((polyObject) => {
+                    if (polyObject.options.id !== undefined) {
+                        list.push(polyObject);
+                    }
+                });
+            }
+        }); 
+
+        const transformedSpotsLayer = [];
+        list.forEach((layer) => {
+            const spotId = layer.options.id;
+            const spot = allSpots.find((spot) => spot.id === spotId);
+            if (spot === undefined) {
+                const layerPoints = layer.toGeoJSON().geometry.coordinates[0];
+                const layerPointsMapped = layerPoints.map((point) => {
+                    return { latitude: point[1], longitude: point[0], id: point[2] };
+                });
+                layerPointsMapped.pop();
+                const pointsDTO = layerPointsMapped.map((point) => {
+                    return {
+                        id: point.id,
+                        latitude: point.latitude,
+                        longitude: point.longitude,
+                        parkingSpotDTO: {
+                            id: parkingId
+                        }
+                    }
+                });
+                const allIdsDefined = pointsDTO.every(point => point.id !== undefined);
+
+                if (pointsDTO.length !== 4 || !allIdsDefined) {
+                    toast.error("You must draw a 4 points with ids!");
+                } else {
+                    const newParkingSpot = {
+                        id: spotId,
+                        spotNumber: "newly created spot",
+                        active: false,
+                        parkingDTO: {
+                            id: parking.id
+                        },
+                        pointsDTO: pointsDTO
+                    }
+                    transformedSpotsLayer.push(newParkingSpot);
+                }
+
+            }
+        });
+        allSpots.push(...transformedSpotsLayer);
 
         const transformedSpots = [];
         editedLayers.forEach((layer) => {
@@ -193,16 +245,17 @@ function ParkingEditor(props) {
                     if (coliding) {
                         isColliding = true;
                         toast.error("Parking spots are colliding!");
+                        debugger
                     }
                 }
             });
 
             if (!isColliding) {
                 dispatch(updateParkingSpot(editedSpot)).then(() => {
-                    dispatch(getParkingSpot(editedSpot.id));
+                    dispatch(getParkingSpotsByParkingId(parkingId));
                 });
             } else {
-                dispatch(getParkingSpot(editedSpot.id));
+                dispatch(getParkingSpotsByParkingId(parkingId));
             }
         });
     };
