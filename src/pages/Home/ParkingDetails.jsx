@@ -1,4 +1,4 @@
-import React, {useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getParking, getParkingSpotsNumber, getParkingFreeSpotsNumber } from "../../actions/parkingActions";
 import CardContent from "@mui/material/CardContent";
@@ -92,7 +92,7 @@ function ParkingDetails(props) {
         tryGetUser();
         tryGetUserCars();
     }, []);
-    
+
     const unsetParkingSpot = () => {
         dispatch({
             type: GET_PARKING_SPOT,
@@ -161,14 +161,14 @@ function ParkingDetails(props) {
 
 
     const handleAnyChangeOfTime = (startDay, startTime, endDay, endTime) => {
-        
-        
+
+
 
         if (startDay.toDate().getDate() !== startTime.toDate().getDate()) {
             startTime = dayjs(startDay.toDate()).startOf('day').add(startTime.hour(), 'hour').add(startTime.minute(), 'minute').add(startTime.second(), 'second');
             if (dayjs(parkingTime).toDate().getHours() > dayjs(startTime).toDate().getHours()) {
                 startTime = dayjs(parkingTime).set("minute", dayjs(parkingTime).minute() - (dayjs(parkingTime).minute() % 15)).set("second", 0).set("millisecond", 0);
-                
+
                 setStartTime(startTime);
             }
         }
@@ -179,7 +179,7 @@ function ParkingDetails(props) {
 
         setStartDay(startDay);
         setStartTime(startTime);
-            
+
 
         if (startTime.toDate().getTime() >= endTime.toDate().getTime()) {
             endTime = startTime.add(15, "minute");
@@ -205,6 +205,9 @@ function ParkingDetails(props) {
         const utcDate = new Date();
 
         const timeZoneOffset = parseInt(parking.timeZone) * 60;
+        if (isNaN(timeZoneOffset)) {
+            timeZoneOffset = 0;
+        }
 
         const localDate = new Date(utcDate.getTime() + timeZoneOffset * 60 * 1000);
 
@@ -213,6 +216,7 @@ function ParkingDetails(props) {
 
         const localTimeString = formatter.format(localDate);
         const localTime = new Date(localTimeString);
+
         setParkingTime(localTime)
 
         const localTimeDayjs = dayjs(localTime);
@@ -260,7 +264,7 @@ function ParkingDetails(props) {
             });
         } else {
             toast.info("Click on the selected parking spot to deselect it");
-        }   
+        }
     };
 
     const handleClickOnSelectedSpot = (event) => {
@@ -276,7 +280,7 @@ function ParkingDetails(props) {
 
     const handleRegistrationTextFieldChange = (event) => {
         const registrationNumber = event.target.value;
-        if (!validateRegistraionNumber(registrationNumber)){
+        if (!validateRegistraionNumber(registrationNumber)) {
             toast.info('Please enter valid registration number');
         }
         setRegistrationNumber(registrationNumber);
@@ -306,7 +310,7 @@ function ParkingDetails(props) {
             return
         }
 
-        if (!validateRegistraionNumber(registrationNumber)){
+        if (!validateRegistraionNumber(registrationNumber)) {
             toast.warning('Registration number has no whitespaces');
             return;
         }
@@ -340,6 +344,11 @@ function ParkingDetails(props) {
 
     const handleGoToReservations = () => {
         navigate(`/parking/${parkingId}/reservations`);
+    };
+
+
+    const handleGoToParkingDetails = () => {
+        navigate(`/parking/${parkingId}/details`);
     };
 
     return (
@@ -411,9 +420,9 @@ function ParkingDetails(props) {
                                                     )}
                                                 </Polygon>
                                             ))}
-                                                {freeParkingSpots.map((spot, index) => (
-                                                spot.id !== parkingSpots.parkingSpot.id && (
-                                                    <Polygon
+                                        {freeParkingSpots.map((spot, index) => (
+                                            spot.id !== parkingSpots.parkingSpot.id && (
+                                                <Polygon
                                                     key={index}
                                                     positions={spot.pointsDTO.map((point) => [
                                                         point.latitude,
@@ -422,12 +431,12 @@ function ParkingDetails(props) {
                                                     color="green"
                                                     eventHandlers={{
                                                         click: () => {
-                                                        handleClickOnFreeParkingSpot(spot);
+                                                            handleClickOnFreeParkingSpot(spot);
                                                         },
                                                     }}
-                                                    />
-                                                )
-                                                ))}
+                                                />
+                                            )
+                                        ))}
 
                                     </FeatureGroup>
 
@@ -438,28 +447,28 @@ function ParkingDetails(props) {
                                         url='http://mt0.google.com/vt/lyrs=s&x={x}&y={y}&z={z}'
                                     />
                                     {parkingSpot && parkingSpot.id && (
-                                            <Polygon
-                                                positions={parkingSpot.pointsDTO.map((point) => [
-                                                    point.latitude,
-                                                    point.longitude,
-                                                ])}
-                                                color='orange'
-                                                eventHandlers={{
-                                                    click: () => {
-                                                        handleClickOnSelectedSpot(parkingSpot);
-                                                    },
-                                                    mouseover: (e) => {
+                                        <Polygon
+                                            positions={parkingSpot.pointsDTO.map((point) => [
+                                                point.latitude,
+                                                point.longitude,
+                                            ])}
+                                            color='orange'
+                                            eventHandlers={{
+                                                click: () => {
+                                                    handleClickOnSelectedSpot(parkingSpot);
+                                                },
+                                                mouseover: (e) => {
                                                     e.target.openPopup();
-                                                    },
-                                                    mouseout: (e) => {
+                                                },
+                                                mouseout: (e) => {
                                                     e.target.closePopup();
-                                                    },
+                                                },
                                             }}
                                             interactive
-                                            >
+                                        >
                                             <Popup>{`Selected spot number: ${parkingSpot.id}`} <br></br> Click to deselect</Popup>
-                                            </Polygon>
-                                        )}
+                                        </Polygon>
+                                    )}
                                 </MapContainer>
                             ) : (
                                 <Box
@@ -485,8 +494,8 @@ function ParkingDetails(props) {
                         <Paper className='reserve'>
                             <CardContent>
                                 <Typography variant='h4'>{parking.name}</Typography>
-                                {numOfFreeSpotsList && numOfSpotsList && parking.id  &&   (
-                                <Typography variant='h5'>Available: {numOfFreeSpotsList[parking.id.toString()]}/{numOfSpotsList[parking.id.toString()]}</Typography>
+                                {numOfFreeSpotsList && numOfSpotsList && parking.id && (
+                                    <Typography variant='h5'>Available: {numOfFreeSpotsList[parking.id.toString()]}/{numOfSpotsList[parking.id.toString()]}</Typography>
                                 )}
                                 <Typography variant='p'>{parking.description}</Typography>
                                 <Typography variant="h6">
@@ -499,7 +508,7 @@ function ParkingDetails(props) {
                                 <Typography>{parking.currency}/h: {parking.costRate}</Typography>
                             </CardContent>
                             <Grid container>
-                                {  user && user.parkingDTO &&
+                                {user && user.parkingDTO &&
                                     user.parkingDTO.id === parking.id
                                     && authenticationReducer.isLoggedIn
                                     && authenticationReducer.decodedUser.role === "PARKING_MANAGER" ? (
@@ -520,138 +529,146 @@ function ParkingDetails(props) {
                                         >
                                             Parking reservations
                                         </Button>
+                                        <Button
+                                            sx={{ m: 1 }}
+                                            variant='contained'
+                                            onClick={handleGoToParkingDetails}
+                                            fullWidth
+                                        >
+                                            Change parking details
+                                        </Button>
                                     </Grid>
                                 ) : (
                                     <div></div>
                                 )}
                             </Grid>
                             {parkingTime && parking.timeZone && (
-                            <CardContent spacing={2}>
+                                <CardContent spacing={2}>
                                     <Typography variant='h6'>Select start date and time:</Typography>
 
-                                <Grid
-                                    container
-                                    spacing={3}
-                                >
-                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                        <Grid  
-                                            item xs={12} sm={8} lg={9}
-                                        >
-                                            <DateCalendar
-                                                value={startDay}
+                                    <Grid
+                                        container
+                                        spacing={3}
+                                    >
+                                        <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                            <Grid
+                                                item xs={12} sm={8} lg={9}
+                                            >
+                                                <DateCalendar
+                                                    value={startDay}
                                                     onChange={(newStartDay) => handleAnyChangeOfTime(newStartDay, startTime, endDay, endTime)}
                                                     minDate={dayjs(parkingTime)}
 
-                                            />
-                                        </Grid>
-                                        <Grid
-                                           item xs={12} sm={4} lg={3}
-                                        >
-                                            <DigitalClock
-                                                ampm={false}
-                                                timeStep={15}
-                                                skipDisabled
-                                                shouldDisableTime={(val, view) => shouldDisableTime(val, view, parkingTime)}
-                                                value={startTime}
-                                                onChange={(newStartTime) => { handleAnyChangeOfTime(startDay, newStartTime, endDay, endTime);}}
-                                            />
-                                        </Grid>
-                                    </LocalizationProvider>
-                                </Grid>
+                                                />
+                                            </Grid>
+                                            <Grid
+                                                item xs={12} sm={4} lg={3}
+                                            >
+                                                <DigitalClock
+                                                    ampm={false}
+                                                    timeStep={15}
+                                                    skipDisabled
+                                                    shouldDisableTime={(val, view) => shouldDisableTime(val, view, parkingTime)}
+                                                    value={startTime}
+                                                    onChange={(newStartTime) => { handleAnyChangeOfTime(startDay, newStartTime, endDay, endTime); }}
+                                                />
+                                            </Grid>
+                                        </LocalizationProvider>
+                                    </Grid>
                                     <Typography variant='h6'>Select end date and time:</Typography>
-                                <Grid
-                                    container
-                                    spacing={3}
-                                >
-                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                        <Grid
-                                            item xs={12} sm={8} lg={9}
-                                        >
-                                            <DateCalendar
-                                                value={endDay}
-                                                onChange={(newValue) => { handleAnyChangeOfTime(startDay, startTime, newValue, endTime);} }
+                                    <Grid
+                                        container
+                                        spacing={3}
+                                    >
+                                        <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                            <Grid
+                                                item xs={12} sm={8} lg={9}
+                                            >
+                                                <DateCalendar
+                                                    value={endDay}
+                                                    onChange={(newValue) => { handleAnyChangeOfTime(startDay, startTime, newValue, endTime); }}
                                                     minDate={startDay}
-                                            />
-                                        </Grid>
-                                        <Grid
-                                            item xs={12} sm={4} lg={3}
-                                        >
-                                            <DigitalClock
-                                                ampm={false}
-                                                timeStep={15}
-                                                skipDisabled
-                                                shouldDisableTime={(val, view) => shouldDisableTime(val, view, startTime.add(15, "minute"))}
-                                                value={endTime}
-                                                onChange={(newValue) => { handleAnyChangeOfTime(startDay, startTime, endDay, newValue);}}
-                                            />
-                                        </Grid>
-                                    </LocalizationProvider>
-                                </Grid>
-                                <Grid container>
-                                    <TextField
-                                        sx={{ m: 1 }}
-                                        fullWidth
-                                        value={parkingSpot?.id || ""}
-                                        id='outlined-basic'
-                                        label='Parking spot'
-                                        variant='outlined'
-                                        placeholder="Click on a free parking spot on a map"
-                                        required={true}
-                                        InputProps={{
-                                            readOnly: true,
-                                        }}
-                                    />
-                                </Grid>
-                                <Grid container>
-                                    <TextField
-                                        sx={{ m: 1 }}
-                                        fullWidth
-                                        label="Registration number"
-                                        variant="outlined"
-                                        type="text"
-                                        required={true}
-                                        value={registrationNumber ?? ''}
-                                        onChange={handleRegistrationTextFieldChange}
-                                    />
-                                </Grid>
-                                {authenticationReducer.decodedUser && cars.cars.length > 0 ? (
+                                                />
+                                            </Grid>
+                                            <Grid
+                                                item xs={12} sm={4} lg={3}
+                                            >
+                                                <DigitalClock
+                                                    ampm={false}
+                                                    timeStep={15}
+                                                    skipDisabled
+                                                    shouldDisableTime={(val, view) => shouldDisableTime(val, view, startTime.add(15, "minute"))}
+                                                    value={endTime}
+                                                    onChange={(newValue) => { handleAnyChangeOfTime(startDay, startTime, endDay, newValue); }}
+                                                />
+                                            </Grid>
+                                        </LocalizationProvider>
+                                    </Grid>
                                     <Grid container>
-                                        <FormControl
+                                        <TextField
                                             sx={{ m: 1 }}
                                             fullWidth
-                                        >
-                                            <InputLabel id='demo-multiple-name-label'>Select your car</InputLabel>
-                                            <Select
-                                                labelId='demo-multiple-name-label'
-                                                id='demo-multiple-name'
-                                                value={selectedCar}
-                                                onChange={changeCarSelection}
-                                                label='Select your car'
-                                            >
-                                                {cars.cars.map((car, index) => (
-                                                    <MenuItem
-                                                        key={index}
-                                                        value={car}
-                                                    >
-                                                        {car.brand},{car.registrationNumber}
-                                                    </MenuItem>
-                                                ))}
-                                            </Select>
-                                        </FormControl>
+                                            value={parkingSpot?.id || ""}
+                                            id='outlined-basic'
+                                            label='Parking spot'
+                                            variant='outlined'
+                                            placeholder="Click on a free parking spot on a map"
+                                            required={true}
+                                            InputProps={{
+                                                readOnly: true,
+                                            }}
+                                        />
                                     </Grid>
-                                ) : (
-                                    <div></div>
-                                )}
-                                <Grid container>
-                                    <Button
-                                        sx={{ m: 1 }}
-                                        variant='contained'
-                                        onClick={handleCreateReservation}
-                                        fullWidth
-                                    >
-                                        Reserve
-                                    </Button>
-                                </Grid>
+                                    <Grid container>
+                                        <TextField
+                                            sx={{ m: 1 }}
+                                            fullWidth
+                                            label="Registration number"
+                                            variant="outlined"
+                                            type="text"
+                                            required={true}
+                                            value={registrationNumber ?? ''}
+                                            onChange={handleRegistrationTextFieldChange}
+                                        />
+                                    </Grid>
+                                    {authenticationReducer.decodedUser && cars.cars.length > 0 ? (
+                                        <Grid container>
+                                            <FormControl
+                                                sx={{ m: 1 }}
+                                                fullWidth
+                                            >
+                                                <InputLabel id='demo-multiple-name-label'>Select your car</InputLabel>
+                                                <Select
+                                                    labelId='demo-multiple-name-label'
+                                                    id='demo-multiple-name'
+                                                    value={selectedCar}
+                                                    onChange={changeCarSelection}
+                                                    label='Select your car'
+                                                >
+                                                    {cars.cars.map((car, index) => (
+                                                        <MenuItem
+                                                            key={index}
+                                                            value={car}
+                                                        >
+                                                            {car.brand},{car.registrationNumber}
+                                                        </MenuItem>
+                                                    ))}
+                                                </Select>
+                                            </FormControl>
+                                        </Grid>
+                                    ) : (
+                                        <div></div>
+                                    )}
+                                    <Grid container>
+                                        <Button
+                                            sx={{ m: 1 }}
+                                            variant='contained'
+                                            onClick={handleCreateReservation}
+                                            fullWidth
+                                        >
+                                            Reserve
+                                        </Button>
+                                    </Grid>
                                 </CardContent>
                             )}
                         </Paper>

@@ -3,33 +3,40 @@ import {useNavigate} from "react-router-dom";
 import Home from "../Home/Home";
 import {getUser} from "../../actions/userActions";
 
+import { useEffect } from "react";
+
 export default function ManagerProfile() {
     const authenticationReducer = useSelector((state) => state.authenticationReducer);
-    const userReducer = useSelector((state) => state.userReducer);
+    const user = useSelector((state) => state.userReducer.user);
     
     const dispatch = useDispatch();
     const navigate = useNavigate()
 
-    if (!authenticationReducer.decodedUser ||
-        authenticationReducer.decodedUser.role !== "PARKING_MANAGER") {
-        navigate('/');
-        return <Home />;
-    } else {
-        dispatch(getUser(authenticationReducer.decodedUser.userId))
-            .then((response) => {
-                navigate(`/parking/${userReducer.user.parkingDTO.id}/editor`);
-            })
-            .catch((error) => {
-                console.log(error);
-            });
-    }
+    useEffect(() => {
+        if (!authenticationReducer.decodedUser ||
+            authenticationReducer.decodedUser.role !== "PARKING_MANAGER") {
+            navigate('/');
+            return <Home />;
+        } else {
+            dispatch(getUser(authenticationReducer.decodedUser.userId))
+                .then((response) => {
+                    // if user's parkingDTO is null, navigate to create parking page
+                    debugger
+                    if (user.parkingDTO) {
+                        navigate(`/parking/${user.parkingDTO.id}`);
+                    } else {
+                        navigate('/parking/create');
+                    }
 
-
-
-
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+        }
+    }, [])
 
     return (
-        <h1> MANAGER PROFILE </h1>
+        <h1>  </h1>
     )
 
 }
