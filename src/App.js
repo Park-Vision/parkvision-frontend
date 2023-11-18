@@ -17,13 +17,10 @@ import ManagerProfile from "./pages/ParkingManagement/ManagerProfile";
 import UserProfile from "./pages/User/UserProfile";
 import * as React from "react";
 
-import Stomp, { setInterval } from 'stompjs';
-import SockJS from 'sockjs-client';
-
-
 import UserReservations from "./pages/User/UserReservations";
 import ParkingSpotDetails from "./pages/ParkingSpot/ParkingSpotDetails";
 import ParkingEditor from "./pages/Editor/Editor"
+import DroneManager from "./pages/DroneManager/DroneManager"
 import DroneManager from "./pages/DroneManager/DroneManager"
 import axios from "axios";
 import useErrorHandler from "./utils/ErrorHandler";
@@ -54,47 +51,6 @@ axios.interceptors.request.use(
 
 
 function App() {
-    const [messages, setMessages] = React.useState([]);
-    const [message, setMessage] = React.useState("test");
-    const [stompClient, setStomClient] = React.useState(null);
-
-    React.useEffect(() => {
-        const socket = new SockJS('http://localhost:8080/ws');
-        const client = Stomp.over(socket);
-
-        client.connect({}, () => {
-            client.subscribe('/topic/messages', (message) => {
-                const recievedMessage = JSON.parse(message.body);
-                setMessages((messages) => [...messages, recievedMessage]);
-            });
-        }, (error) => {
-            console.log(error);
-        }
-        
-        );
-
-        setStomClient(client);
-        
-            
-            setInterval(() => {
-        if (stompClient !== null) {
-            sendMessage();
-        }
-    }, 1000);
-    }, []);
-
-
-
-
-
-    const sendMessage = () => {
-        const messageObject = {
-            message: message,
-        };
-        stompClient.send('/app/chat', {}, JSON.stringify(messageObject));
-        setMessage("");
-    }
-
 
     const [mode, setMode] = React.useState("light");
     const colorMode = React.useMemo(
@@ -192,6 +148,10 @@ function App() {
                             <Route
                                 path={"/parking/:parkingId/details"}
                                 element={<ManagerParkingDetails />}
+                            />
+                            <Route 
+                                path={'/parking/:parkingId/drone'} 
+                                element={<DroneManager/>}
                             />
                             <Route 
                                 path={'/parking/:parkingId/drone'} 

@@ -562,6 +562,14 @@ function ParkingDetails(props) {
                                         >
                                             Change parking details
                                         </Button>
+                                        <Button
+                                            sx={{ m: 1 }}
+                                            variant='contained'
+                                            onClick={handleGoToDroneManager}
+                                            fullWidth
+                                        >
+                                            Drone manager
+                                        </Button>
                                     </Grid>
                                 ) : (
                                     <div></div>
