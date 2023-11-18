@@ -11,8 +11,12 @@ class ParkingSpotService {
         return await axios.get(urlConst + "/" + parkingSpotId);
     }
 
-    async createParkingSpot(parkingId, parkingSpotData) {
+    async addParkingSpots(parkingId, parkingSpotData) {
         return await axios.post( urlConst + "/parking/" + parkingId + "/model/create", parkingSpotData);
+    }
+
+    async addParkingSpot(parkingSpotData) {
+        return await axios.post(urlConst, parkingSpotData);
     }
 
     async updateParkingSpot(parkingSpotData) {
