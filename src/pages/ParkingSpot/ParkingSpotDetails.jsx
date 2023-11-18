@@ -7,7 +7,7 @@ import { addReservation } from '../../actions/reservationActions';
 import { toast } from "react-toastify";
 import { useState, useRef, useEffect } from 'react';
 import L from "leaflet";
-import { getParkingSpot, updateParkingSpot } from '../../actions/parkingSpotActions';
+import { getParkingSpot, updateParkingSpot, deleteParkingSpotSoft } from '../../actions/parkingSpotActions';
 import Radio from '@mui/material/Radio';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from '@mui/material/FormControl';
@@ -166,6 +166,18 @@ export default function ParkingSpotDetails(props) {
         });
     };
 
+    const handleDelete = () => {
+    dispatch(deleteParkingSpotSoft(parkingSpotReducer.parkingSpot.id))
+        .then(() => {
+            toast.success("Parking spot deleted successfully!");
+            navigate('/parking/' + parkingSpotReducer.parkingSpot.parkingDTO.id + '/editor');
+        })
+        .catch((error) => {
+                toast.error("Parking spot cannot be deleted because there are reservations on it!");
+                dispatch(getParkingSpot(params.parkingSpotId));
+        });
+    };
+
     return (
         <Container maxWidth="lg">
             <Box sx={{ my: 4 }}>
@@ -203,7 +215,7 @@ export default function ParkingSpotDetails(props) {
                                                     polygon: false,
                                                 }}
                                                 edit={{
-                                                    edit: true,
+                                                    edit: false, // for now its disabled
                                                     remove: false,
                                                     featureGroup: mapRef.current?.leafletElement,
                                                 }}
@@ -276,6 +288,14 @@ export default function ParkingSpotDetails(props) {
                                 </FormControl>
                             <Button sx={{ m: 1 }} variant='contained' onClick={handleEditInfo} fullWidth>
                                 Edit
+                            </Button>
+                                <Button sx={{ m: 1 }}
+                                    variant="contained"
+                                    onClick={handleDelete}
+                                    fullWidth disabled={parkingSpotReducer.parkingSpot.active}
+                                    color='error'
+                                >
+                                Delete
                             </Button>
                             </Grid>
 

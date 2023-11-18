@@ -1,5 +1,6 @@
 import {
     ADD_PARKING_SPOT,
+    ADD_PARKING_SPOTS,
     DELETE_PARKING_SPOT_SOFT,
     DELETE_PARKING_SPOT_HARD,
     UPDATE_PARKING_SPOT,
@@ -25,6 +26,13 @@ const parkingSpotReducer = (state = initialState, action) => {
 
     switch (type){
         case ADD_PARKING_SPOT:
+            return {
+                ...state,
+                parkingSpots: [...state.parkingSpots, action.value], //This makes "flat" because endpoint returns array of parking spots
+                parkingSpot: {},
+                stagedParkingSpots: []
+            }
+        case ADD_PARKING_SPOTS:
             return {
                 ...state,
                 parkingSpots: [...state.parkingSpots, ...action.value], //This makes "flat" because endpoint returns array of parking spots
