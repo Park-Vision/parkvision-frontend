@@ -7,4 +7,11 @@ module.exports = defineConfig({
     },
     experimentalStudio: true,
   },
+
+  component: {
+    devServer: {
+      framework: "create-react-app",
+      bundler: "webpack",
+    },
+  },
 });
