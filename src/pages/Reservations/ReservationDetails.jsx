@@ -104,7 +104,7 @@ export default function ReservationDetails(props) {
                     ...reservation,
                     amount: amount,
                 };
-                dispatch(addReservation(transformResevationDates(reservation)))
+                dispatch(addReservation(transformResevationDates(reservationWithAmount)))
                     .then((reservationResponse) => {
                         const userId = authenticationReducer.decodedUser.userId;
                         const newPayment = {
