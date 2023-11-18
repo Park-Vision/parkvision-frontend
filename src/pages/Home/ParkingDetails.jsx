@@ -217,7 +217,7 @@ function ParkingDetails(props) {
 
         const utcDate = new Date();
 
-        const timeZoneOffset = parseInt(parking.timeZone) * 60;
+        let timeZoneOffset = parseInt(parking.timeZone) * 60;
         if (isNaN(timeZoneOffset)) {
             timeZoneOffset = 0;
         }

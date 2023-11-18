@@ -104,7 +104,7 @@ const timeZones = [
         label: 'UTC',
     },
     {
-        value: 'UTC+01:00',
+        value: '+01:00',
         label: 'UTC+01:00',
     },
     {
@@ -190,6 +190,8 @@ function ManagerParkingDetails() {
 
     const handleSubmit = (event) => {
         event.preventDefault();
+        debugger
+
 
         const newParking = {
             id: parkingId,
