@@ -283,12 +283,16 @@ function ParkingDetails(props) {
         // dispatch(addReservation(newReservation))
     };
 
-    const handleGoToMission = () => {
+    const handleGoToEditor = () => {
         navigate(`/parking/${parkingId}/editor`);
     };
 
     const handleGoToReservations = () => {
         navigate(`/parking/${parkingId}/reservations`);
+    };
+
+    const handleGoToDroneManager = () => {
+        navigate(`/parking/${parkingId}/drone`);
     };
 
     return (
@@ -451,7 +455,7 @@ function ParkingDetails(props) {
                                         <Button
                                             sx={{ m: 1 }}
                                             variant='contained'
-                                            onClick={handleGoToMission}
+                                            onClick={handleGoToEditor}
                                             fullWidth
                                         >
                                             Parking editor
@@ -463,6 +467,14 @@ function ParkingDetails(props) {
                                             fullWidth
                                         >
                                             Parking reservations
+                                        </Button>
+                                        <Button
+                                            sx={{ m: 1 }}
+                                            variant='contained'
+                                            onClick={handleGoToDroneManager}
+                                            fullWidth
+                                        >
+                                            Drone manager
                                         </Button>
                                     </Grid>
                                 ) : (

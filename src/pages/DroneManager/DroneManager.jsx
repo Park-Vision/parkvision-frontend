@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getParking } from "../../actions/parkingActions";
 import CardContent from "@mui/material/CardContent";
@@ -11,21 +11,26 @@ import Box from "@mui/material/Box";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet-draw/dist/leaflet.draw.css";
-import { EditControl } from "react-leaflet-draw";
 import "../Editor.css"; // Create a CSS file for styling
 import { useNavigate } from "react-router-dom";
-
-import { MapContainer, Polygon, Popup, TileLayer, FeatureGroup } from "react-leaflet";
-import { getParkingSpotsByParkingId, addStagedParkingSpot, addParkingSpot } from "../../actions/parkingSpotActions";
+import Stomp, { setInterval } from 'stompjs';
+import SockJS from 'sockjs-client';
+import { MapContainer, Polygon, Popup, TileLayer, FeatureGroup, LayersControl } from "react-leaflet";
+import { getParkingSpotsByParkingId } from "../../actions/parkingSpotActions";
 import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
 import {
     GET_PARKING_SPOT,
 } from "../../actions/types";
-import convertTime from "../../utils/convertTime";
 import decodeToken from "../../utils/decodeToken";
 import { getUser } from "../../actions/userActions";
 import { toast } from "react-toastify";
+import DroneMarker from "../../components/DroneMarker"
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
+
 delete L.Icon.Default.prototype._getIconUrl;
 
 L.Icon.Default.mergeOptions({
@@ -44,12 +49,57 @@ function ParkingEditor(props) {
 
     const parking = useSelector((state) => state.parkingReducer.parking);
     const parkingSpots = useSelector((state) => state.parkingSpotReducer);
-    const stagedParkingSpots = useSelector((state) => state.parkingSpotReducer.stagedParkingSpots);
-    const parkingSpot = useSelector((state) => state.parkingSpotReducer.parkingSpot);
 
     const userjson = JSON.parse(localStorage.getItem("user"));
     const user = decodeToken(userjson?.token);
 
+    const [messages, setMessages] = useState([]);
+    const [message, setMessage] = useState("test");
+    const [stompClient, setStompClient] = useState(null);
+
+    // mock list of drones for this parking, TODO add handling /api/drones/parking/{id} endpoint
+    const mockDronesForParking = [3, 33]
+
+    const [selectedDroneId, setSelectedDroneId] = useState(mockDronesForParking[0])
+    const [selectedDronePosition, setSelectedDronePosition] = useState([parking.latitude, parking.longitude]);
+
+    const recreateWSClient = () => {
+        const socket = new SockJS(process.env.REACT_APP_WEBSOCKET_URL);
+        const client = Stomp.over(socket);
+
+        client.connect({ Authorization: "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzdHJpbmciLCJ1c2VySWQiOiIzIiwicm9sZSI6IlBBUktJTkdfTUFOQUdFUiIsImlhdCI6MTcwMDMyNDExMCwiZXhwIjoxNzAwMzI3NzEwfQ.yWDd7kILuEqLwGyuIfkEI0w562n4x6z3r2w4HT3xmLw" }, () => {
+            client.subscribe('/topic/drones/' + selectedDroneId, (message) => {
+                const recievedMessage = JSON.parse(message.body);
+                //console.log(recievedMessage)
+                setMessages((messages) => [...messages, recievedMessage]);
+                setSelectedDronePosition([recievedMessage.lat, recievedMessage.lon])
+            });
+        }, (error) => {
+            console.log(error);
+        }
+        );
+
+        setStompClient(client);
+
+        setInterval(() => {
+            if (stompClient !== null) {
+                // sendMessage();
+            }
+        }, 1000);
+    }
+
+    useEffect(() => {
+        recreateWSClient()
+    }, []);
+
+
+    const sendMessage = () => {
+        const messageObject = {
+            message: message,
+        };
+        stompClient.send('/app/messages', {}, JSON.stringify(messageObject));
+        setMessage("");
+    }
 
     useEffect(() => {
         const checkAuthorization = async () => {
@@ -86,61 +136,15 @@ function ParkingEditor(props) {
         });
     };
 
-    const mapRef = useRef(null);
-
-
-    const handleSaveToDB = (event) => {
-        dispatch(addParkingSpot(parking.id, stagedParkingSpots))
-    };
-
     const handleExitClick = () => {
         navigate(`/parking/${parking.id}`);
     };
 
-    const mapPonitsToParkingSpot = (points) => {
-
-        const mappedPoints = points[0].map((coord) => {
-            console.log(coord);
-            return { latitude: coord[1], longitude: coord[0] };
-        });
-
-        mappedPoints.pop();
-
-        const pointsDTO = mappedPoints.map((point) => {
-            return {
-                latitude: point.latitude,
-                longitude: point.longitude,
-                parkingSpotDTO: {
-                    id: parking.id
-                }
-            }
-        }
-        );
-
-        const newParkingSpot = {
-            spotNumber: "newly created spot",
-            occupied: false,
-            active: true,
-            parkingDTO: {
-                id: parking.id
-            },
-            pointsDTO: pointsDTO
-        }
-
-        dispatch(addStagedParkingSpot(newParkingSpot));
+    const handleSelectDrone = (event) => {
+        setSelectedDroneId(event.target.value);
+        // TODO impossible switch topics
     };
 
-    const handleEditClick = (event) => {
-        console.log(event)
-        if (parkingSpot.id === undefined) {
-            dispatch({
-                type: GET_PARKING_SPOT,
-                value: event,
-            });
-            navigate(`/parkingspot/${event.id}`);
-        }
-
-    };
 
     return (
         <Container
@@ -167,37 +171,6 @@ function ParkingEditor(props) {
                                     scrollWheelZoom={true}
                                 >
                                     <FeatureGroup>
-                                        <EditControl
-                                            position='topright'
-                                            draw={{
-                                                rectangle: false,
-                                                circle: false,
-                                                circlemarker: false,
-                                                marker: false,
-                                                polyline: false,
-                                                polygon: {
-                                                    allowIntersection: false,
-                                                    drawError: {
-                                                        color: "#e1e100",
-                                                        message: "<strong>Oh snap!<strong> you can't draw that!",
-                                                    },
-                                                    shapeOptions: {
-                                                        color: "#97009c",
-                                                    },
-                                                },
-                                            }}
-                                            edit={{
-                                                edit: false,
-                                                remove: false, //TODO zmiana na disabled?
-                                                featureGroup: mapRef.current?.leafletElement,
-                                            }}
-                                            onCreated={e => {
-                                                const eventJson = (e.layer.toGeoJSON())
-                                                console.log(eventJson.geometry.coordinates)
-                                                mapPonitsToParkingSpot(eventJson.geometry.coordinates);
-
-                                            }}
-                                        />
                                         {parkingSpots.parkingSpots
                                             .map((spot) => (
                                                 <Polygon
@@ -210,34 +183,34 @@ function ParkingEditor(props) {
                                                 >
                                                     <Popup>
                                                         <div style={{ minWidth: '200px', maxWidth: '250px', padding: '10px', textAlign: 'left' }}>
-                                                            <div style={{ marginBottom: '5px', textAlign: 'center',
+                                                            <div style={{
+                                                                marginBottom: '5px', textAlign: 'center',
                                                                 fontSize: `${Math.min(20, 450 / parking.name.length)}px`, fontWeight: 'bold',
-                                                                whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                                                whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'
+                                                            }}>
                                                                 Spot: {spot.id}
                                                             </div>
                                                             <div style={{ marginBottom: '5px' }}>
                                                                 <span style={{ fontWeight: 'bold' }}>Spot number:</span> {spot.spotNumber}
                                                             </div>
-                                                            <Button
-                                                                variant="contained"
-                                                                color="primary"
-                                                                onClick={() => handleEditClick(spot)}
-                                                                style={{ width: '100%' }}
-                                                            >
-                                                                EDIT
-                                                            </Button>
                                                         </div>
                                                     </Popup>
                                                 </Polygon>
                                             ))}
                                     </FeatureGroup>
+                                    <LayersControl position="topright">
+                                        <LayersControl.BaseLayer checked name="OpenStreetMap">
+                                            <TileLayer
+                                                maxNativeZoom={22}
+                                                maxZoom={22}
+                                                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                                                url='http://mt0.google.com/vt/lyrs=s&x={x}&y={y}&z={z}'
+                                            />
+                                        </LayersControl.BaseLayer>
+                                        <DroneMarker position={[selectedDronePosition[0] / 10e6, selectedDronePosition[1] / 10e6]} />
+                                    </LayersControl>
 
-                                    <TileLayer
-                                        maxNativeZoom={22}
-                                        maxZoom={22}
-                                        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                                        url='http://mt0.google.com/vt/lyrs=s&x={x}&y={y}&z={z}'
-                                    />
+
                                 </MapContainer>
                             ) : (
                                 <Box
@@ -263,34 +236,28 @@ function ParkingEditor(props) {
                         <Paper className='reserve'>
                             <CardContent>
                                 <Typography variant='h4'>{parking.name}</Typography>
-                                <Typography variant='p'>{parking.description}</Typography>
-                                <Typography variant="h6">
-                                    Address: {parking.street},{parking.zipCode} {parking.city}
-                                </Typography>
-                                <Typography variant="h6">Open hours: {convertTime(parking.startTime, parking.timeZone)} -  {convertTime(parking.endTime, parking.timeZone)} </Typography>
-                                <Typography>
-                                     Dates and times are based on parking time zone ({parking.timeZone}) compared to UTC.
-                                </Typography>
-                                <Typography>$/h: {parking.costRate}</Typography>
+                                <FormControl fullWidth>
+                                    <InputLabel id="demo-simple-select-label">Drone</InputLabel>
+                                    <Select
+                                        labelId="demo-simple-select-label"
+                                        id="demo-simple-select"
+                                        value={selectedDroneId}
+                                        label="Drone"
+                                        onChange={handleSelectDrone}
+                                    >
+                                        {mockDronesForParking.map(drone => <MenuItem value={drone}>{drone}</MenuItem>)}
+                                    </Select>
+                                </FormControl>
                             </CardContent>
                             <Grid container>
-                            <Button
-                                sx={{ m: 1 }}
-                                variant='contained'
-                                onClick={handleSaveToDB}
-                                fullWidth
-                                disabled={stagedParkingSpots.length === 0}
-                            >
-                                Save parking
-                            </Button>
-                            <Button
-                                sx={{ m: 1 }}
-                                variant='contained'
-                                onClick={handleExitClick}
-                                fullWidth
-                            >
-                                Exit editor
-                            </Button>
+                                <Button
+                                    sx={{ m: 1 }}
+                                    variant='contained'
+                                    onClick={handleExitClick}
+                                    fullWidth
+                                >
+                                    Exit drone manager
+                                </Button>
                             </Grid>
                         </Paper>
                     </Grid>

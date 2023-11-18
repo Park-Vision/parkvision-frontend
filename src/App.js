@@ -17,13 +17,10 @@ import ManagerProfile from "./pages/ParkingManagement/ManagerProfile";
 import UserProfile from "./pages/User/UserProfile";
 import * as React from "react";
 
-import Stomp, { setInterval } from 'stompjs';
-import SockJS from 'sockjs-client';
-
-
 import UserReservations from "./pages/User/UserReservations";
 import ParkingSpotDetails from "./pages/ParkingSpot/ParkingSpotDetails";
 import ParkingEditor from "./pages/Editor/Editor"
+import DroneManager from "./pages/DroneManager/DroneManager"
 import axios from "axios";
 import useErrorHandler from "./utils/ErrorHandler";
 import ManagerReservations from "./pages/ParkingManagement/ManagerReservations";
@@ -51,48 +48,6 @@ axios.interceptors.request.use(
 
 
 function App() {
-    const [messages, setMessages] = React.useState([]);
-    const [message, setMessage] = React.useState("test");
-    const [stompClient, setStomClient] = React.useState(null);
-
-    React.useEffect(() => {
-        const socket = new SockJS('http://localhost:8080/ws');
-        const client = Stomp.over(socket);
-
-        client.connect({ Authorization: "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJQbW9kQHB2LnBsIiwidXNlcklkIjoiMSIsInJvbGUiOiJQQVJLSU5HX01BTkFHRVIiLCJpYXQiOjE2OTkxODIwMzMsImV4cCI6MTY5OTE4NTYzM30.8vOxMI8Yw7xmNWqMvwiqj6a43fxEbdA-fO1i2-i4B7E"}, () => {
-            client.subscribe('/topic/parkings/1', (message) => {
-                const recievedMessage = JSON.parse(message.body);
-                console.log(recievedMessage)
-                setMessages((messages) => [...messages, recievedMessage]);
-            });
-        }, (error) => {
-            console.log(error);
-        }
-        
-        );
-
-        setStomClient(client);
-        
-            
-            setInterval(() => {
-        if (stompClient !== null) {
-            // sendMessage();
-        }
-    }, 1000);
-    }, []);
-
-
-
-
-
-    const sendMessage = () => {
-        const messageObject = {
-            message: message,
-        };
-        stompClient.send('/app/messages', {}, JSON.stringify(messageObject));
-        setMessage("");
-    }
-
 
     const [mode, setMode] = React.useState("light");
     const colorMode = React.useMemo(
@@ -186,6 +141,10 @@ function App() {
                             <Route 
                                 path={'/parking/:parkingId/editor'} 
                                 element={<ParkingEditor/>}
+                            />
+                            <Route 
+                                path={'/parking/:parkingId/drone'} 
+                                element={<DroneManager/>}
                             />
                             <Route 
                                 path={"/parkingspot/:parkingSpotId"} 
