@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
     Container,
@@ -15,23 +15,17 @@ import {
 
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { MobileTimePicker } from '@mui/x-date-pickers/MobileTimePicker';
-import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { useDispatch } from 'react-redux';
-import dayjs from 'dayjs';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
 import { renderToString } from "react-dom/server";
+import { getUser } from '../../actions/userActions';
 import { addParking } from '../../actions/parkingActions';
 import LocalParkingIcon from '@mui/icons-material/LocalParking';
 import decodeToken from '../../utils/decodeToken';
 import { toast } from 'react-toastify';
-const markerIcon = new L.Icon({
-    iconUrl: 'https://cdn0.iconfinder.com/data/icons/small-n-flat/24/678111-map-marker-512.png',
-    iconRetinaUrl: 'https://cdn0.iconfinder.com/data/icons/small-n-flat/24/678111-map-marker-512.png',
-    iconSize: [32, 32],
-    iconAnchor: [16, 32],
-});
+
 const currencies = [
     {
         value: 'USD',
@@ -181,12 +175,30 @@ function ManagerParkingCreate() {
     const [longitude, setLongitude] = useState(0);
     const [timeZone, setTimeZone] = useState('');
     const [currency, setCurrency] = useState('');
-    const marker = React.useRef(L.marker([0, 0], { icon: markerIcon }));
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
     const userjson = JSON.parse(localStorage.getItem("user"));
     const user = decodeToken(userjson?.token);
+
+    useEffect(() => {
+        if (!user || user.role !== 'PARKING_MANAGER') {
+            navigate('/');
+            toast.error('You are not authorized to access this page');
+        }
+        else {
+            dispatch(getUser(user.userId)).then((response) => {
+                if (response.parkingDTO) {
+                    navigate('/');
+                    toast.error('You already have a parking');
+                }
+            }).catch((error) => {
+                toast.error('Error getting user');
+                console.log(error);
+            });
+        }
+    }, [])
+
 
 
     const handleSubmit = (event) => {
@@ -252,6 +264,7 @@ function ManagerParkingCreate() {
                                         maxRows={4}
                                         value={description}
                                         onChange={(event) => setDescription(event.target.value)}
+                                        inputProps={{ maxLength: 255 }}
                                     />
                                 </Grid>
                                 <Grid item xs={12} sm={6}>
@@ -375,7 +388,7 @@ function ManagerParkingCreate() {
                                         id="latitude"
                                         label="latitude"
                                         value={latitude}
-                                        onChange={(event) => setLongitude(event.target.value)}
+                                        onChange={(event) => setLatitude(event.target.value)}
                                     />
                                 </Grid>
                                 <Grid item xs={12} sm={6}>

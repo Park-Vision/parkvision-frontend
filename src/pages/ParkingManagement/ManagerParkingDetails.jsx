@@ -16,20 +16,17 @@ import {
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { MobileTimePicker } from '@mui/x-date-pickers/MobileTimePicker';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import dayjs from 'dayjs';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
 import { renderToString } from "react-dom/server";
 import { getParking, updateParking } from '../../actions/parkingActions';
+import { getUser } from '../../actions/userActions';
 import LocalParkingIcon from '@mui/icons-material/LocalParking';
 import { toast } from 'react-toastify';
-const markerIcon = new L.Icon({
-    iconUrl: 'https://cdn0.iconfinder.com/data/icons/small-n-flat/24/678111-map-marker-512.png',
-    iconRetinaUrl: 'https://cdn0.iconfinder.com/data/icons/small-n-flat/24/678111-map-marker-512.png',
-    iconSize: [32, 32],
-    iconAnchor: [16, 32],
-});
+import decodeToken from '../../utils/decodeToken';
+
 const currencies = [
     {
         value: 'USD',
@@ -181,8 +178,9 @@ function ManagerParkingDetails() {
     const [longitude, setLongitude] = useState(0);
     const [timeZone, setTimeZone] = useState('');
     const [currency, setCurrency] = useState('');
-    const marker = React.useRef(L.marker([0, 0], { icon: markerIcon }));
-    const parking = useSelector((state) => state.parkingReducer.parking);
+
+    const userjson = JSON.parse(localStorage.getItem("user"));
+    const user = decodeToken(userjson?.token);
 
     const dispatch = useDispatch();
 
@@ -222,12 +220,24 @@ function ManagerParkingDetails() {
     };
 
     useEffect(() => {
-        if (parkingId) {
+        debugger
+        if (!user || user.role !== 'PARKING_MANAGER') {
+            navigate('/');
+            toast.error('You are not authorized to access this page');
+        }
+        else {
+            dispatch(getUser(user.userId)).then((response) => {
+                if (response.parkingDTO.id !== parseInt(parkingId)) {
+                    navigate('/');
+                    toast.error('You are not authorized to access this page');
+                }
+            }).catch((error) => {
+                toast.error('Error getting user');
+                console.log(error);
+            });
             dispatch(getParking(parkingId)).then((response) => {
-                debugger
                 const parking = response;
 
-                // if parking time zone is not a Z then
                 if (parking.timeZone !== 'Z') {
                     parking.startTime = parking.startTime.slice(0, -6);
                     parking.endTime = parking.endTime.slice(0, -6);
@@ -260,6 +270,9 @@ function ManagerParkingDetails() {
                 setCurrency(parking.currency);
             });
         }
+
+
+
     }, [parkingId]);
 
 
@@ -420,7 +433,7 @@ function ManagerParkingDetails() {
                                         id="latitude"
                                         label="latitude"
                                         value={latitude}
-                                        onChange={(event) => setLongitude(event.target.value)}
+                                        onChange={(event) => setLatitude(event.target.value)}
                                     />
                                 </Grid>
                                 <Grid item xs={12} sm={6}>

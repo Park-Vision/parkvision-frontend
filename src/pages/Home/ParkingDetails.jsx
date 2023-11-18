@@ -135,19 +135,32 @@ function ParkingDetails(props) {
         let now = dayjs(time);
         now = now.set("minute", now.minute() - (now.minute() % 15)).set("second", 0).set("millisecond", 0);
 
-        if (value.day() === now.day() && (value.hour() < now.hour() || (value.hour() === now.hour() && value.minute() < now.minute()))) {
+        if (value.day() === now.day()
+            && (value.hour() < now.hour()
+                || (value.hour() === now.hour()
+                    && value.minute() < now.minute()))) {
             return true;
         }
+
+
         let hour = value.hour();
         let minute = value.minute();
 
         if (view === "hours") {
             const parkingStart = parseTime(convertTime(parking.startTime, parking.timeZone))
             const parkingEnd = parseTime(convertTime(parking.endTime, parking.timeZone))
-            return hour < parkingStart.getHours()
-                || hour > parkingEnd.getHours()
-                || (hour === parkingEnd.getHours() && minute > parkingEnd.getMinutes())
-                || (hour === parkingStart.getHours() && minute < parkingStart.getMinutes());
+            if (time === parkingTime) {
+                return hour < parkingStart.getHours()
+                    || hour > parkingEnd.getHours()
+                    || (hour === parkingEnd.getHours() && minute >= parkingEnd.getMinutes())
+                    || (hour === parkingStart.getHours() && minute < parkingStart.getMinutes());
+            } else {
+                return hour < parkingStart.getHours()
+                    || hour > parkingEnd.getHours()
+                    || (hour === parkingEnd.getHours() && minute > parkingEnd.getMinutes())
+                    || (hour === parkingStart.getHours() && minute < parkingStart.getMinutes());
+            }
+
         }
 
         return false;
@@ -497,9 +510,9 @@ function ParkingDetails(props) {
                                 {numOfFreeSpotsList && numOfSpotsList && parking.id && (
                                     <Typography variant='h5'>Available: {numOfFreeSpotsList[parking.id.toString()]}/{numOfSpotsList[parking.id.toString()]}</Typography>
                                 )}
-                                <Typography variant='p'>{parking.description}</Typography>
+                                <Typography variant='string'>{parking.description}</Typography>
                                 <Typography variant="h6">
-                                    Address: {parking.street},{parking.zipCode} {parking.city}
+                                    Address: {parking.street}, {parking.zipCode} {parking.city}
                                 </Typography>
                                 <Typography variant="h6">Open hours: {convertTime(parking.startTime, parking.timeZone)} -  {convertTime(parking.endTime, parking.timeZone)} </Typography>
                                 <Typography>
