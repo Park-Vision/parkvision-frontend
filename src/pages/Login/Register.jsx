@@ -129,6 +129,7 @@ export default function Register() {
                                         <FormControl fullWidth variant="outlined" margin="normal">
                                             <InputLabel htmlFor="email">E-mail</InputLabel>
                                             <OutlinedInput
+                                                data-cy={'email-input'}
                                                 label="E-mail"
                                                 id="email"
                                                 variant="outlined"
