@@ -190,8 +190,6 @@ function ManagerParkingDetails() {
 
     const handleSubmit = (event) => {
         event.preventDefault();
-        debugger
-
 
         const newParking = {
             id: parkingId,
@@ -210,7 +208,6 @@ function ManagerParkingDetails() {
         };
 
 
-        console.log(newParking);
 
         dispatch(updateParking(newParking)).then((response) => {
             toast.success("Parking updated successfully");
@@ -222,7 +219,6 @@ function ManagerParkingDetails() {
     };
 
     useEffect(() => {
-        debugger
         if (!user || user.role !== 'PARKING_MANAGER') {
             navigate('/');
             toast.error('You are not authorized to access this page');

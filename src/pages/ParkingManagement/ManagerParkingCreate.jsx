@@ -220,7 +220,6 @@ function ManagerParkingCreate() {
             parkingManagerId: user.userId
         };
 
-        console.log(newParking);
 
         dispatch(addParking(newParking)).then(() => {
             toast.success('Parking created successfully');
@@ -229,7 +228,8 @@ function ManagerParkingCreate() {
         ).catch((error) => {
             toast.error('Error creating parking');
             console.log(error);
-        });
+        }
+        );
 
     };
 

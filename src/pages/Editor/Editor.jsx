@@ -210,9 +210,11 @@ function ParkingEditor(props) {
                                                 >
                                                     <Popup>
                                                         <div style={{ minWidth: '200px', maxWidth: '250px', padding: '10px', textAlign: 'left' }}>
-                                                            <div style={{ marginBottom: '5px', textAlign: 'center',
+                                                            <div style={{
+                                                                marginBottom: '5px', textAlign: 'center',
                                                                 fontSize: `${Math.min(20, 450 / parking.name.length)}px`, fontWeight: 'bold',
-                                                                whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                                                whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'
+                                                            }}>
                                                                 Spot: {spot.id}
                                                             </div>
                                                             <div style={{ marginBottom: '5px' }}>
@@ -269,28 +271,28 @@ function ParkingEditor(props) {
                                 </Typography>
                                 <Typography variant="h6">Open hours: {convertTime(parking.startTime, parking.timeZone)} -  {convertTime(parking.endTime, parking.timeZone)} </Typography>
                                 <Typography>
-                                     Dates and times are based on parking time zone ({parking.timeZone}) compared to UTC.
+                                    Dates and times are based on parking time zone ({parking.timeZone}) compared to UTC.
                                 </Typography>
                                 <Typography>$/h: {parking.costRate}</Typography>
                             </CardContent>
                             <Grid container>
-                            <Button
-                                sx={{ m: 1 }}
-                                variant='contained'
-                                onClick={handleSaveToDB}
-                                fullWidth
-                                disabled={stagedParkingSpots.length === 0}
-                            >
-                                Save parking
-                            </Button>
-                            <Button
-                                sx={{ m: 1 }}
-                                variant='contained'
-                                onClick={handleExitClick}
-                                fullWidth
-                            >
-                                Exit editor
-                            </Button>
+                                <Button
+                                    sx={{ m: 1 }}
+                                    variant='contained'
+                                    onClick={handleSaveToDB}
+                                    fullWidth
+                                    disabled={stagedParkingSpots.length === 0}
+                                >
+                                    Save parking
+                                </Button>
+                                <Button
+                                    sx={{ m: 1 }}
+                                    variant='contained'
+                                    onClick={handleExitClick}
+                                    fullWidth
+                                >
+                                    Exit editor
+                                </Button>
                             </Grid>
                         </Paper>
                     </Grid>
