@@ -21,10 +21,8 @@ const convertTime = (time, timezoneOffset) => {
     }
     // Add the desired offset to the date
     date.setUTCHours(date.getUTCHours() + desiredOffset);
-
     // Format the date to get the time in HH:MM format
     var adjustedTime = date.toISOString().substring(11, 16);
-
     return adjustedTime;
 }
 
