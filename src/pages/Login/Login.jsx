@@ -135,13 +135,14 @@ export default function Login() {
                                 alt="random"
                             />
                             <CardContent>
-                                <Typography gutterBottom variant="h5" component="div">
+                                <Typography data-cy={'login-title'} gutterBottom variant="h5" component="div">
                                     Login
                                 </Typography>
                                 <form onSubmit={handleLogin}>
                                     <FormControl fullWidth variant="outlined" margin="normal">
                                         <InputLabel htmlFor="email">E-mail</InputLabel>
                                         <OutlinedInput
+                                            data-cy={'email-input'}
                                             label="E-mail"
                                             id="email"
                                             variant="outlined"
@@ -153,6 +154,7 @@ export default function Login() {
                                     <FormControl fullWidth variant="outlined" margin="normal">
                                         <InputLabel htmlFor="password">Password</InputLabel>
                                         <OutlinedInput
+                                            data-cy={'password-input'}
                                             label="Password"
                                             id="password"
                                             type={showPassword ? 'text' : 'password'}
@@ -180,6 +182,7 @@ export default function Login() {
                                         Password reset
                                     </Button>
                                     <GradientButton
+                                        data-cy={'register-button'}
                                         variant="contained"
                                         fullWidth
                                         sx={{ mt: 1 }}
