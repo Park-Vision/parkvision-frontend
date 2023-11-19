@@ -1,4 +1,4 @@
-// generate login page with login, password and submit button
+// generate PasswordReset page with PasswordReset, password and submit button
 import React, { useEffect, useState } from 'react';
 
 // use @mui/material
@@ -20,84 +20,44 @@ import {
 } from '@mui/material';
 
 import { useDispatch, useSelector } from "react-redux";
-import { login } from "../../actions/authenticationActions";
-import { resetPassword } from '../../actions/userActions';
+import { resetPassword, setPasswordFromReset } from '../../actions/userActions';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { validateEmail, validatePassword } from "../../utils/validation";
-import decodeToken from "../../utils/decodeToken";
 
 
-export default function Login() {
-
-    const [email, setEmail] = React.useState("")
+export default function PasswordReset() {
     const [password, setPassword] = React.useState("")
+    const [passwordRepeat, setPasswordRepeat] = React.useState("")
     const dispatch = useDispatch()
     const navigate = useNavigate()
-
-    const [openResetPasswordDialog, setResetPasswordDialog] = useState(false);
-
-    const handleEmail = (event) => {
-        setEmail(event.target.value);
-    };
+    const token = useParams();
 
     const handlePassword = (event) => {
         setPassword(event.target.value);
     };
 
-    const handleRegister = () => {
-        navigate("/register");
-    }
+    const handlePasswordRepeat = (event) => {
+        setPasswordRepeat(event.target.value);
+    };
 
-    const handleLogin = (e) => {
-        e.preventDefault()
-        if (!validateEmail(email) || !validatePassword(password)) {
-            toast.info('Please enter valid email and password');
+    const handlePasswordReset = (event) => {
+        event.preventDefault()
+
+        if (!validatePassword(password)) {
+            toast.info('Password must contains eight characters, including at least one capital letter and number');
+        } else if (passwordRepeat !== password) {
+            toast.info('Passwords must be the same');
         } else {
-            dispatch(login(email, password))
-                .then(response => {
-                    if (response.status === 200) {
-                        setEmail("");
-                        setPassword("");
-                        toast.success('Login successful');
-                        const decodedUser = decodeToken(response.data.token);
-                        if (decodedUser.role === "PARKING_MANAGER") {
-                            navigate('/management');
-                        }
-                        if (decodedUser.role === "USER") {
-                            navigate('/');
-                        }
-                    } else {
-                        console.log('Login failed');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    toast.error('Please enter valid email and password');
-                });
+            const resetPasswordBody = {
+                token: token.token,
+                password: password
+            }
+            dispatch(setPasswordFromReset(resetPasswordBody))
         }
-
-    };
-
-    const handleCloseResetPassword = () => {
-        setResetPasswordDialog(false);
-    };
-
-    const handleOpenResetPassword = () => {
-        setResetPasswordDialog(true);
-        setEmail("");
     }
 
-    const navigateToHome = () => {
-        navigate('/')
-    }
-
-    const handleSendPasswordReset = () => {
-        dispatch(resetPassword(email));
-        setResetPasswordDialog(false);
-        toast.success('Password reset email sent. Check your inbox.');
-    }
 
     return (
         <Container maxWidth="lg">
@@ -117,20 +77,12 @@ export default function Login() {
                         />
                         <CardContent>
                             <Typography gutterBottom variant="h5" component="div">
-                                Login
+                                PasswordReset
                             </Typography>
                             <Typography variant="body2" color="text.secondary">
-                                <form onSubmit={handleLogin}>
+                                <form onSubmit={handlePasswordReset} >
                                     <TextField
-                                        label="Email address"
-                                        variant="outlined"
-                                        fullWidth
-                                        margin="normal"
-                                        required={true}
-                                        onChange={handleEmail}
-                                        value={email}
-                                    />
-                                    <TextField
+                                        id="outlined-basic"
                                         label="Password"
                                         variant="outlined"
                                         fullWidth
@@ -140,14 +92,19 @@ export default function Login() {
                                         onChange={handlePassword}
                                         value={password}
                                     />
+                                    <TextField
+                                        id="outlined-basic"
+                                        label="Repeat password"
+                                        variant="outlined"
+                                        fullWidth
+                                        margin="normal"
+                                        type="password"
+                                        required={true}
+                                        onChange={handlePasswordRepeat}
+                                        value={passwordRepeat}
+                                    />
                                     <Button type="submit" variant="contained" fullWidth margin="normal" >
-                                        Login
-                                    </Button>
-                                    <Button fullWidth margin="normal" onClick={handleOpenResetPassword}>
-                                        Password reset
-                                    </Button>
-                                    <Button variant="contained" fullWidth margin="normal" onClick={() => handleRegister()}>
-                                        Register
+                                        PasswordReset
                                     </Button>
                                 </form>
                             </Typography>
@@ -155,7 +112,7 @@ export default function Login() {
                     </Card>
                 </Grid>
             </Box>
-            <Dialog open={openResetPasswordDialog}>
+            <Dialog >
                 <DialogTitle>Password reset</DialogTitle>
                 <DialogContent>
                     <Typography>
@@ -168,12 +125,11 @@ export default function Login() {
                         label="Email Address"
                         type="email"
                         fullWidth
-                        onChange={handleEmail}
                     />
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleCloseResetPassword}>Cancel</Button>
-                    <Button onClick={handleSendPasswordReset}>Send</Button>
+                    <Button >Cancel</Button>
+                    <Button >Send</Button>
                 </DialogActions>
             </Dialog>
         </Container>

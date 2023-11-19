@@ -24,6 +24,7 @@ import useErrorHandler from "./utils/ErrorHandler";
 import ManagerReservations from "./pages/ParkingManagement/ManagerReservations";
 import ManagerParkingCreate from "./pages/ParkingManagement/ManagerParkingCreate";
 import ManagerParkingDetails from "./pages/ParkingManagement/ManagerParkingDetails";
+import PasswordReset from "./pages/Login/PasswordReset";
 const ColorModeContext = React.createContext({ toggleColorMode: () => { } });
 
 axios.defaults.baseURL = process.env.REACT_APP_BACKEND_URL;
@@ -164,6 +165,10 @@ function App() {
                             <Route
                                 path={"/reservation-edit/:reservationId"}
                                 element={<ReservationEdit />}
+                            />
+                            <Route
+                                path={"reset-password/:token"}
+                                element={<PasswordReset />}
                             />
                         </Routes>
                     </div>
