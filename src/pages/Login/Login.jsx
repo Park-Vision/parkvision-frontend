@@ -33,6 +33,7 @@ export default function Login() {
 
     const [email, setEmail] = React.useState("")
     const [password, setPassword] = React.useState("")
+    const [emailReset, setEmailReset] = React.useState("")
     const dispatch = useDispatch()
     const navigate = useNavigate()
 
@@ -41,6 +42,12 @@ export default function Login() {
     const handleEmail = (event) => {
         setEmail(event.target.value);
     };
+
+
+    const handleEmailReset = (event) => {
+        setEmailReset(event.target.value);
+    };
+
 
     const handlePassword = (event) => {
         setPassword(event.target.value);
@@ -86,7 +93,7 @@ export default function Login() {
 
     const handleOpenResetPassword = () => {
         setResetPasswordDialog(true);
-        setEmail("");
+        setEmailReset("");
     }
 
     const navigateToHome = () => {
@@ -94,13 +101,13 @@ export default function Login() {
     }
 
     const handleSendPasswordReset = () => {
-        dispatch(resetPassword(email));
+        dispatch(resetPassword(emailReset));
         setResetPasswordDialog(false);
         toast.success('Password reset email sent. Check your inbox.');
     }
 
     return (
-        <Container maxWidth="lg">
+        <Container maxWidth="sm">
             <Box sx={{
                 display: 'flex',
                 justifyContent: 'center',
@@ -146,7 +153,11 @@ export default function Login() {
                                     <Button fullWidth margin="normal" onClick={handleOpenResetPassword}>
                                         Password reset
                                     </Button>
-                                    <Button variant="contained" fullWidth margin="normal" onClick={() => handleRegister()}>
+                                    <Button
+                                        variant="contained"
+                                        fullWidth
+                                        margin="normal"
+                                        onClick={() => handleRegister()}>
                                         Register
                                     </Button>
                                 </form>
@@ -168,7 +179,7 @@ export default function Login() {
                         label="Email Address"
                         type="email"
                         fullWidth
-                        onChange={handleEmail}
+                        onChange={handleEmailReset}
                     />
                 </DialogContent>
                 <DialogActions>
