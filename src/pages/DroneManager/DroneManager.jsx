@@ -58,19 +58,18 @@ function ParkingEditor(props) {
     const [stompClient, setStompClient] = useState(null);
 
     // mock list of drones for this parking, TODO add handling /api/drones/parking/{id} endpoint
-    const mockDronesForParking = [3, 33]
+    const mockDronesForParking = [3, 4]
 
     const [selectedDroneId, setSelectedDroneId] = useState(mockDronesForParking[0])
     const [selectedDronePosition, setSelectedDronePosition] = useState([parking.latitude, parking.longitude]);
 
-    const recreateWSClient = () => {
+    const initStomp = () => {
         const socket = new SockJS(process.env.REACT_APP_WEBSOCKET_URL);
         const client = Stomp.over(socket);
 
         client.connect({ Authorization: "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzdHJpbmciLCJ1c2VySWQiOiIzIiwicm9sZSI6IlBBUktJTkdfTUFOQUdFUiIsImlhdCI6MTcwMDMyNDExMCwiZXhwIjoxNzAwMzI3NzEwfQ.yWDd7kILuEqLwGyuIfkEI0w562n4x6z3r2w4HT3xmLw" }, () => {
             client.subscribe('/topic/drones/' + selectedDroneId, (message) => {
                 const recievedMessage = JSON.parse(message.body);
-                //console.log(recievedMessage)
                 setMessages((messages) => [...messages, recievedMessage]);
                 setSelectedDronePosition([recievedMessage.lat, recievedMessage.lon])
             });
@@ -89,7 +88,8 @@ function ParkingEditor(props) {
     }
 
     useEffect(() => {
-        recreateWSClient()
+        initStomp()
+        return () => disposeSocket()
     }, []);
 
 
@@ -100,6 +100,33 @@ function ParkingEditor(props) {
         stompClient.send('/app/messages', {}, JSON.stringify(messageObject));
         setMessage("");
     }
+
+    const disposeSocket = () => {
+        if (stompClient) {
+            stompClient.disconnect();
+            setStompClient(null);
+        }
+    };
+
+    const subscribeToDifferentSocket = ( desiredDroneId ) => {
+        disposeSocket();
+
+        const newSocket = new SockJS(process.env.REACT_APP_WEBSOCKET_URL);
+        const newStomp = Stomp.over(newSocket);
+
+        newStomp.connect({ Authorization: "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzdHJpbmciLCJ1c2VySWQiOiIzIiwicm9sZSI6IlBBUktJTkdfTUFOQUdFUiIsImlhdCI6MTcwMDMyNDExMCwiZXhwIjoxNzAwMzI3NzEwfQ.yWDd7kILuEqLwGyuIfkEI0w562n4x6z3r2w4HT3xmLw" }, () => {
+            newStomp.subscribe('/topic/drones/' + desiredDroneId, (message) => {
+                const recievedMessage = JSON.parse(message.body);
+                setMessages((messages) => [...messages, recievedMessage]);
+                setSelectedDronePosition([recievedMessage.lat, recievedMessage.lon])
+            });
+            setStompClient(newStomp);
+
+        }, (error) => {
+            console.log(error);
+        });
+
+    };
 
     useEffect(() => {
         const checkAuthorization = async () => {
@@ -142,7 +169,8 @@ function ParkingEditor(props) {
 
     const handleSelectDrone = (event) => {
         setSelectedDroneId(event.target.value);
-        // TODO impossible switch topics
+
+        subscribeToDifferentSocket(event.target.value)
     };
 
 
