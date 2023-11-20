@@ -30,6 +30,7 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
+import DroneTimeline from "../../components/DroneTimeline";
 
 delete L.Icon.Default.prototype._getIconUrl;
 
@@ -54,14 +55,29 @@ function ParkingEditor(props) {
     const user = decodeToken(userjson?.token);
 
     const [messages, setMessages] = useState([]);
-    const [message, setMessage] = useState("test");
     const [stompClient, setStompClient] = useState(null);
 
     // mock list of drones for this parking, TODO add handling /api/drones/parking/{id} endpoint
     const mockDronesForParking = [3, 4]
 
     const [selectedDroneId, setSelectedDroneId] = useState(mockDronesForParking[0])
-    const [selectedDronePosition, setSelectedDronePosition] = useState([parking.latitude, parking.longitude]);
+    const [dronePosition, setDronePosition] = useState([parking.latitude, parking.longitude])
+    const [droneStage, setDroneStage] = useState(0)
+
+    const processIncomingMessage = (recievedMessage) => {
+        setMessages((messages) => [...messages, recievedMessage]);
+
+        if (Object.hasOwn(recievedMessage, "lat")) {
+            setDronePosition([recievedMessage.lat, recievedMessage.lon])
+        }
+
+        if (Object.hasOwn(recievedMessage, "type")) {
+            switch (recievedMessage.type) {
+                case 'stage':
+                    setDroneStage(recievedMessage.stage)
+            }
+        }
+    }
 
     const initStomp = () => {
         const socket = new SockJS(process.env.REACT_APP_WEBSOCKET_URL);
@@ -69,9 +85,7 @@ function ParkingEditor(props) {
 
         client.connect({ Authorization: "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzdHJpbmciLCJ1c2VySWQiOiIzIiwicm9sZSI6IlBBUktJTkdfTUFOQUdFUiIsImlhdCI6MTcwMDMyNDExMCwiZXhwIjoxNzAwMzI3NzEwfQ.yWDd7kILuEqLwGyuIfkEI0w562n4x6z3r2w4HT3xmLw" }, () => {
             client.subscribe('/topic/drones/' + selectedDroneId, (message) => {
-                const recievedMessage = JSON.parse(message.body);
-                setMessages((messages) => [...messages, recievedMessage]);
-                setSelectedDronePosition([recievedMessage.lat, recievedMessage.lon])
+                processIncomingMessage(JSON.parse(message.body))
             });
         }, (error) => {
             console.log(error);
@@ -93,12 +107,11 @@ function ParkingEditor(props) {
     }, []);
 
 
-    const sendMessage = () => {
+    const sendMessage = (message) => {
         const messageObject = {
             message: message,
         };
         stompClient.send('/app/messages', {}, JSON.stringify(messageObject));
-        setMessage("");
     }
 
     const disposeSocket = () => {
@@ -108,7 +121,7 @@ function ParkingEditor(props) {
         }
     };
 
-    const subscribeToDifferentSocket = ( desiredDroneId ) => {
+    const subscribeToDifferentSocket = (desiredDroneId) => {
         disposeSocket();
 
         const newSocket = new SockJS(process.env.REACT_APP_WEBSOCKET_URL);
@@ -116,9 +129,7 @@ function ParkingEditor(props) {
 
         newStomp.connect({ Authorization: "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzdHJpbmciLCJ1c2VySWQiOiIzIiwicm9sZSI6IlBBUktJTkdfTUFOQUdFUiIsImlhdCI6MTcwMDMyNDExMCwiZXhwIjoxNzAwMzI3NzEwfQ.yWDd7kILuEqLwGyuIfkEI0w562n4x6z3r2w4HT3xmLw" }, () => {
             newStomp.subscribe('/topic/drones/' + desiredDroneId, (message) => {
-                const recievedMessage = JSON.parse(message.body);
-                setMessages((messages) => [...messages, recievedMessage]);
-                setSelectedDronePosition([recievedMessage.lat, recievedMessage.lon])
+                processIncomingMessage(JSON.parse(message.body))
             });
             setStompClient(newStomp);
 
@@ -169,6 +180,7 @@ function ParkingEditor(props) {
 
     const handleSelectDrone = (event) => {
         setSelectedDroneId(event.target.value);
+        setDronePosition([0, 0])
 
         subscribeToDifferentSocket(event.target.value)
     };
@@ -235,7 +247,7 @@ function ParkingEditor(props) {
                                                 url='http://mt0.google.com/vt/lyrs=s&x={x}&y={y}&z={z}'
                                             />
                                         </LayersControl.BaseLayer>
-                                        <DroneMarker position={[selectedDronePosition[0] / 10e6, selectedDronePosition[1] / 10e6]} />
+                                        <DroneMarker position={[dronePosition[0] / 10e6, dronePosition[1] / 10e6]} />
                                     </LayersControl>
 
 
@@ -276,6 +288,7 @@ function ParkingEditor(props) {
                                         {mockDronesForParking.map(drone => <MenuItem value={drone}>{drone}</MenuItem>)}
                                     </Select>
                                 </FormControl>
+                                <DroneTimeline stageId={droneStage}/>
                             </CardContent>
                             <Grid container>
                                 <Button
