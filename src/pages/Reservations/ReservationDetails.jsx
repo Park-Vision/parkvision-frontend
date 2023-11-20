@@ -35,7 +35,7 @@ export default function ReservationDetails(props) {
     const [cvc, setCvc] = useState("");
     const [amount, setAmount] = useState("");
     const cardRegex = /^\d+$/;
-    const cvcRegex = /^\d{3}$/;
+    const cvcRegex = /^\d{3,4}$/;
 
     useEffect(() => {
         const calculatedAmount = handleAmount();
@@ -96,7 +96,7 @@ export default function ReservationDetails(props) {
         } else if (!cardRegex.test(cardNumber)) {
             toast.error('Card number should contain only digits');
         } else if (!cvcRegex.test(cvc)) {
-            toast.error('CVC should be 3 digits');
+            toast.error('CVC should be 3 or 4 digits');
         } else {
             try {
                 setLoading(true);
@@ -104,7 +104,7 @@ export default function ReservationDetails(props) {
                     ...reservation,
                     amount: amount,
                 };
-                dispatch(addReservation(transformResevationDates(reservation)))
+                dispatch(addReservation(transformResevationDates(reservationWithAmount)))
                     .then((reservationResponse) => {
                         const userId = authenticationReducer.decodedUser.userId;
                         const newPayment = {

@@ -1,5 +1,6 @@
 import {
     ADD_PARKING_SPOT,
+    ADD_PARKING_SPOTS,
     DELETE_PARKING_SPOT_SOFT,
     DELETE_PARKING_SPOT_HARD,
     UPDATE_PARKING_SPOT,
@@ -12,9 +13,22 @@ import {
 } from "./types"
 import ParkingSpotService from "../services/ParkingSpotService";
 
-export const addParkingSpot = (parkingId, parkingSpotData) => async (dispatch) => {
+export const addParkingSpots = (parkingId,parkingSpotData) => async (dispatch) => {
     try {
-        const response = await ParkingSpotService.createParkingSpot(parkingId, parkingSpotData);
+        const response = await ParkingSpotService.addParkingSpots(parkingId, parkingSpotData);
+        dispatch({
+            type: ADD_PARKING_SPOTS,
+            value: response.data
+        })
+        return Promise.resolve(response.data)
+    } catch (error){
+        return Promise.reject(error)
+    }
+}
+
+export const addParkingSpot = (parkingSpotData) => async (dispatch) => {
+    try {
+        const response = await ParkingSpotService.addParkingSpot(parkingSpotData);
         dispatch({
             type: ADD_PARKING_SPOT,
             value: response.data

@@ -16,7 +16,7 @@ class ParkingService {
     }
 
     async updateParking(parkingData) {
-        return await axios.put(urlConst + "/", parkingData);
+        return await axios.put(urlConst, parkingData);
     }
 
     async deleteParkingById(parkingId) {

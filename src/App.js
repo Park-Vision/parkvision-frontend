@@ -23,6 +23,8 @@ import ParkingEditor from "./pages/Editor/Editor"
 import axios from "axios";
 import useErrorHandler from "./utils/ErrorHandler";
 import ManagerReservations from "./pages/ParkingManagement/ManagerReservations";
+import ManagerParkingCreate from "./pages/ParkingManagement/ManagerParkingCreate";
+import ManagerParkingDetails from "./pages/ParkingManagement/ManagerParkingDetails";
 const ColorModeContext = React.createContext({ toggleColorMode: () => { } });
 
 axios.defaults.baseURL = process.env.REACT_APP_BACKEND_URL;
@@ -140,6 +142,10 @@ function App() {
                                 path={'/parking/:parkingId/editor'} 
                                 element={<ParkingEditor/>}
                             />
+                            <Route
+                                path={"/parking/:parkingId/details"}
+                                element={<ManagerParkingDetails />}
+                            />
                             <Route 
                                 path={"/parkingspot/:parkingSpotId"} 
                                 element={<ParkingSpotDetails />}
@@ -155,6 +161,10 @@ function App() {
                             <Route
                                 path={"/parking/:parkingId/missions"}
                                 element={<Missions />}
+                             />
+                            <Route
+                                path={"/parking/create"}
+                                element={<ManagerParkingCreate />}
                             />
                             <Route
                                 path={"/reservation-edit/:reservationId"}
