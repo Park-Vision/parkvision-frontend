@@ -36,9 +36,12 @@ export default function ManagerReservations(props) {
         { field: 'endDate', headerName: 'End Date', flex: 0.8,
             valueGetter: ({row}) => convertDate(row.missionEndDate) },
         { field: 'status', headerName: 'Status', flex: 1 },
-        { field: 'parking', headerName: 'Parking', flex: 0.6 },
-        { field: 'drone', headerName: 'Drone', flex: 1 },
-        { field: 'actions', headerName: 'Actions', flex: 0.5 },
+        { field: 'parking', headerName: 'Parking', flex: 0.6,
+            valueGetter: ({row}) => row.parkingDTO.name },
+        { field: 'drone', headerName: 'Drone', flex: 1,
+            valueGetter: ({row}) => row.droneDTO.name},
+        { field: 'droneModel', headerName: 'Drone Model', flex: 1,
+            valueGetter: ({row}) => row.droneDTO.model},,
     ];
 
     return (
