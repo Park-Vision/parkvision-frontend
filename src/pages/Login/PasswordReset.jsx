@@ -23,7 +23,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { resetPassword, setPasswordFromReset } from '../../actions/userActions';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { validateEmail, validatePassword } from "../../utils/validation";
 
 
@@ -32,7 +32,10 @@ export default function PasswordReset() {
     const [passwordRepeat, setPasswordRepeat] = React.useState("")
     const dispatch = useDispatch()
     const navigate = useNavigate()
-    const token = useParams();
+    const location = useLocation();
+    const queryParams = new URLSearchParams(location.search);
+    const token = queryParams.get('token');
+    const timestamp = queryParams.get('timestamp');
 
     const handlePassword = (event) => {
         setPassword(event.target.value);
@@ -51,16 +54,25 @@ export default function PasswordReset() {
             toast.info('Passwords must be the same');
         } else {
             const resetPasswordBody = {
-                token: token.token,
-                password: password
+                token: token,
+                password: password,
+                timestamp: timestamp
             }
-            dispatch(setPasswordFromReset(resetPasswordBody))
+            dispatch(setPasswordFromReset(resetPasswordBody)).then(response => {
+                toast.success('Submited successfully');
+                navigate("/login");
+            }
+            );
         }
+    }
+
+    const handleGoToLogin = () => {
+        navigate("/login");
     }
 
 
     return (
-        <Container maxWidth="lg">
+        <Container maxWidth="sm">
             <Box sx={{
                 display: 'flex',
                 justifyContent: 'center',
@@ -77,12 +89,11 @@ export default function PasswordReset() {
                         />
                         <CardContent>
                             <Typography gutterBottom variant="h5" component="div">
-                                PasswordReset
+                                Set new password
                             </Typography>
                             <Typography variant="body2" color="text.secondary">
                                 <form onSubmit={handlePasswordReset} >
                                     <TextField
-                                        id="outlined-basic"
                                         label="Password"
                                         variant="outlined"
                                         fullWidth
@@ -93,7 +104,6 @@ export default function PasswordReset() {
                                         value={password}
                                     />
                                     <TextField
-                                        id="outlined-basic"
                                         label="Repeat password"
                                         variant="outlined"
                                         fullWidth
@@ -104,7 +114,16 @@ export default function PasswordReset() {
                                         value={passwordRepeat}
                                     />
                                     <Button type="submit" variant="contained" fullWidth margin="normal" >
-                                        PasswordReset
+                                        Password reset
+                                    </Button>
+                                    <Button onClick={handleGoToLogin} fullWidth margin="normal" >
+                                        Login
+                                    </Button>
+                                    <Button
+                                        variant="contained"
+                                        fullWidth
+                                        margin="normal">
+                                        Register
                                     </Button>
                                 </form>
                             </Typography>
@@ -112,26 +131,6 @@ export default function PasswordReset() {
                     </Card>
                 </Grid>
             </Box>
-            <Dialog >
-                <DialogTitle>Password reset</DialogTitle>
-                <DialogContent>
-                    <Typography>
-                        Please enter your email address.<br></br> We will send you a link to reset your password.
-                    </Typography>
-                    <TextField
-                        autoFocus
-                        margin="dense"
-                        id="email"
-                        label="Email Address"
-                        type="email"
-                        fullWidth
-                    />
-                </DialogContent>
-                <DialogActions>
-                    <Button >Cancel</Button>
-                    <Button >Send</Button>
-                </DialogActions>
-            </Dialog>
         </Container>
     );
 }
