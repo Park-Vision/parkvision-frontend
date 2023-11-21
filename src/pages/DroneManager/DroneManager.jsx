@@ -84,7 +84,7 @@ function ParkingEditor(props) {
         const socket = new SockJS(process.env.REACT_APP_WEBSOCKET_URL);
         const client = Stomp.over(socket);
 
-        client.connect({ Authorization: "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzdHJpbmciLCJ1c2VySWQiOiIzIiwicm9sZSI6IlBBUktJTkdfTUFOQUdFUiIsImlhdCI6MTcwMDMyNDExMCwiZXhwIjoxNzAwMzI3NzEwfQ.yWDd7kILuEqLwGyuIfkEI0w562n4x6z3r2w4HT3xmLw" }, () => {
+        client.connect({ Authorization: "Bearer " + JSON.parse(localStorage.getItem("user"))?.token }, () => {
             client.subscribe('/topic/drones/' + selectedDroneId, (message) => {
                 processIncomingMessage(JSON.parse(message.body))
             });
