@@ -22,15 +22,16 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import IconButton from '@mui/material/IconButton';
 import InputAdornment from '@mui/material/InputAdornment';
+import InputLabel from '@mui/material/InputLabel';
 import { useDispatch, useSelector } from "react-redux";
 import { login } from "../../actions/authenticationActions";
 import { resetPassword } from '../../actions/userActions';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { useNavigate } from 'react-router-dom';
+import { Form, useNavigate } from 'react-router-dom';
 import { validateEmail, validatePassword } from "../../utils/validation";
 import decodeToken from "../../utils/decodeToken";
-import { OutlinedInput } from '@mui/material';
+import { FormControl, OutlinedInput } from '@mui/material';
 
 
 export default function Login() {
@@ -139,46 +140,50 @@ export default function Login() {
                             </Typography>
                             <Typography variant="body2" color="text.secondary">
                                 <form onSubmit={handleLogin}>
-                                    <TextField
-                                        label="Email address"
-                                        variant="outlined"
-                                        fullWidth
-                                        margin="normal"
-                                        required={true}
-                                        onChange={handleEmail}
-                                        value={email}
-                                    />
-                                    <OutlinedInput
-                                        label="Password"
-                                        fullWidth
-                                        margin="normal"
-                                        type={showPassword ? 'text' : 'password'}
-                                        required={true}
-                                        onChange={handlePassword}
-                                        value={password}
-                                        endAdornment={
-                                            <InputAdornment position="end">
-                                                <IconButton
-                                                    aria-label="toggle password visibility"
-                                                    onClick={handleClickShowPassword}
-                                                    onMouseDown={handleMouseDownPassword}
-                                                    edge="end"
-                                                >
-                                                    {showPassword ? <VisibilityOff /> : <Visibility />}
-                                                </IconButton>
-                                            </InputAdornment>
-                                        }
-                                    />
-                                    <Button type="submit" variant="contained" fullWidth margin="normal" >
+                                    <FormControl fullWidth variant="outlined" margin="normal">
+                                        <InputLabel htmlFor="email">E-mail</InputLabel>
+                                        <OutlinedInput
+                                            label="E-mail"
+                                            id="email"
+                                            variant="outlined"
+                                            required={true}
+                                            onChange={handleEmail}
+                                            value={email}
+                                        />
+                                    </FormControl>
+                                    <FormControl fullWidth variant="outlined" margin="normal">
+                                        <InputLabel htmlFor="password">Password</InputLabel>
+                                        <OutlinedInput
+                                            label="Password"
+                                            id="password"
+                                            type={showPassword ? 'text' : 'password'}
+                                            required={true}
+                                            onChange={handlePassword}
+                                            value={password}
+                                            endAdornment={
+                                                <InputAdornment position="end">
+                                                    <IconButton
+                                                        aria-label="toggle password visibility"
+                                                        onClick={handleClickShowPassword}
+                                                        onMouseDown={handleMouseDownPassword}
+                                                        edge="end"
+                                                    >
+                                                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                                                    </IconButton>
+                                                </InputAdornment>
+                                            }
+                                        />
+                                    </FormControl>
+                                    <Button type="submit" variant="contained" fullWidth sx={{ mt: 1 }} >
                                         Login
                                     </Button>
-                                    <Button fullWidth margin="normal" onClick={handleOpenResetPassword}>
+                                    <Button fullWidth sx={{ mt: 1 }} onClick={handleOpenResetPassword}>
                                         Password reset
                                     </Button>
                                     <Button
                                         variant="contained"
                                         fullWidth
-                                        margin="normal"
+                                        sx={{ mt: 1 }}
                                         onClick={() => handleRegister()}>
                                         Register
                                     </Button>

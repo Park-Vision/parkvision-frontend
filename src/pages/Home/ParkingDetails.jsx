@@ -355,8 +355,6 @@ function ParkingDetails(props) {
             value: newReservation,
         });
 
-        // route to resevation detail page and pass reservation object
-
         navigate("/reservation-details");
 
         // dispatch(addReservation(newReservation))
@@ -506,10 +504,10 @@ function ParkingDetails(props) {
                                 <Box
                                     sx={{
                                         display: "flex",
-                                        "align-content": "center",
-                                        "justify-content": "center",
-                                        "flex-direction": "row",
-                                        "flex-wrap": "wrap",
+                                        alignContent: "center",
+                                        justifyContent: "center",
+                                        flexDirection: "row",
+                                        flexWrap: "wrap",
                                     }}
                                     style={{ width: "100%", height: "100%" }}
                                 >

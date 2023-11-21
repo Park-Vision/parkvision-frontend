@@ -59,6 +59,7 @@ export default function ReservationEdit(props) {
         //         endDate = startDate;
         //     }
         // }
+        endDate = startDate.add(duration, 'minutes');
 
         if (!parking.timeZone) {
             return;
@@ -74,9 +75,10 @@ export default function ReservationEdit(props) {
     }
 
 
-    const transformResevationDates = (reservation) => {
-        const start = getLocalISOTime(reservation.startDate, parking.timeZone);
-        const end = getLocalISOTime(reservation.endDate, parking.timeZone);
+    const transformResevationDates = (reservation, parking) => {
+        debugger
+        const start = getLocalISOTime(startDate, parking.timeZone);
+        const end = getLocalISOTime(endDate, parking.timeZone);
         return {
             ...reservation,
             startDate: start,
@@ -85,7 +87,6 @@ export default function ReservationEdit(props) {
     }
 
     const handleEditClick = (parking) => {
-        debugger
         if (!validateRegistraionNumber(registrationNumber)) {
             toast.error('Please enter valid registration number: not empty and no white spaces.');
             return;
@@ -95,16 +96,7 @@ export default function ReservationEdit(props) {
 
         try {
             setLoading(true);
-
-
-            reservation.startDate = new Date(startDate).toISOString();
-            reservation.endDate = new Date(endDate).toISOString();
-
-            let start = getLocalISOTime(startDate, parking.timeZone);
-            let end = getLocalISOTime(endDate, parking.timeZone);
-            debugger;
-            //TODO fix when changing time with time zone
-            dispatch(updateReservation(reservation))
+            dispatch(updateReservation(transformResevationDates(reservation, parking)))
                 .then(response => {
                     setLoading(false);
                     toast.success('reservation updated');
@@ -135,8 +127,6 @@ export default function ReservationEdit(props) {
     }
 
     const minEndDate = () => {
-        console.log(duration);
-        console.log(startDate.add(duration, 'minutes'));
         return startDate.add(duration, 'minutes');
     }
 
@@ -195,16 +185,17 @@ export default function ReservationEdit(props) {
                                     </MapContainer>
                                 )}
                             </div>
-                            <Typography sx={{ m: 1 }} >
+                            <Typography margin='normal'>
                                 Dates and times are based on parking time zone ({reservation?.parkingSpotDTO?.parkingDTO?.timeZone}) compared to UTC.
                             </Typography>
                             <LocalizationProvider
+
                                 dateAdapter={AdapterDayjs}>
                                 <MobileDateTimePicker
-                                    sx={{ m: 1 }}
+
                                     label="Start date"
                                     value={startDate}
-                                    slotProps={{ textField: { fullWidth: true } }}
+                                    slotProps={{ textField: { fullWidth: true, margin: 'normal' } }}
                                     ampm={false}
                                     minutesStep={15}
                                     disablePast={true}
@@ -212,44 +203,29 @@ export default function ReservationEdit(props) {
                                     minDateTime={dayjs(reservation.startDate)}
                                 />
                             </LocalizationProvider>
-                            {/* <TextField sx={{ m: 1 }} fullWidth
-                                value={startDate}
-                                id="outlined-basic"
-                                label="Start date"
-                                variant="outlined"
-                                InputProps={{
-                                    readOnly: true,
-                                }}
-                            /> */}
                             <LocalizationProvider
                                 dateAdapter={AdapterDayjs}>
                                 <MobileDateTimePicker
-                                    sx={{ m: 1 }}
+                                    margin='normal'
                                     label="End date"
                                     value={endDate}
-                                    slotProps={{ textField: { fullWidth: true } }}
+                                    slotProps={{ textField: { fullWidth: true, margin: 'normal' } }}
                                     ampm={false}
                                     minutesStep={15}
                                     minDateTime={minEndDate()}
                                     onChange={(value) => handleAnyChangeOfTime(startDate, value, reservation.parkingSpotDTO?.parkingDTO)}
+                                    disabled={true}
 
                                 />
                             </LocalizationProvider>
-                            {/* <TextField sx={{ m: 1 }} fullWidth
-                                value={endDate}
-                                id="outlined-basic"
-                                label="End date"
-                                variant="outlined"
-                                InputProps={{
-                                    readOnly: true,
-                                }}
-                            /> */}
                             {parkingSpotReducer.freeParkingSpots && parkingSpotReducer.freeParkingSpots.find(spot => spot.id === reservation.parkingSpotDTO.id) && (
-                                <Typography sx={{ m: 1 }} >
+                                <Typography
+                                    margin='normal'>
                                     Spot available
                                 </Typography>
                             )}
-                            <TextField sx={{ m: 1 }} fullWidth
+                            <TextField fullWidth
+                                margin='normal'
                                 value={reservation.amount + ' ' + reservation.parkingSpotDTO?.parkingDTO?.currency}
                                 label="Amount"
                                 variant="outlined"
@@ -257,13 +233,15 @@ export default function ReservationEdit(props) {
                                     readOnly: true,
                                 }}
                             />
-                            <TextField sx={{ m: 1 }} fullWidth
+                            <TextField fullWidth
+                                margin='normal'
                                 value={registrationNumber}
                                 label="Registration number"
                                 variant="outlined"
                                 onChange={(value) => handleChangeRegistrationNumber(value.target.value)}
                             />
-                            <TextField sx={{ m: 1 }} fullWidth
+                            <TextField fullWidth
+                                margin='normal'
                                 value={`${reservation.parkingSpotDTO?.parkingDTO.name}, ${reservation.parkingSpotDTO?.parkingDTO.street}, ${reservation.parkingSpotDTO?.parkingDTO.city}`}
                                 label="Parking name"
                                 variant="outlined"
@@ -271,7 +249,8 @@ export default function ReservationEdit(props) {
                                     readOnly: true,
                                 }}
                             />
-                            <TextField sx={{ m: 1 }} fullWidth
+                            <TextField fullWidth
+                                margin='normal'
                                 value={reservation.parkingSpotDTO?.spotNumber}
                                 label="Parking spot"
                                 variant="outlined"
@@ -282,10 +261,19 @@ export default function ReservationEdit(props) {
 
 
                             />
-                            <Button sx={{ m: 1 }} variant="contained" onClick={() => handleEditClick(reservation.parkingSpotDTO.parkingDTO)} fullWidth>
+                            <Button
+                                sx={{ mt: 2 }}
+                                margin='normal'
+                                variant="contained"
+                                onClick={() => handleEditClick(reservation.parkingSpotDTO.parkingDTO)}
+                                fullWidth>
                                 Save
                             </Button>
-                            <Button sx={{ m: 1 }} variant="outlined" onClick={handleExitClick} fullWidth>
+                            <Button
+                                sx={{ mt: 2 }}
+                                variant="outlined"
+                                onClick={handleExitClick}
+                                fullWidth>
                                 Exit
                             </Button>
 
