@@ -176,7 +176,7 @@ export default function Login() {
                     </Typography>
                     <TextField
                         autoFocus
-                        margin="dense"
+                        margin="normal"
                         id="email"
                         label="Email Address"
                         type="email"
