@@ -171,9 +171,21 @@ function ParkingDetails(props) {
         setRegistrationNumber(registrationNumber);
     };
 
+    const isParking24h = (parking) => {
+        if (!parking) {
+            return false;
+        }
+        return convertTime(parking.startTime, parking.timeZone) === "00:00" && convertTime(parking.endTime, parking.timeZone) === "23:45";
+    };
+
 
     const handleAnyChangeOfTime = (startDay, startTime, endDay, endTime) => {
 
+        if (!isParking24h(parking)) {
+            if (startDay.toDate().getDate() !== dayjs(parkingTime).toDate().getDate()) {
+                endDay = startDay;
+            }
+        }
 
 
         if (startDay.toDate().getDate() !== startTime.toDate().getDate()) {
@@ -594,6 +606,7 @@ function ParkingDetails(props) {
                                                     value={startDay}
                                                     onChange={(newStartDay) => handleAnyChangeOfTime(newStartDay, startTime, endDay, endTime)}
                                                     minDate={dayjs(parkingTime)}
+                                                    minutesStep={15}
 
                                                 />
                                             </Grid>
@@ -607,6 +620,7 @@ function ParkingDetails(props) {
                                                     shouldDisableTime={(val, view) => shouldDisableTime(val, view, parkingTime)}
                                                     value={startTime}
                                                     onChange={(newStartTime) => { handleAnyChangeOfTime(startDay, newStartTime, endDay, endTime); }}
+                                                    minutesStep={15}
                                                 />
                                             </Grid>
                                         </LocalizationProvider>
@@ -624,6 +638,7 @@ function ParkingDetails(props) {
                                                     value={endDay}
                                                     onChange={(newValue) => { handleAnyChangeOfTime(startDay, startTime, newValue, endTime); }}
                                                     minDate={startDay}
+                                                    disabled={!isParking24h(parking)}
                                                 />
                                             </Grid>
                                             <Grid
