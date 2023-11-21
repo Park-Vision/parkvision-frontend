@@ -16,9 +16,11 @@ import ReservationEdit from "./pages/Reservations/ReservationEdit";
 import ManagerProfile from "./pages/ParkingManagement/ManagerProfile";
 import UserProfile from "./pages/User/UserProfile";
 import * as React from "react";
+
 import UserReservations from "./pages/User/UserReservations";
 import ParkingSpotDetails from "./pages/ParkingSpot/ParkingSpotDetails";
 import ParkingEditor from "./pages/Editor/Editor"
+import DroneManager from "./pages/DroneManager/DroneManager"
 import axios from "axios";
 import useErrorHandler from "./utils/ErrorHandler";
 import ManagerReservations from "./pages/ParkingManagement/ManagerReservations";
@@ -48,6 +50,7 @@ axios.interceptors.request.use(
 
 
 function App() {
+
     const [mode, setMode] = React.useState("light");
     const colorMode = React.useMemo(
         () => ({
@@ -144,6 +147,10 @@ function App() {
                             <Route
                                 path={"/parking/:parkingId/details"}
                                 element={<ManagerParkingDetails />}
+                            />
+                            <Route 
+                                path={'/parking/:parkingId/drone'} 
+                                element={<DroneManager/>}
                             />
                             <Route 
                                 path={"/parkingspot/:parkingSpotId"} 
