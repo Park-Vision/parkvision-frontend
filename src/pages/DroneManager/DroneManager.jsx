@@ -182,6 +182,7 @@ function ParkingEditor(props) {
     const handleSelectDrone = (event) => {
         setSelectedDroneId(event.target.value);
         setDronePosition([0, 0])
+        setDroneStage(0)
 
         subscribeToDifferentSocket(event.target.value)
     };
