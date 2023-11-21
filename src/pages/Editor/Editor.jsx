@@ -27,7 +27,7 @@ import decodeToken from "../../utils/decodeToken";
 import { getUser } from "../../actions/userActions";
 import { toast } from "react-toastify";
 import 'leaflet-path-drag'
-import { areParkingSpotsColliding } from "../../utils/parkingUtils";
+import { areParkingSpotsColliding, hasParkingSpotTooBigArea } from "../../utils/parkingUtils";
 delete L.Icon.Default.prototype._getIconUrl;
 
 L.Icon.Default.mergeOptions({
@@ -139,7 +139,7 @@ function ParkingEditor(props) {
                     }
                 });
             }
-        }); 
+        });
 
         const transformedSpotsLayer = [];
         list.forEach((layer) => {
@@ -237,20 +237,23 @@ function ParkingEditor(props) {
         );
 
         let isColliding = false;
-
+        let inValidArea = false;
         transformedSpots.forEach((editedSpot) => {
+            if (hasParkingSpotTooBigArea(editedSpot)) {
+                inValidArea = true;
+                toast.error("Parking spot area is invalid!");
+            }
             uniqueSpots.forEach((otherspot) => {
                 if (editedSpot.id !== otherspot.id) {
                     const coliding = areParkingSpotsColliding(otherspot, editedSpot);
                     if (coliding) {
                         isColliding = true;
                         toast.error("Parking spots are colliding!");
-                        debugger
                     }
                 }
             });
 
-            if (!isColliding) {
+            if (!isColliding && !inValidArea) {
                 dispatch(updateParkingSpot(editedSpot)).then(() => {
                     dispatch(getParkingSpotsByParkingId(parkingId));
                 });
@@ -279,7 +282,7 @@ function ParkingEditor(props) {
                     }
                 });
             }
-        }); 
+        });
 
         const transformedSpots = [];
         list.forEach((layer) => {
@@ -378,8 +381,12 @@ function ParkingEditor(props) {
         }
     };
 
-    const mapPonitsToParkingSpot = (points, editedSpot) => {
-
+    const mapPonitsToParkingSpot = (e, points, editedSpot) => {
+        let toMuchDrag = false;
+        if (e.distance > 50.0) {
+            toMuchDrag = true;
+            toast.error("You can't drag parking spot that much!");
+        }
 
         const mappedPoints = points[0].map((coord) => {
             return { latitude: coord[1], longitude: coord[0], id: coord[2] };
@@ -414,7 +421,7 @@ function ParkingEditor(props) {
             }
         });
 
-        if (!isColliding) {
+        if (!isColliding && !toMuchDrag) {
             dispatch(updateParkingSpot(editedParkingSpot)).then(() => {
                 dispatch(getParkingSpot(editedParkingSpot.id));
             });
@@ -525,7 +532,7 @@ function ParkingEditor(props) {
                                                                 list[index].push(spot.pointsDTO[i].id);
                                                                 index = index + 1;
                                                             }
-                                                            mapPonitsToParkingSpot(eventJson.geometry.coordinates, spot);
+                                                            mapPonitsToParkingSpot(e, eventJson.geometry.coordinates, spot);
                                                         },
 
                                                     }}
