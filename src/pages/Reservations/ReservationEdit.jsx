@@ -1,4 +1,4 @@
-import { useNavigate, useParams} from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Container, Box, Typography, Paper, CardContent, TextField, Button, CircularProgress } from '@mui/material';
 import { useDispatch, useSelector } from "react-redux";
 import { MapContainer, TileLayer, FeatureGroup, Polygon, Popup } from 'react-leaflet';
@@ -11,7 +11,12 @@ import { validateRegistraionNumber } from '../../utils/validation';
 import decodeToken from '../../utils/decodeToken';
 import { getUserReservations } from '../../actions/reservationActions';
 import convertDate from '../../utils/convertDate';
-
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { MobileDateTimePicker } from '@mui/x-date-pickers/MobileDateTimePicker';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import dayjs from 'dayjs';
+import getLocalISOTime from '../../utils/getLocalISOTime';
+import { checkParkingSpotAviability } from '../../actions/parkingSpotActions';
 export default function ReservationEdit(props) {
     const { reservationId } = useParams();
     const navigate = useNavigate();
@@ -20,14 +25,19 @@ export default function ReservationEdit(props) {
     const parkingSpotReducer = useSelector(state => state.parkingSpotReducer);
     const [loading, setLoading] = useState(false);
     const [registrationNumber, setRegistrationNumber] = useState('');
+    const [startDate, setStartDate] = useState(dayjs());
+    const [endDate, setEndDate] = useState(dayjs());
+    const [duration, setDuration] = useState(0);
 
     const dispatch = useDispatch()
 
     const userjson = JSON.parse(localStorage.getItem("user"));
     const user = decodeToken(userjson?.token);
-
     useEffect(() => {
         dispatch(getReservation(reservationId)).then((response) => {
+            setStartDate(dayjs(response.startDate));
+            setEndDate(dayjs(response.endDate));
+            setDuration(dayjs(response.endDate).diff(dayjs(response.startDate), 'minutes'));
             dispatch(getParkingSpot(response.parkingSpotDTO.id));
             setRegistrationNumber(response.registrationNumber);
         });
@@ -42,7 +52,40 @@ export default function ReservationEdit(props) {
     }, []);
 
 
-    const handleEditClick = (event) => {
+    const handleAnyChangeOfTime = (startDate, endDate, parking) => {
+        // check if there no resevrations in this time
+        // if (!isParking24h(parking)) {
+        //     if (startDate.toDate().getDate() !== dayjs(parkingTime).toDate().getDate()) {
+        //         endDate = startDate;
+        //     }
+        // }
+
+        if (!parking.timeZone) {
+            return;
+        }
+
+        setStartDate(startDate);
+        const start = getLocalISOTime(startDate, parking.timeZone);
+
+        setEndDate(endDate);
+        const end = getLocalISOTime(endDate, parking.timeZone);
+
+        dispatch(checkParkingSpotAviability(parking.id, reservation.id, start, end));
+    }
+
+
+    const transformResevationDates = (reservation) => {
+        const start = getLocalISOTime(reservation.startDate, parking.timeZone);
+        const end = getLocalISOTime(reservation.endDate, parking.timeZone);
+        return {
+            ...reservation,
+            startDate: start,
+            endDate: end,
+        };
+    }
+
+    const handleEditClick = (parking) => {
+        debugger
         if (!validateRegistraionNumber(registrationNumber)) {
             toast.error('Please enter valid registration number: not empty and no white spaces.');
             return;
@@ -53,8 +96,13 @@ export default function ReservationEdit(props) {
         try {
             setLoading(true);
 
-            reservation.startDate = new Date(reservation.startDate).toISOString();
-            reservation.endDate = new Date(reservation.endDate).toISOString(); 
+
+            reservation.startDate = new Date(startDate).toISOString();
+            reservation.endDate = new Date(endDate).toISOString();
+
+            let start = getLocalISOTime(startDate, parking.timeZone);
+            let end = getLocalISOTime(endDate, parking.timeZone);
+            debugger;
             //TODO fix when changing time with time zone
             dispatch(updateReservation(reservation))
                 .then(response => {
@@ -65,7 +113,7 @@ export default function ReservationEdit(props) {
                     setLoading(false);
                     console.log(error);
                     toast.error(error.message);
-                    }
+                }
                 );
         }
         catch (e) {
@@ -80,125 +128,170 @@ export default function ReservationEdit(props) {
     };
 
     const handleChangeRegistrationNumber = (value) => {
-        if (!validateRegistraionNumber(value)){
+        if (!validateRegistraionNumber(value)) {
             toast.warning('Please enter valid registration number: not empty and no white spaces.');
         }
         setRegistrationNumber(value);
     }
-    
-    
+
+    const minEndDate = () => {
+        console.log(duration);
+        console.log(startDate.add(duration, 'minutes'));
+        return startDate.add(duration, 'minutes');
+    }
+
     return (
         <Container maxWidth="lg">
             <Box sx={{ my: 4 }}>
-            <Typography variant="h4" component="h1" gutterBottom>
-            Rerservation Edit
+                <Typography variant="h4" component="h1" gutterBottom>
+                    Rerservation Edit
                 </Typography>
-            {loading && <Box
-                                    sx={{
-                                        display: "flex",
-                                        "align-content": "center",
-                                        "justify-content": "center",
-                                        "flex-direction": "row",
-                                        "flex-wrap": "wrap",
-                                    }}
-                                    style={{ width: "100%", height: "100%" }}
-                                >
-                                    <CircularProgress />
+                {loading && <Box
+                    sx={{
+                        display: "flex",
+                        "align-content": "center",
+                        "justify-content": "center",
+                        "flex-direction": "row",
+                        "flex-wrap": "wrap",
+                    }}
+                    style={{ width: "100%", height: "100%" }}
+                >
+                    <CircularProgress />
                 </Box>}
-            {reservation && reservation.id && (
-                <Paper>
-                    <CardContent>
-                        <div style={{ height: '500px'}}>
-                        {parkingSpotReducer.parkingSpot && parkingSpotReducer.parkingSpot.id && (
-                        <MapContainer
-                            style={{ width: '100%', height: '100%' }}
-                            center={[parkingSpotReducer.parkingSpot.pointsDTO[0].latitude, parkingSpotReducer.parkingSpot.pointsDTO[0].longitude]}
-                            zoom={21}
-                            scrollWheelZoom={true}
-                        >
-                            <FeatureGroup>
-                            </FeatureGroup>
+                {reservation && reservation.id && (
+                    <Paper>
+                        <CardContent>
+                            <div style={{ height: '500px' }}>
+                                {parkingSpotReducer.parkingSpot && parkingSpotReducer.parkingSpot.id && (
+                                    <MapContainer
+                                        style={{ width: '100%', height: '100%' }}
+                                        center={[parkingSpotReducer.parkingSpot.pointsDTO[0].latitude, parkingSpotReducer.parkingSpot.pointsDTO[0].longitude]}
+                                        zoom={21}
+                                        scrollWheelZoom={true}
+                                    >
+                                        <FeatureGroup>
+                                        </FeatureGroup>
 
-                            <TileLayer
-                                maxNativeZoom={22}
-                                maxZoom={22}
-                                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                                url="http://mt0.google.com/vt/lyrs=s&x={x}&y={y}&z={z}"
-                                    />
-                                                                        {parkingSpotReducer.parkingSpot && parkingSpotReducer.parkingSpot.id && (
+                                        <TileLayer
+                                            maxNativeZoom={22}
+                                            maxZoom={22}
+                                            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                                            url="http://mt0.google.com/vt/lyrs=s&x={x}&y={y}&z={z}"
+                                        />
+                                        {parkingSpotReducer.parkingSpot && parkingSpotReducer.parkingSpot.id && (
                                             <Polygon
                                                 positions={parkingSpotReducer.parkingSpot.pointsDTO.map((point) => [
                                                     point.latitude,
                                                     point.longitude,
                                                 ])}
                                                 color='orange'
-                                            interactive
+                                                interactive
                                             >
-                                            <Popup>{`Selected Parking Spot ID: ${parkingSpotReducer.parkingSpot.id}`} <br></br> Click to deselect</Popup>
+                                                <Popup>{`Selected Parking Spot ID: ${parkingSpotReducer.parkingSpot.id}`} <br></br> Click to deselect</Popup>
                                             </Polygon>
                                         )}
 
 
-                        </MapContainer>
-                    )}
-                        </div>
-                        <Typography sx={{ m: 1 }} fullWidth>
-                            Dates and times are based on parking time zone ({reservation?.parkingSpotDTO?.parkingDTO?.timeZone}) compared to UTC.
-                        </Typography>
-                        <TextField sx={{ m: 1 }} fullWidth
-                                value={convertDate(reservation.startDate)}
+                                    </MapContainer>
+                                )}
+                            </div>
+                            <Typography sx={{ m: 1 }} >
+                                Dates and times are based on parking time zone ({reservation?.parkingSpotDTO?.parkingDTO?.timeZone}) compared to UTC.
+                            </Typography>
+                            <LocalizationProvider
+                                dateAdapter={AdapterDayjs}>
+                                <MobileDateTimePicker
+                                    sx={{ m: 1 }}
+                                    label="Start date"
+                                    value={startDate}
+                                    slotProps={{ textField: { fullWidth: true } }}
+                                    ampm={false}
+                                    minutesStep={15}
+                                    disablePast={true}
+                                    onChange={(value) => handleAnyChangeOfTime(value, endDate, reservation.parkingSpotDTO?.parkingDTO)}
+                                    minDateTime={dayjs(reservation.startDate)}
+                                />
+                            </LocalizationProvider>
+                            {/* <TextField sx={{ m: 1 }} fullWidth
+                                value={startDate}
                                 id="outlined-basic"
                                 label="Start date"
-                                variant="outlined" 
+                                variant="outlined"
                                 InputProps={{
                                     readOnly: true,
                                 }}
-                        />
-                        <TextField sx={{ m: 1 }} fullWidth
-                            value={convertDate(reservation.endDate)}
+                            /> */}
+                            <LocalizationProvider
+                                dateAdapter={AdapterDayjs}>
+                                <MobileDateTimePicker
+                                    sx={{ m: 1 }}
+                                    label="End date"
+                                    value={endDate}
+                                    slotProps={{ textField: { fullWidth: true } }}
+                                    ampm={false}
+                                    minutesStep={15}
+                                    minDateTime={minEndDate()}
+                                    onChange={(value) => handleAnyChangeOfTime(startDate, value, reservation.parkingSpotDTO?.parkingDTO)}
+
+                                />
+                            </LocalizationProvider>
+                            {/* <TextField sx={{ m: 1 }} fullWidth
+                                value={endDate}
                                 id="outlined-basic"
                                 label="End date"
-                                variant="outlined" 
+                                variant="outlined"
                                 InputProps={{
                                     readOnly: true,
                                 }}
-                        />
+                            /> */}
+                            {parkingSpotReducer.freeParkingSpots && parkingSpotReducer.freeParkingSpots.find(spot => spot.id === reservation.parkingSpotDTO.id) && (
+                                <Typography sx={{ m: 1 }} >
+                                    Spot available
+                                </Typography>
+                            )}
+                            <TextField sx={{ m: 1 }} fullWidth
+                                value={reservation.amount + ' ' + reservation.parkingSpotDTO?.parkingDTO?.currency}
+                                label="Amount"
+                                variant="outlined"
+                                InputProps={{
+                                    readOnly: true,
+                                }}
+                            />
                             <TextField sx={{ m: 1 }} fullWidth
                                 value={registrationNumber}
-                                id="outlined-basic"
                                 label="Registration number"
-                                variant="outlined" 
+                                variant="outlined"
                                 onChange={(value) => handleChangeRegistrationNumber(value.target.value)}
-                        />
-                        <TextField sx={{ m: 1 }} fullWidth
-                            value={`${reservation.parkingSpotDTO?.parkingDTO.name}, ${reservation.parkingSpotDTO?.parkingDTO.street}, ${reservation.parkingSpotDTO?.parkingDTO.city}`}
-                                id="outlined-basic"
-                                label="Parking name"
-                                variant="outlined" 
-                                InputProps={{
-                                    readOnly: true,
-                                }}
-                        />
+                            />
                             <TextField sx={{ m: 1 }} fullWidth
-                                value={reservation.parkingSpotDTO?.id}
-                                id="outlined-basic"
-                                label="Parking spot"
-                                variant="outlined" 
+                                value={`${reservation.parkingSpotDTO?.parkingDTO.name}, ${reservation.parkingSpotDTO?.parkingDTO.street}, ${reservation.parkingSpotDTO?.parkingDTO.city}`}
+                                label="Parking name"
+                                variant="outlined"
                                 InputProps={{
                                     readOnly: true,
-                                    shrink: true,
                                 }}
-                        />
-                        <Button sx={{ m: 1 }} variant="contained" onClick={handleEditClick} fullWidth>
-                            Save
-                        </Button>
-                        <Button sx={{ m: 1 }} variant="outlined" onClick={handleExitClick} fullWidth>
-                            Exit
-                        </Button>
-                        
-                    </CardContent>
+                            />
+                            <TextField sx={{ m: 1 }} fullWidth
+                                value={reservation.parkingSpotDTO?.spotNumber}
+                                label="Parking spot"
+                                variant="outlined"
+                                InputProps={{
+                                    readOnly: true,
+                                }}
+                                InputLabelProps={{ shrink: true }}
+
+
+                            />
+                            <Button sx={{ m: 1 }} variant="contained" onClick={() => handleEditClick(reservation.parkingSpotDTO.parkingDTO)} fullWidth>
+                                Save
+                            </Button>
+                            <Button sx={{ m: 1 }} variant="outlined" onClick={handleExitClick} fullWidth>
+                                Exit
+                            </Button>
+
+                        </CardContent>
                     </Paper>
-            )}
+                )}
             </Box>
         </Container>
     )
