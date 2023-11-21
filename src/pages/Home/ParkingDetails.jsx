@@ -606,7 +606,6 @@ function ParkingDetails(props) {
                                                     value={startDay}
                                                     onChange={(newStartDay) => handleAnyChangeOfTime(newStartDay, startTime, endDay, endTime)}
                                                     minDate={dayjs(parkingTime)}
-                                                    minutesStep={15}
 
                                                 />
                                             </Grid>

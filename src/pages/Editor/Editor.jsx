@@ -116,11 +116,6 @@ function ParkingEditor(props) {
         });
     };
 
-    const handleSaveToDB = async (event) => {
-        await dispatch(addParkingSpots(parking.id, stagedParkingSpots));
-        await dispatch(getParkingSpotsByParkingId(parseInt(parkingId)));
-    };
-
     const handleExitClick = () => {
         navigate(`/parking/${parking.id}`);
     };
@@ -641,15 +636,6 @@ function ParkingEditor(props) {
                                 <Typography>$/h: {parking.costRate}</Typography>
                             </CardContent>
                             <Grid container>
-                                <Button
-                                    sx={{ m: 1 }}
-                                    variant='contained'
-                                    onClick={handleSaveToDB}
-                                    fullWidth
-                                    disabled={stagedParkingSpots.length === 0}
-                                >
-                                    Save parking
-                                </Button>
                                 <Button
                                     sx={{ m: 1 }}
                                     variant='contained'

@@ -18,3 +18,7 @@ code {
     flex-direction: column;
     justify-content: space-between;
 }
+
+::-ms-reveal {
+    display: none;
+}
