@@ -1,7 +1,5 @@
-// generate login page with login, password and submit button
-import React, {useEffect} from 'react';
+import React from 'react';
 
-// use @mui/material
 import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
@@ -14,7 +12,7 @@ import CardMedia from '@mui/material/CardMedia';
 import pvlogo from "../../assets/pv_transparent.png";
 
 
-import {useDispatch, useSelector} from "react-redux";
+import {useDispatch} from "react-redux";
 import {login} from "../../actions/authenticationActions";
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';

@@ -33,7 +33,6 @@ import {
     GET_RESERVATION,
     GET_PARKING_SPOT,
     GET_FREE_PARKING_SPOTS_BY_PARKING_ID,
-    GET_PARKING,
 } from "../../actions/types";
 import { toast } from "react-toastify";
 import convertTime from "../../utils/convertTime";
@@ -101,7 +100,7 @@ function ParkingDetails(props) {
     };
 
     const tryGetUserCars = () => {
-        if (authenticationReducer.decodedUser && authenticationReducer.decodedUser.role == "USER") {
+        if (authenticationReducer.decodedUser && authenticationReducer.decodedUser.role === "USER") {
             dispatch(getUserCars()).catch((error) => {
 
             });
@@ -351,7 +350,7 @@ function ParkingDetails(props) {
         // dispatch(addReservation(newReservation))
     };
 
-    const handleGoToMission = () => {
+    const handleGoToEditor = () => {
         navigate(`/parking/${parkingId}/editor`);
     };
 
@@ -362,6 +361,10 @@ function ParkingDetails(props) {
 
     const handleGoToParkingDetails = () => {
         navigate(`/parking/${parkingId}/details`);
+    };
+
+    const handleGoToMission = () => {
+        navigate(`/parking/${parkingId}/missions`);
     };
 
     return (
@@ -529,7 +532,7 @@ function ParkingDetails(props) {
                                         <Button
                                             sx={{ m: 1 }}
                                             variant='contained'
-                                            onClick={handleGoToMission}
+                                            onClick={handleGoToEditor}
                                             fullWidth
                                         >
                                             Parking editor
@@ -549,6 +552,14 @@ function ParkingDetails(props) {
                                             fullWidth
                                         >
                                             Change parking details
+                                        </Button>
+                                        <Button
+                                            sx={{ m: 1 }}
+                                            variant='contained'
+                                            onClick={handleGoToMission}
+                                            fullWidth
+                                        >
+                                            Drone missions
                                         </Button>
                                     </Grid>
                                 ) : (

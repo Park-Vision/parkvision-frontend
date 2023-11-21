@@ -1,15 +1,12 @@
 import {useDispatch, useSelector} from "react-redux";
-import React, {useEffect} from "react";
+import React, {useEffect, useState} from "react";
 import {useNavigate, useParams} from "react-router-dom";
 import {getDroneMissions} from "../../actions/droneMissionActions";
-import {Box, Button, Container} from "@mui/material";
-import { DataGrid } from "@mui/x-data-grid";
+import {Box, Container} from "@mui/material";
+import {DataGrid} from "@mui/x-data-grid";
 import convertDate from "../../utils/convertDate";
 import Home from "../Home/Home";
-import ModeEditIcon from '@mui/icons-material/ModeEdit';
-import DeleteIcon from '@mui/icons-material/Delete';
-import IconButton from '@mui/material/IconButton';
-import { toast } from "react-toastify";
+
 export default function ManagerReservations(props) {
     const { parkingId } = useParams();
     const authenticationReducer = useSelector((state) => state.authenticationReducer);
@@ -36,12 +33,19 @@ export default function ManagerReservations(props) {
         { field: 'endDate', headerName: 'End Date', flex: 0.8,
             valueGetter: ({row}) => convertDate(row.missionEndDate) },
         { field: 'status', headerName: 'Status', flex: 1 },
+        {field: 'occupiedSpotsCount', headerName: 'Occupied Spots', flex: 1, align: 'right',
+            valueGetter: (params) => {
+                const allSpotsCount = params.row.missionSpotResultList.length;
+                const occupiedSpotsCount = params.row.missionSpotResultList.filter(spot => spot.occupied).length;
+                return occupiedSpotsCount + "/" + allSpotsCount;
+            },
+        },
         { field: 'parking', headerName: 'Parking', flex: 0.6,
             valueGetter: ({row}) => row.parkingDTO.name },
         { field: 'drone', headerName: 'Drone', flex: 1,
             valueGetter: ({row}) => row.droneDTO.name},
         { field: 'droneModel', headerName: 'Drone Model', flex: 1,
-            valueGetter: ({row}) => row.droneDTO.model},,
+            valueGetter: ({row}) => row.droneDTO.model},
     ];
 
     return (
