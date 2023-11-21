@@ -18,6 +18,10 @@ import {
     TextField
 } from '@mui/material';
 
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import IconButton from '@mui/material/IconButton';
+import InputAdornment from '@mui/material/InputAdornment';
 import { useDispatch, useSelector } from "react-redux";
 import { login } from "../../actions/authenticationActions";
 import { resetPassword } from '../../actions/userActions';
@@ -26,9 +30,17 @@ import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom';
 import { validateEmail, validatePassword } from "../../utils/validation";
 import decodeToken from "../../utils/decodeToken";
+import { OutlinedInput } from '@mui/material';
 
 
 export default function Login() {
+    const [showPassword, setShowPassword] = React.useState(false);
+
+    const handleClickShowPassword = () => setShowPassword((show) => !show);
+
+    const handleMouseDownPassword = (event) => {
+        event.preventDefault();
+    };
 
     const [email, setEmail] = React.useState("")
     const [password, setPassword] = React.useState("")
@@ -136,15 +148,26 @@ export default function Login() {
                                         onChange={handleEmail}
                                         value={email}
                                     />
-                                    <TextField
+                                    <OutlinedInput
                                         label="Password"
-                                        variant="outlined"
                                         fullWidth
                                         margin="normal"
-                                        type="password"
+                                        type={showPassword ? 'text' : 'password'}
                                         required={true}
                                         onChange={handlePassword}
                                         value={password}
+                                        endAdornment={
+                                            <InputAdornment position="end">
+                                                <IconButton
+                                                    aria-label="toggle password visibility"
+                                                    onClick={handleClickShowPassword}
+                                                    onMouseDown={handleMouseDownPassword}
+                                                    edge="end"
+                                                >
+                                                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                                                </IconButton>
+                                            </InputAdornment>
+                                        }
                                     />
                                     <Button type="submit" variant="contained" fullWidth margin="normal" >
                                         Login
