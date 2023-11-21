@@ -59,10 +59,10 @@ function ParkingEditor(props) {
     const [stompClient, setStompClient] = useState(null);
 
     // mock list of drones for this parking, TODO add handling /api/drones/parking/{id} endpoint
-    const mockDronesForParking = [3, 4]
+    const mockDronesForParking = [1, 2, 3]
 
     const [selectedDroneId, setSelectedDroneId] = useState(mockDronesForParking[0])
-    const [dronePosition, setDronePosition] = useState([parking.latitude, parking.longitude])
+    const [dronePosition, setDronePosition] = useState([0, 0])
     const [droneStage, setDroneStage] = useState(0)
 
     const processIncomingMessage = (recievedMessage) => {
@@ -104,6 +104,9 @@ function ParkingEditor(props) {
 
     useEffect(() => {
         initStomp()
+        dispatch(getParking(parkingId)).then((response) => {
+            setDronePosition([response.latitude, response.longitude]);
+        });
         return () => disposeSocket()
     }, []);
 
@@ -120,7 +123,7 @@ function ParkingEditor(props) {
         const newSocket = new SockJS(process.env.REACT_APP_WEBSOCKET_URL);
         const newStomp = Stomp.over(newSocket);
 
-        newStomp.connect({ Authorization: "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzdHJpbmciLCJ1c2VySWQiOiIzIiwicm9sZSI6IlBBUktJTkdfTUFOQUdFUiIsImlhdCI6MTcwMDMyNDExMCwiZXhwIjoxNzAwMzI3NzEwfQ.yWDd7kILuEqLwGyuIfkEI0w562n4x6z3r2w4HT3xmLw" }, () => {
+        newStomp.connect({ Authorization: "Bearer " + JSON.parse(localStorage.getItem("user"))?.token }, () => {
             newStomp.subscribe('/topic/drones/' + desiredDroneId, (message) => {
                 processIncomingMessage(JSON.parse(message.body))
             });
