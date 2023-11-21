@@ -21,7 +21,6 @@ import UserReservations from "./pages/User/UserReservations";
 import ParkingSpotDetails from "./pages/ParkingSpot/ParkingSpotDetails";
 import ParkingEditor from "./pages/Editor/Editor"
 import DroneManager from "./pages/DroneManager/DroneManager"
-import DroneManager from "./pages/DroneManager/DroneManager"
 import axios from "axios";
 import useErrorHandler from "./utils/ErrorHandler";
 import ManagerReservations from "./pages/ParkingManagement/ManagerReservations";

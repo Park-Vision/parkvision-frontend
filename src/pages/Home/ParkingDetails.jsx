@@ -549,14 +549,6 @@ function ParkingDetails(props) {
                                         <Button
                                             sx={{ m: 1 }}
                                             variant='contained'
-                                            onClick={handleGoToDroneManager}
-                                            fullWidth
-                                        >
-                                            Drone manager
-                                        </Button>
-                                        <Button
-                                            sx={{ m: 1 }}
-                                            variant='contained'
                                             onClick={handleGoToParkingDetails}
                                             fullWidth
                                         >
