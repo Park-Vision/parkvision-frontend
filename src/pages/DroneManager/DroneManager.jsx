@@ -107,14 +107,6 @@ function ParkingEditor(props) {
         return () => disposeSocket()
     }, []);
 
-
-    const sendMessage = (message) => {
-        const messageObject = {
-            message: message,
-        };
-        stompClient.send('/app/messages', {}, JSON.stringify(messageObject));
-    }
-
     const disposeSocket = () => {
         if (stompClient) {
             stompClient.disconnect();
