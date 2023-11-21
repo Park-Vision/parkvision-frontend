@@ -20,15 +20,31 @@ export function areParkingSpotsColliding(parkingSpot1, parkingSpot2) {
     return true
 }
 
-export function hasInvalidSpotArea(parkingSpot1) {
-    const polygon1 = convertToTurfPolygon(parkingSpot1.pointsDTO);
+export function isSpotAreaTooBig(parkingSpot) {
+    const polygon1 = convertToTurfPolygon(parkingSpot.pointsDTO);
 
     const area = turf.area(polygon1);
     if (area > 12.5) {
         return true;
     }
 
-    if( area < 8) {
+    return false;
+}
+
+export function isSpotAreaTooSmall(parkingSpot) {
+    const polygon1 = convertToTurfPolygon(parkingSpot.pointsDTO);
+
+    const area = turf.area(polygon1);
+    if (area < 8) {
         return true;
     }
+
+    return false;
+}
+
+export function getArea(parkingSpot) {
+    const polygon1 = convertToTurfPolygon(parkingSpot.pointsDTO);
+
+    const area = turf.area(polygon1);
+    return area;
 }

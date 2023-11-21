@@ -16,7 +16,7 @@ import "../Editor.css"; // Create a CSS file for styling
 import { useNavigate } from "react-router-dom";
 
 import { MapContainer, Polygon, Popup, TileLayer, FeatureGroup } from "react-leaflet";
-import { getParkingSpotsByParkingId, addStagedParkingSpot, addParkingSpot, addParkingSpots, updateParkingSpot, getParkingSpot, getParkingSpots } from "../../actions/parkingSpotActions";
+import { getParkingSpotsByParkingId, addParkingSpot, addParkingSpots, updateParkingSpot, getParkingSpot, getParkingSpots } from "../../actions/parkingSpotActions";
 import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
 import {
@@ -27,7 +27,7 @@ import decodeToken from "../../utils/decodeToken";
 import { getUser } from "../../actions/userActions";
 import { toast } from "react-toastify";
 import 'leaflet-path-drag'
-import { areParkingSpotsColliding, hasInvalidSpotArea } from "../../utils/parkingUtils";
+import { areParkingSpotsColliding, getArea, isSpotAreaTooBig, isSpotAreaTooSmall } from "../../utils/parkingUtils";
 delete L.Icon.Default.prototype._getIconUrl;
 
 L.Icon.Default.mergeOptions({
@@ -234,9 +234,21 @@ function ParkingEditor(props) {
         let isColliding = false;
         let inValidArea = false;
         transformedSpots.forEach((editedSpot) => {
-            if (hasInvalidSpotArea(editedSpot)) {
+            if (isSpotAreaTooBig(editedSpot)) {
                 inValidArea = true;
-                toast.error("Parking spot area is invalid!");
+                let area = getArea(editedSpot);
+                toast.error("Parking spot area is too big!"
+                    + " Area: " + area.toFixed(2) + " m2. "
+                    + "Maximal area: 12.5 m2"
+                );
+            }
+            if (isSpotAreaTooSmall(editedSpot)) {
+                inValidArea = true;
+                let area = getArea(editedSpot);
+                toast.error("Parking spot area is too small!"
+                    + " Area: " + area.toFixed(2) + " m2. "
+                    + "Minimal area: 8 m2 "
+                );
             }
             uniqueSpots.forEach((otherspot) => {
                 if (editedSpot.id !== otherspot.id) {
@@ -352,8 +364,23 @@ function ParkingEditor(props) {
             },
             pointsDTO: pointsDTO
         }
-        if (hasInvalidSpotArea(newParkingSpot)) {
-            toast.error("Parking spot area is invalid!");
+
+        if (isSpotAreaTooBig(newParkingSpot)) {
+            let area = getArea(newParkingSpot);
+            toast.error("Parking spot area is too big!"
+                + " Area: " + area.toFixed(2) + " m2. "
+                + "Maximal area: 12.5 m2"
+            );
+            clearLayerWithNoIds();
+            return;
+        }
+
+        if (isSpotAreaTooSmall(newParkingSpot)) {
+            let area = getArea(newParkingSpot);
+            toast.error("Parking spot area is too small!"
+                + " Area: " + area.toFixed(2) + " m2. "
+                + "Minimal area: 8 m2 "
+            );
             clearLayerWithNoIds();
             return;
         }
@@ -383,9 +410,11 @@ function ParkingEditor(props) {
 
     const mapPonitsToParkingSpot = (e, points, editedSpot) => {
         let toMuchDrag = false;
-        if (e.distance > 50.0) {
+        if (e.distance > 300.0) {
             toMuchDrag = true;
-            toast.error("You can't drag parking spot that much!");
+            toast.error("You can't drag parking spot that much! drag distance: " +
+                e.distance.toFixed(2) + " cm. " +
+                "Max distance: 300 cm");
         }
 
         const mappedPoints = points[0].map((coord) => {
