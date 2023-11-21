@@ -33,11 +33,14 @@ export default function ManagerReservations(props) {
         { field: 'endDate', headerName: 'End Date', flex: 0.8,
             valueGetter: ({row}) => convertDate(row.missionEndDate) },
         { field: 'status', headerName: 'Status', flex: 1 },
-        {field: 'occupiedSpotsCount', headerName: 'Occupied Spots', flex: 1, align: 'right',
+        {field: 'occupiedSpotsCount', headerName: 'Occupied', flex: 0.4, align: 'right',
             valueGetter: (params) => {
-                const allSpotsCount = params.row.missionSpotResultList.length;
-                const occupiedSpotsCount = params.row.missionSpotResultList.filter(spot => spot.occupied).length;
-                return occupiedSpotsCount + "/" + allSpotsCount;
+                return params.row.missionSpotResultList.filter(spot => spot.occupied).length;
+            },
+        },
+        {field: 'visitedSpotsCount', headerName: 'Visited', flex: 0.4, align: 'right',
+            valueGetter: (params) => {
+                return  params.row.missionSpotResultList.length;
             },
         },
         { field: 'parking', headerName: 'Parking', flex: 0.6,
