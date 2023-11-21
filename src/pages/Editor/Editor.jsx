@@ -27,7 +27,7 @@ import decodeToken from "../../utils/decodeToken";
 import { getUser } from "../../actions/userActions";
 import { toast } from "react-toastify";
 import 'leaflet-path-drag'
-import { areParkingSpotsColliding, hasParkingSpotTooBigArea } from "../../utils/parkingUtils";
+import { areParkingSpotsColliding, hasInvalidSpotArea } from "../../utils/parkingUtils";
 delete L.Icon.Default.prototype._getIconUrl;
 
 L.Icon.Default.mergeOptions({
@@ -239,7 +239,7 @@ function ParkingEditor(props) {
         let isColliding = false;
         let inValidArea = false;
         transformedSpots.forEach((editedSpot) => {
-            if (hasParkingSpotTooBigArea(editedSpot)) {
+            if (hasInvalidSpotArea(editedSpot)) {
                 inValidArea = true;
                 toast.error("Parking spot area is invalid!");
             }
@@ -356,6 +356,11 @@ function ParkingEditor(props) {
                 id: parking.id
             },
             pointsDTO: pointsDTO
+        }
+        if (hasInvalidSpotArea(newParkingSpot)) {
+            toast.error("Parking spot area is invalid!");
+            clearLayerWithNoIds();
+            return;
         }
 
         let isColliding = false;

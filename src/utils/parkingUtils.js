@@ -20,19 +20,15 @@ export function areParkingSpotsColliding(parkingSpot1, parkingSpot2) {
     return true
 }
 
-export function hasParkingSpotTooBigArea(parkingSpot1) {
-    //use turf js to calculate area
+export function hasInvalidSpotArea(parkingSpot1) {
     const polygon1 = convertToTurfPolygon(parkingSpot1.pointsDTO);
 
     const area = turf.area(polygon1);
-    console.log(area)
     if (area > 12.5) {
-        console.log("area too big")
         return true;
     }
 
     if( area < 8) {
-        console.log("area too small")
         return true;
     }
 }
