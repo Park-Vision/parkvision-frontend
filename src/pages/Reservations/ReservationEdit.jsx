@@ -71,7 +71,14 @@ export default function ReservationEdit(props) {
         setEndDate(endDate);
         const end = getLocalISOTime(endDate, parking.timeZone);
 
-        dispatch(checkParkingSpotAviability(parking.id, reservation.id, start, end));
+        dispatch(checkParkingSpotAviability(reservation.parkingSpotDTO.id, reservation.id, start, end)).then((response) => {
+            if (response === false) {
+                toast.error('Parking spot is not available in this time');
+                setStartDate(dayjs(reservation.startDate));
+                setEndDate(dayjs(reservation.endDate));
+            }
+        });
+
     }
 
 
