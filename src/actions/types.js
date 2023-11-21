@@ -9,6 +9,7 @@ export const GET_DRONE = "GET_DRONE";
 export const ADD_DRONE = "ADD_DRONE";
 export const UPDATE_DRONE = "UPDATE_DRONE";
 export const DELETE_DRONE = "DELETE_DRONE";
+export const COMMAND_DRONE = "COMMAND_DRONE";
 export const GET_PARKINGS = "GET_PARKINGS";
 export const GET_PARKING = "GET_PARKING";
 export const ADD_PARKING = "ADD_PARKING";
