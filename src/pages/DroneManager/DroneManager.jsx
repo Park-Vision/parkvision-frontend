@@ -24,6 +24,7 @@ import {
 } from "../../actions/types";
 import decodeToken from "../../utils/decodeToken";
 import { getUser } from "../../actions/userActions";
+import { commandDrone } from "../../actions/droneActions";
 import { toast } from "react-toastify";
 import DroneMarker from "../../components/DroneMarker"
 import InputLabel from '@mui/material/InputLabel';
@@ -185,6 +186,19 @@ function ParkingEditor(props) {
         subscribeToDifferentSocket(event.target.value)
     };
 
+    const handleStart = (event) => {
+        dispatch(commandDrone(selectedDroneId, "start"))
+            .catch((error) => {
+                console.log(error);
+            });
+    }
+
+    const handleStop = (event) => {
+        dispatch(commandDrone(selectedDroneId, "stop"))
+            .catch((error) => {
+                console.log(error);
+            });
+    }
 
     return (
         <Container
@@ -288,9 +302,25 @@ function ParkingEditor(props) {
                                         {mockDronesForParking.map(drone => <MenuItem value={drone}>{drone}</MenuItem>)}
                                     </Select>
                                 </FormControl>
-                                <DroneTimeline stageId={droneStage}/>
+                                <DroneTimeline stageId={droneStage} />
                             </CardContent>
                             <Grid container>
+                                <Button
+                                    sx={{ m: "5%", width: "40%" }}
+                                    variant='contained'
+                                    color="secondary"
+                                    onClick={handleStart}
+                                >
+                                    Start Mission
+                                </Button>
+                                <Button
+                                    sx={{ m: "5%", width: "40%" }}
+                                    variant='contained'
+                                    color="error"
+                                    onClick={handleStop}
+                                >
+                                    Emergency stop
+                                </Button>
                                 <Button
                                     sx={{ m: 1 }}
                                     variant='contained'
