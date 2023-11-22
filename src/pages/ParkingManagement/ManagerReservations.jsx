@@ -35,8 +35,10 @@ export default function ManagerReservations(props) {
             field: 'startDate', headerName: 'Start Date', flex: 0.8,
             valueGetter: ({ row }) => convertDate(row.startDate)
         },
-        { field: 'endDate', headerName: 'End Date', flex: 0.8,
-            valueGetter: ({ row }) => convertDate(row.endDate) },
+        {
+            field: 'endDate', headerName: 'End Date', flex: 0.8,
+            valueGetter: ({ row }) => convertDate(row.endDate)
+        },
         { field: 'registrationNumber', headerName: 'Reg. Number', flex: 1 },
         {
             field: 'amount', headerName: 'Amount', flex: 0.6, align: 'right',
