@@ -72,14 +72,14 @@ export default function ReservationDetails(props) {
         if (authenticationReducer.isLoggedIn &&
             authenticationReducer.decodedUser.role === "PARKING_MANAGER") {
             dispatch(addReservation(transformResevationDates(reservation))).then((reservationResponse) => {
-                    setLoading(false);
-                    toast.success('Reservation created');
-                    navigate('/parking/' + parking.id);
-                    dispatch({
-                        type: 'GET_PARKING_SPOT',
-                        value: {},
-                    });
-                }
+                setLoading(false);
+                toast.success('Reservation created');
+                navigate('/parking/' + parking.id);
+                dispatch({
+                    type: 'GET_PARKING_SPOT',
+                    value: {},
+                });
+            }
 
             ).catch((error) => {
                 console.error('Error in adding reservation:', error);
@@ -131,7 +131,7 @@ export default function ReservationDetails(props) {
                                 dispatch(addStripeCharge(newCharge))
                                     .then((chargeResponse) => {
                                         setLoading(false);
-                                        if (chargeResponse.reservation !== null){
+                                        if (chargeResponse.reservation !== null) {
                                             toast.success('Reservation created');
                                         } else {
                                             toast.error('Payment declined. Please try again.');
@@ -233,7 +233,7 @@ export default function ReservationDetails(props) {
                                             color='orange'
                                             interactive
                                         >
-                                            <Popup>{`Selected Parking Spot ID: ${parkingSpotReducer.parkingSpot.id}`} <br></br> Click to deselect</Popup>
+                                            <Popup>{`Selected Parking Spot ID: ${parkingSpotReducer.parkingSpot.spotNumber}`} <br></br> Click to deselect</Popup>
                                         </Polygon>
                                     )}
 
@@ -249,61 +249,63 @@ export default function ReservationDetails(props) {
                                 Dates and times are based on parking time zone ({parking.timeZone}) compared to UTC.
                             </Typography>
                             <TextField style={{ marginBottom: 10 }} fullWidth
-                                       value={`${new Date(reservation.startDate).toLocaleString()}`}
-                                       id="outlined-basic"
-                                       label="Start date"
-                                       variant="outlined"
-                                       InputProps={{
-                                           readOnly: true,
-                                       }}
+                                value={`${new Date(reservation.startDate).toLocaleString()}`}
+                                id="outlined-basic"
+                                label="Start date"
+                                variant="outlined"
+                                InputProps={{
+                                    readOnly: true,
+                                }}
                             />
                             <TextField style={{ marginBottom: 10 }} fullWidth
-                                       value={`${new Date(reservation.endDate).toLocaleString()}`}
-                                       id="outlined-basic"
-                                       label="End date"
-                                       variant="outlined"
-                                       InputProps={{
-                                           readOnly: true,
-                                       }}
+                                value={`${new Date(reservation.endDate).toLocaleString()}`}
+                                id="outlined-basic"
+                                label="End date"
+                                variant="outlined"
+                                InputProps={{
+                                    readOnly: true,
+                                }}
                             />
                             <TextField style={{ marginBottom: 10 }} fullWidth
-                                       value={reservation.registrationNumber}
-                                       id="outlined-basic"
-                                       label="Registration number"
-                                       variant="outlined"
-                                       InputProps={{
-                                           readOnly: true,
-                                       }}
+                                value={reservation.registrationNumber}
+                                id="outlined-basic"
+                                label="Registration number"
+                                variant="outlined"
+                                InputProps={{
+                                    readOnly: true,
+                                }}
                             />
                             <TextField style={{ marginBottom: 10 }} fullWidth
-                                       value={`${parking.name}, ${parking.street}, ${parking.city}`}
-                                       id="outlined-basic"
-                                       label="Parking name"
-                                       variant="outlined"
-                                       InputProps={{
-                                           readOnly: true,
-                                       }}
+                                value={`${parking.name}, ${parking.street}, ${parking.city}`}
+                                id="outlined-basic"
+                                label="Parking name"
+                                variant="outlined"
+                                InputProps={{
+                                    readOnly: true,
+                                }}
                             />
                             <TextField style={{ marginBottom: 10 }} fullWidth
-                                       value={`${parkingSpotReducer.parkingSpot.spotNumber}`}
-                                       id="outlined-basic"
-                                       label="Parking spot"
-                                       variant="outlined"
-                                       InputProps={{
-                                           readOnly: true,
-                                       }}
+                                value={`${parkingSpotReducer.parkingSpot.spotNumber}`}
+                                id="outlined-basic"
+                                label="Parking spot"
+                                variant="outlined"
+                                InputProps={{
+                                    readOnly: true,
+                                }}
                             />
                             {authenticationReducer.isLoggedIn &&
                                 authenticationReducer.decodedUser.role !== "PARKING_MANAGER" && (
-                            <Typography style={{ margin: 10, fontWeight: 'bold',
-                                fontSize: '1.2rem',
-                                textAlign: 'right' }} fullWidth>
-                                Amount to pay:
-                                {'  '}
-                                {amount}
-                                {' '}
-                                {parking.currency}
-                            </Typography>
+                                    <Typography style={{
+                                        margin: 10, fontWeight: 'bold',
+                                        fontSize: '1.2rem',
+                                        textAlign: 'right'
+                                    }} fullWidth>
+                                        Amount to pay:
+                                        {'  '}
+                                        {amount}
+                                        {' '}
+                                        {parking.currency}
+                                    </Typography>
                                 )}
                         </Card>
                         {authenticationReducer.isLoggedIn &&

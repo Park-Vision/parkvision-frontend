@@ -573,10 +573,10 @@ function ParkingEditor(props) {
                                                                 fontSize: `${Math.min(20, 450 / parking.name.length)}px`, fontWeight: 'bold',
                                                                 whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'
                                                             }}>
-                                                                Spot: {spot.id}
+                                                                Spot: {spot.spotNumber}
                                                             </div>
                                                             <div style={{ marginBottom: '5px' }}>
-                                                                <span style={{ fontWeight: 'bold' }}>Spot number:</span> {spot.spotNumber}
+                                                                <span style={{ fontWeight: 'bold' }}>Spot ID:</span> {spot.id}
                                                             </div>
                                                             <Button
                                                                 variant="contained"
@@ -619,7 +619,7 @@ function ParkingEditor(props) {
                                                             fontSize: `${Math.min(20, 450 / parking.name.length)}px`, fontWeight: 'bold',
                                                             whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'
                                                         }}>
-                                                            Spot: {spot.id}
+                                                            Spot: {spot.spotNumber}
                                                         </div>
                                                         <div style={{ marginBottom: '5px' }}>
                                                             Save parking staged spots to edit them.
