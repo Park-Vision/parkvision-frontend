@@ -12,7 +12,7 @@ import L, { point } from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet-draw/dist/leaflet.draw.css";
 import { EditControl } from "react-leaflet-draw";
-import "./Editor.css"; // Create a CSS file for styling
+import "../Editor.css"; // Create a CSS file for styling
 import { useNavigate } from "react-router-dom";
 
 import { MapContainer, Polygon, Popup, TileLayer, FeatureGroup } from "react-leaflet";

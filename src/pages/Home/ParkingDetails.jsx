@@ -358,6 +358,10 @@ function ParkingDetails(props) {
         navigate(`/parking/${parkingId}/reservations`);
     };
 
+    const handleGoToDroneManager = () => {
+        navigate(`/parking/${parkingId}/drone`);
+    };
+
 
     const handleGoToParkingDetails = () => {
         navigate(`/parking/${parkingId}/details`);
@@ -559,7 +563,15 @@ function ParkingDetails(props) {
                                             onClick={handleGoToMission}
                                             fullWidth
                                         >
-                                            Drone missions
+                                            Drone mission
+                                        </Button>
+                                        <Button
+                                            sx={{ m: 1 }}
+                                            variant='contained'
+                                            onClick={handleGoToDroneManager}
+                                            fullWidth
+                                        >
+                                            Drone manager
                                         </Button>
                                     </Grid>
                                 ) : (
