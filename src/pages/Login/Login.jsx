@@ -1,6 +1,3 @@
-import Container from '@mui/material/Container';
-import Box from '@mui/material/Box';
-// generate login page with login, password and submit button
 import React, { useEffect, useState } from 'react';
 
 // use @mui/material
