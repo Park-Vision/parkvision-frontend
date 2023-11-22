@@ -36,6 +36,25 @@ export default function PasswordReset() {
     const queryParams = new URLSearchParams(location.search);
     const token = queryParams.get('token');
     const timestamp = queryParams.get('timestamp');
+    const hourRule = process.env.REACT_APP_RESET_PASSWORD_HOUR_RULE;
+
+    useEffect(() => {
+        if (token === null || timestamp === null) {
+            navigate("/", { replace: true });
+            toast.error('Invalid link');
+            return;
+        }
+        const hourRuleInSeconds = 60 * 60 * 1000 * parseInt(hourRule);
+        const linkTimestamp = parseInt(timestamp);
+        const currentTimestamp = Date.now();
+        const timeDifference = currentTimestamp - linkTimestamp;
+
+        if (timeDifference > hourRuleInSeconds) {
+            navigate("/", { replace: true });
+            toast.error('Link expired');
+            return;
+        }
+    }, [token, timestamp])
 
     const handlePassword = (event) => {
         setPassword(event.target.value);
