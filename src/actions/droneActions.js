@@ -1,4 +1,4 @@
-import { ADD_DRONE, GET_DRONE, DELETE_DRONE, GET_DRONES, UPDATE_DRONE, COMMAND_DRONE } from "./types"
+import { ADD_DRONE, GET_DRONE, DELETE_DRONE, GET_DRONES, UPDATE_DRONE, COMMAND_DRONE, GET_DRONES_BY_PARKING_ID } from "./types"
 import DroneService from "../services/DroneService"
 
 export const addDrone = (droneData) => async (dispatch) => {
@@ -66,6 +66,18 @@ export const commandDrone = (droneId, command) => async (dispatch) => {
         const response = await DroneService.commandDrone(droneId, command)
         dispatch({
             type: COMMAND_DRONE,
+            value: response.data
+        })
+        return Promise.resolve(response.data)
+    } catch (error) {
+        return Promise.reject(error)
+    }
+}
+export const getDronesByParkingId = (parkingId) => async (dispatch) => {
+    try {
+        const response = await DroneService.getDronesByParkingId(parkingId)
+        dispatch({
+            type: GET_DRONES_BY_PARKING_ID,
             value: response.data
         })
         return Promise.resolve(response.data)

@@ -24,7 +24,7 @@ import {
 } from "../../actions/types";
 import decodeToken from "../../utils/decodeToken";
 import { getUser } from "../../actions/userActions";
-import { commandDrone } from "../../actions/droneActions";
+import { commandDrone, getDronesByParkingId } from "../../actions/droneActions";
 import { toast } from "react-toastify";
 import DroneMarker from "../../components/DroneMarker"
 import InputLabel from '@mui/material/InputLabel';
@@ -58,10 +58,10 @@ function ParkingEditor(props) {
     const [messages, setMessages] = useState([]);
     const [stompClient, setStompClient] = useState(null);
 
-    // mock list of drones for this parking, TODO add handling /api/drones/parking/{id} endpoint
-    const mockDronesForParking = [1, 2, 3]
+    // Drones assigned to this parking
+    const [availableDrones, setAvailableDrones] = useState([])
 
-    const [selectedDroneId, setSelectedDroneId] = useState(mockDronesForParking[0])
+    const [selectedDroneId, setSelectedDroneId] = useState(0)
     const [dronePosition, setDronePosition] = useState([0, 0])
     const [droneStage, setDroneStage] = useState(0)
 
@@ -106,6 +106,9 @@ function ParkingEditor(props) {
         initStomp()
         dispatch(getParking(parkingId)).then((response) => {
             setDronePosition([response.latitude, response.longitude]);
+        });
+        dispatch(getDronesByParkingId(parkingId)).then((response) => {
+            setAvailableDrones(response);
         });
         return () => disposeSocket()
     }, []);
@@ -295,7 +298,7 @@ function ParkingEditor(props) {
                                         label="Drone"
                                         onChange={handleSelectDrone}
                                     >
-                                        {mockDronesForParking.map(drone => <MenuItem value={drone}>{drone}</MenuItem>)}
+                                        {availableDrones.map(drone => <MenuItem value={drone.id}>{drone.id} - {drone.name}</MenuItem>)}
                                     </Select>
                                 </FormControl>
                                 <DroneTimeline stageId={droneStage} />
