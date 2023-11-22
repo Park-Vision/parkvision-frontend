@@ -12,9 +12,7 @@ import PlaceIcon from '@mui/icons-material/Place';
 import ListIcon from '@mui/icons-material/List';
 import LocalParkingIcon from '@mui/icons-material/LocalParking';
 import L from 'leaflet';
-import SearchIcon from '@mui/icons-material/Search';
 import {useDispatch, useSelector} from "react-redux";
-import {getCars} from "../../actions/carActions";
 import {getParkingFreeSpotsNumber, getParkingSpotsNumber, getParkings} from "../../actions/parkingActions";
 import convertTime  from '../../utils/convertTime';
 import { useNavigate } from "react-router-dom";
@@ -27,10 +25,8 @@ import decodeToken from '../../utils/decodeToken';
 
 export default function Home() {
     const parkings = useSelector(state => state.parkingReducer.parkings)
-    const userReducer = useSelector((state) => state.userReducer);
     useSelector(state => state.parkingReducer.parking = {})
     const dispatch = useDispatch()
-    const authenticationReducer = useSelector((state) => state.authenticationReducer);
     const numOfSpotsList = useSelector(state => state.parkingReducer.numOfSpotsInParkings);
     const numOfFreeSpotsList = useSelector(state => state.parkingReducer.numOfFreeSpotsInParkings);
     const [showMap, setShowMap] = useState(false);

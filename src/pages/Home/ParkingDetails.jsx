@@ -33,7 +33,6 @@ import {
     GET_RESERVATION,
     GET_PARKING_SPOT,
     GET_FREE_PARKING_SPOTS_BY_PARKING_ID,
-    GET_PARKING,
 } from "../../actions/types";
 import { toast } from "react-toastify";
 import convertTime from "../../utils/convertTime";
@@ -101,7 +100,7 @@ function ParkingDetails(props) {
     };
 
     const tryGetUserCars = () => {
-        if (authenticationReducer.decodedUser && authenticationReducer.decodedUser.role == "USER") {
+        if (authenticationReducer.decodedUser && authenticationReducer.decodedUser.role === "USER") {
             dispatch(getUserCars()).catch((error) => {
 
             });
@@ -368,6 +367,10 @@ function ParkingDetails(props) {
         navigate(`/parking/${parkingId}/details`);
     };
 
+    const handleGoToMission = () => {
+        navigate(`/parking/${parkingId}/missions`);
+    };
+
     return (
         <Container
             maxWidth='xl'
@@ -553,6 +556,14 @@ function ParkingDetails(props) {
                                             fullWidth
                                         >
                                             Change parking details
+                                        </Button>
+                                        <Button
+                                            sx={{ m: 1 }}
+                                            variant='contained'
+                                            onClick={handleGoToMission}
+                                            fullWidth
+                                        >
+                                            Drone mission
                                         </Button>
                                         <Button
                                             sx={{ m: 1 }}

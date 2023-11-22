@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { addCar, getCar, deleteCar, updateCar, getUserCars } from '../../actions/carActions';
+import { addCar, deleteCar, updateCar, getUserCars } from '../../actions/carActions';
 import {
     Box,
     Container,
@@ -23,7 +23,7 @@ import { useNavigate } from 'react-router-dom';
 import {validateRegistraionNumber} from "../../utils/validation";
 import {toast} from "react-toastify";
 import Home from "../Home/Home";
-import {getUser} from "../../actions/userActions";
+
 
 export default function Cars() {
     const cars = useSelector((state) => state.carReducer.cars);

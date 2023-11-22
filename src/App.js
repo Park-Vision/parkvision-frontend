@@ -11,6 +11,7 @@ import Cars from "./pages/Car/Cars";
 import ParkingDetails from "./pages/Home/ParkingDetails";
 import Toolbar from "@mui/material/Toolbar";
 import Register from "./pages/Login/Register";
+import Missions from "./pages/Drone/Missions";
 import ReservationDetails from "./pages/Reservations/ReservationDetails";
 import ReservationEdit from "./pages/Reservations/ReservationEdit";
 import ManagerProfile from "./pages/ParkingManagement/ManagerProfile";
@@ -164,6 +165,10 @@ function App() {
                                 path={"/parking/:parkingId/reservations"}
                                 element={<ManagerReservations />}
                             />
+                            <Route
+                                path={"/parking/:parkingId/missions"}
+                                element={<Missions />}
+                             />
                             <Route
                                 path={"/parking/create"}
                                 element={<ManagerParkingCreate />}

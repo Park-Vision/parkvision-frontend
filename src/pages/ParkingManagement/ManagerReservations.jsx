@@ -12,7 +12,6 @@ import IconButton from '@mui/material/IconButton';
 import { toast } from "react-toastify";
 export default function ManagerReservations(props) {
     const { parkingId } = useParams();
-    console.log(parkingId)
     const authenticationReducer = useSelector((state) => state.authenticationReducer);
 
     const reservations = useSelector((state) => state.reservationReducer.reservations);
@@ -34,7 +33,8 @@ export default function ManagerReservations(props) {
         { field: 'id', headerName: 'ID', flex: 0.3, align: 'right', },
         { field: 'startDate', headerName: 'Start Date', flex: 0.8,
             valueGetter: ({row}) => convertDate(row.startDate)},
-        { field: 'endDate', headerName: 'End Date', flex: 0.8, valueGetter: ({row}) => convertDate(row.endDate) },
+        { field: 'endDate', headerName: 'End Date', flex: 0.8,
+            valueGetter: ({row}) => convertDate(row.endDate) },
         { field: 'registrationNumber', headerName: 'Reg. Number', flex: 1 },
         {field: 'amount', headerName: 'Amount', flex: 0.6, align: 'right',
             valueGetter: ({row}) => row.amount + " " + row.parkingSpotDTO.parkingDTO.currency },
@@ -74,8 +74,8 @@ export default function ManagerReservations(props) {
     }
 
     return (
-        <Container maxWidth="xl">
-            <Box >
+        <Container maxWidth="xl" style={{ height: "100%" }}>
+            <Box style={{ height: "100%" }}>
                 <div style={{ height: "100%" }}>
                     <DataGrid
                         rows={reservations}
