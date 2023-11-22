@@ -85,11 +85,6 @@ export default function PasswordReset() {
         }
     }
 
-    const handleGoToLogin = () => {
-        navigate("/login");
-    }
-
-
     return (
         <Container maxWidth="sm">
             <Box sx={{
@@ -134,15 +129,6 @@ export default function PasswordReset() {
                                     />
                                     <Button type="submit" variant="contained" fullWidth margin="normal" >
                                         Password reset
-                                    </Button>
-                                    <Button onClick={handleGoToLogin} fullWidth margin="normal" >
-                                        Login
-                                    </Button>
-                                    <Button
-                                        variant="contained"
-                                        fullWidth
-                                        margin="normal">
-                                        Register
                                     </Button>
                                 </form>
                             </Typography>
