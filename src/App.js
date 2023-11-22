@@ -3,7 +3,7 @@ import Home from "./pages/Home/Home";
 import Login from "./pages/Login/Login";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import AppBar from "./components/AppBar";
-import {BrowserRouter, Route, Routes} from "react-router-dom";
+import {BrowserRouter, Route, Routes, Navigate} from "react-router-dom";
 import Reservations from "./pages/Reservations/Reservations";
 import About from "./pages/About/About";
 import Contact from "./pages/Contact/Contact";
@@ -167,9 +167,10 @@ function App() {
                                 element={<ReservationEdit />}
                             />
                             <Route
-                                path={"reset-password/"}
+                                path={"reset-password"}
                                 element={<PasswordReset />}
                             />
+                            <Route path="*" element={<Navigate replace to="/" />} />
                         </Routes>
                     </div>
                 </ThemeProvider>
