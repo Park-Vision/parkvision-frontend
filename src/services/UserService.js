@@ -17,7 +17,7 @@ class UserService {
     }
 
     async updateUser(userData) {
-        return await axios.put(urlConst + "/", userData);
+        return await axios.put(urlConst, userData);
     }
 
     async deleteUserById(userId) {
