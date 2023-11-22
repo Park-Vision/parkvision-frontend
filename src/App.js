@@ -3,7 +3,7 @@ import Home from "./pages/Home/Home";
 import Login from "./pages/Login/Login";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import AppBar from "./components/AppBar";
-import {BrowserRouter, Route, Routes} from "react-router-dom";
+import {BrowserRouter, Route, Routes, Navigate} from "react-router-dom";
 import Reservations from "./pages/Reservations/Reservations";
 import About from "./pages/About/About";
 import Contact from "./pages/Contact/Contact";
@@ -27,6 +27,7 @@ import useErrorHandler from "./utils/ErrorHandler";
 import ManagerReservations from "./pages/ParkingManagement/ManagerReservations";
 import ManagerParkingCreate from "./pages/ParkingManagement/ManagerParkingCreate";
 import ManagerParkingDetails from "./pages/ParkingManagement/ManagerParkingDetails";
+import PasswordReset from "./pages/Login/PasswordReset";
 const ColorModeContext = React.createContext({ toggleColorMode: () => { } });
 
 axios.defaults.baseURL = process.env.REACT_APP_BACKEND_URL;
@@ -177,6 +178,11 @@ function App() {
                                 path={"/reservation-edit/:reservationId"}
                                 element={<ReservationEdit />}
                             />
+                            <Route
+                                path={"reset-password"}
+                                element={<PasswordReset />}
+                            />
+                            <Route path="*" element={<Navigate replace to="/" />} />
                         </Routes>
                     </div>
                 </ThemeProvider>
