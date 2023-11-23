@@ -73,7 +73,8 @@ export default function Register() {
         } else if (!validateName(lastName)) {
             toast.info('Wrong last name');
         } else if (!validatePassword(password)) {
-            toast.info('Password must contains eight characters, including at least one capital letter and number');
+            toast.info('Password must contains eight characters or more, including at least one capital ' +
+                'letter, special character and a number.');
         } else if (passwordRepeat !== password) {
             toast.info('Passwords must be the same');
         } else {
