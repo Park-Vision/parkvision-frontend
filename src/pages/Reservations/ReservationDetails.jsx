@@ -384,7 +384,7 @@ export default function ReservationDetails(props) {
                         <Button
                             onClick={handleBackClick}
                             fullWidth>
-                            EDIT
+                            CANCEL
                         </Button>
                     </CardContent >
                 </Paper >
