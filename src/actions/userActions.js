@@ -104,3 +104,21 @@ export const setPasswordFromReset = (userData) => async (dispatch) => {
         return Promise.reject(error)
     }
 }
+
+export const updateName = (userData) => async (dispatch) => {
+    try {
+        const response = await UserService.updateName(userData)
+        return Promise.resolve(response.data)
+    } catch (error){
+        return Promise.reject(error)
+    }
+}
+
+export const updatePassword = (userData) => async (dispatch) => {
+    try {
+        const response = await UserService.updatePassword(userData)
+        return Promise.resolve(response.data)
+    } catch (error){
+        return Promise.reject(error)
+    }
+}

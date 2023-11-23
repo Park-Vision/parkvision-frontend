@@ -1,5 +1,7 @@
-import {ADD_USER, UPDATE_USER, GET_USER, DELETE_USER,
-    AUTHENTICATE_USER, GET_USERS, REGISTER_USER} from "../actions/types"
+import {
+    ADD_USER, UPDATE_USER, GET_USER, DELETE_USER,
+    AUTHENTICATE_USER, GET_USERS, REGISTER_USER, UPDATE_NAME, UPDATE_PASSWORD
+} from "../actions/types"
 
 const initialState = {
     users: [],
@@ -49,6 +51,16 @@ const userReducer = (state = initialState, action) => {
                 ...state,
                 users: [...state.user, action.value],
                 user: {}
+            }
+        case UPDATE_NAME:
+            return {
+                ...state,
+                user: action.value
+            }
+        case UPDATE_PASSWORD:
+            return {
+                ...state,
+                user: action.value
             }
         default:
             return state;

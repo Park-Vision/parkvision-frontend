@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import Home from "../Home/Home";
@@ -21,6 +21,13 @@ export default function UserProfile() {
     const [lastName, setLastName] = useState("");
     const [newPassword, setNewPassword] = useState("");
     const [newPasswordRepeat, setNewPasswordRepeat] = useState("");
+
+    useEffect(() => {
+        if (authenticationReducer.decodedUser && authenticationReducer.decodedUser.role === "USER") {
+            setFirstName(authenticationReducer.user.firstName);
+            setLastName(authenticationReducer.user.lastName);
+        }
+    }, []);
 
     const handleOpenDialog = (type) => {
         setEditing(true);
@@ -63,9 +70,7 @@ export default function UserProfile() {
         const passwordData = {
             id: userId,
             newPassword: newPassword,
-            newPasswordRepeat: newPasswordRepeat,
         };
-        // Dispatch an action to change the user password
         // dispatch(changePassword(passwordData)).then(() => {
         //     toast.success("Password successfully changed!");
         //     setEditing(false);

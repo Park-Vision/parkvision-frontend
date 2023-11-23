@@ -40,5 +40,13 @@ class UserService {
         return await axios.post(urlConst + "/setPasswordFromReset", userData);
     }
 
+    async updateName(userData) {
+        return await axios.post(urlConst + "/updatePassword", userData);
+    }
+
+    async updatePassword(userData) {
+        return await axios.post(urlConst + "/updateName", userData);
+    }
+
 }
 export default new UserService();
