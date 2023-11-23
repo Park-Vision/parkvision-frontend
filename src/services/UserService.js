@@ -41,11 +41,11 @@ class UserService {
     }
 
     async updateName(userData) {
-        return await axios.post(urlConst + "/updatePassword", userData);
+        return await axios.post(urlConst + "/updateName", userData);
     }
 
     async updatePassword(userData) {
-        return await axios.post(urlConst + "/updateName", userData);
+        return await axios.post(urlConst + "/updatePassword", userData);
     }
 
 }

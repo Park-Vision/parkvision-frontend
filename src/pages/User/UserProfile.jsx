@@ -2,7 +2,7 @@ import React, {useEffect, useState} from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import Home from "../Home/Home";
-import { updateUser, changePassword, deleteUser, getUser } from "../../actions/userActions";
+import {updatePassword, updateName, getUser} from "../../actions/userActions";
 import { Box, Button, Container, Typography, TextField, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import { toast } from "react-toastify";
@@ -17,15 +17,19 @@ export default function UserProfile() {
     const [changingPassword, setChangingPassword] = useState(false);
     const [deletingAccount, setDeletingAccount] = useState(false);
     const user = useSelector((state) => state.userReducer.user);
-    const [firstName, setFirstName] = useState("");
-    const [lastName, setLastName] = useState("");
+    const [firstName, setFirstName] = useState(authenticationReducer.user.firstName);
+    const [lastName, setLastName] = useState(authenticationReducer.user.lastName);
     const [newPassword, setNewPassword] = useState("");
     const [newPasswordRepeat, setNewPasswordRepeat] = useState("");
 
     useEffect(() => {
         if (authenticationReducer.decodedUser && authenticationReducer.decodedUser.role === "USER") {
-            setFirstName(authenticationReducer.user.firstName);
-            setLastName(authenticationReducer.user.lastName);
+            dispatch(getUser(authenticationReducer.decodedUser.userId))
+                .then((response) => {
+                    setFirstName(user.firstName);
+                    setLastName(user.lastName);
+                }
+            );
         }
     }, []);
 
@@ -51,7 +55,7 @@ export default function UserProfile() {
             firstName: firstName,
             lastName: lastName,
         };
-        dispatch(updateUser(updatedUser)).then(() => {
+        dispatch(updateName(updatedUser)).then(() => {
             toast.success("Account data successfully updated!");
             setEditing(false);
         });
@@ -60,7 +64,8 @@ export default function UserProfile() {
 
     const handleChangePassword = () => {
         if (!validatePassword(newPassword)) {
-            toast.info("Password must contain eight characters, including at least one capital letter and number");
+            toast.info('Password must contains eight characters or more, including at least one capital ' +
+                'letter, special character and a number.');
             return;
         } else if (newPassword !== newPasswordRepeat) {
             toast.info("Passwords must be the same");
@@ -69,12 +74,12 @@ export default function UserProfile() {
         const userId = authenticationReducer.decodedUser.userId;
         const passwordData = {
             id: userId,
-            newPassword: newPassword,
+            password: newPassword,
         };
-        // dispatch(changePassword(passwordData)).then(() => {
-        //     toast.success("Password successfully changed!");
-        //     setEditing(false);
-        // });
+        dispatch(updatePassword(passwordData)).then(() => {
+            toast.success("Password successfully changed!");
+            setEditing(false);
+        });
         handleCloseDialog();
     };
 
