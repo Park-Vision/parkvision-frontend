@@ -9,14 +9,19 @@ import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
-import {useDispatch} from "react-redux";
-import {logout, register} from "../../actions/authenticationActions";
-import {toast} from "react-toastify";
-import {useNavigate} from "react-router-dom";
-import {validatePassword, validateEmail, validateName} from "../../utils/validation";
+import { useDispatch } from "react-redux";
+import { logout, register } from "../../actions/authenticationActions";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
+import { validatePassword, validateEmail, validateName } from "../../utils/validation";
+import { FormControl, InputLabel, OutlinedInput } from "@mui/material";
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import IconButton from '@mui/material/IconButton';
+import InputAdornment from '@mui/material/InputAdornment';
 
 
-export default function Register(){
+export default function Register() {
     const [email, setEmail] = React.useState("")
     const [firstName, setFirstName] = React.useState("")
     const [lastName, setLastName] = React.useState("")
@@ -24,6 +29,16 @@ export default function Register(){
     const [passwordRepeat, setPasswordRepeat] = React.useState("")
     const dispatch = useDispatch()
     const navigate = useNavigate()
+
+    const [showPassword, setShowPassword] = React.useState(false);
+
+    const handleClickShowPassword = () => setShowPassword((show) => !show);
+
+    const handleMouseDownPassword = (event) => {
+        event.preventDefault();
+    };
+
+
 
     const handleEmail = (event) => {
         setEmail(event.target.value);
@@ -51,21 +66,22 @@ export default function Register(){
 
     const handleRegister = (event) => {
         event.preventDefault()
-        if (!validateEmail(email)){
+        if (!validateEmail(email)) {
             toast.info('Wrong email');
-        } else if (!validateName(firstName)){
+        } else if (!validateName(firstName)) {
             toast.info('Wrong first name');
-        } else if(!validateName(lastName)){
+        } else if (!validateName(lastName)) {
             toast.info('Wrong last name');
-        } else if (!validatePassword(password)){
-            toast.info('Password must contains eight characters, including at least one capital letter and number');
-        } else if(passwordRepeat !== password) {
+        } else if (!validatePassword(password)) {
+            toast.info('Password must contains eight characters or more, including at least one capital ' +
+                'letter, special character and a number.');
+        } else if (passwordRepeat !== password) {
             toast.info('Passwords must be the same');
         } else {
             dispatch(register(email, firstName, lastName, password))
                 .then(response => {
                     console.log(response);
-                    if (response.status === 200){
+                    if (response.status === 200) {
                         setEmail("")
                         setFirstName("")
                         setLastName("")
@@ -111,62 +127,91 @@ export default function Register(){
                             </Typography>
                             <Typography variant="body2" color="text.secondary">
                                 <form onSubmit={handleRegister}>
-                                    <TextField
-                                        id="outlined-basic"
-                                        label="Email address"
-                                        variant="outlined"
-                                        fullWidth
-                                        margin="normal"
-                                        required={true}
-                                        onChange={handleEmail}
-                                        value={email}
-                                    />
-                                    <TextField
-                                        id="outlined-basic"
-                                        label="First name"
-                                        variant="outlined"
-                                        fullWidth
-                                        margin="normal"
-                                        required={true}
-                                        onChange={handleFirstName}
-                                        value={firstName}
-                                    />
-                                    <TextField
-                                        id="outlined-basic"
-                                        label="Last name"
-                                        variant="outlined"
-                                        fullWidth
-                                        margin="normal"
-                                        required={true}
-                                        onChange={handleLastName}
-                                        value={lastName}
-                                    />
-                                    <TextField
-                                        id="outlined-basic"
-                                        label="Password"
-                                        variant="outlined"
-                                        fullWidth
-                                        margin="normal"
-                                        type="password"
-                                        required={true}
-                                        onChange={handlePassword}
-                                        value={password}
-                                    />
-                                    <TextField
-                                        id="outlined-basic"
-                                        label="Repeat password"
-                                        variant="outlined"
-                                        fullWidth
-                                        margin="normal"
-                                        type="password"
-                                        required={true}
-                                        onChange={handlePasswordRepeat}
-                                        value={passwordRepeat}
-                                    />
-                                    <Button type="submit" variant="contained" fullWidth margin="normal" >
+                                    <FormControl fullWidth variant="outlined" margin="normal">
+                                        <InputLabel htmlFor="email">E-mail</InputLabel>
+                                        <OutlinedInput
+                                            label="E-mail"
+                                            id="email"
+                                            variant="outlined"
+                                            required={true}
+                                            onChange={handleEmail}
+                                            value={email}
+                                        />
+                                    </FormControl>
+
+                                    <FormControl fullWidth variant="outlined" margin="normal">
+                                        <InputLabel htmlFor="first-name">First name</InputLabel>
+                                        <OutlinedInput
+                                            label="First name"
+                                            id="first-name"
+                                            variant="outlined"
+                                            required={true}
+                                            onChange={handleFirstName}
+                                            value={firstName}
+                                        />
+                                    </FormControl>
+                                    <FormControl fullWidth variant="outlined" margin="normal">
+                                        <InputLabel htmlFor="last-name">Last name</InputLabel>
+                                        <OutlinedInput
+                                            label="last-name"
+                                            id="first-name"
+                                            variant="outlined"
+                                            required={true}
+                                            onChange={handleLastName}
+                                            value={lastName}
+                                        />
+                                    </FormControl>
+
+                                    <FormControl fullWidth variant="outlined" margin="normal">
+                                        <InputLabel htmlFor="password">Password</InputLabel>
+                                        <OutlinedInput
+                                            label="Password"
+                                            id="password"
+                                            type={showPassword ? 'text' : 'password'}
+                                            required={true}
+                                            onChange={handlePassword}
+                                            value={password}
+                                            endAdornment={
+                                                <InputAdornment position="end">
+                                                    <IconButton
+                                                        aria-label="toggle password visibility"
+                                                        onClick={handleClickShowPassword}
+                                                        onMouseDown={handleMouseDownPassword}
+                                                        edge="end"
+                                                    >
+                                                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                                                    </IconButton>
+                                                </InputAdornment>
+                                            }
+                                        />
+                                    </FormControl>
+                                    <FormControl fullWidth variant="outlined" margin="normal">
+                                        <InputLabel htmlFor="password-repeat">Repeat password</InputLabel>
+                                        <OutlinedInput
+                                            label="Repeat password"
+                                            id="password-repeat"
+                                            type={showPassword ? 'text' : 'password'}
+                                            required={true}
+                                            onChange={handlePasswordRepeat}
+                                            value={passwordRepeat}
+                                            endAdornment={
+                                                <InputAdornment position="end">
+                                                    <IconButton
+                                                        aria-label="toggle password visibility"
+                                                        onClick={handleClickShowPassword}
+                                                        onMouseDown={handleMouseDownPassword}
+                                                        edge="end"
+                                                    >
+                                                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                                                    </IconButton>
+                                                </InputAdornment>
+                                            }
+                                        />
+                                    </FormControl>
+                                    <Button type="submit" variant="contained" fullWidth sx={{ mt: 1 }} >
                                         Register
                                     </Button>
-                                    <Button fullWidth margin="normal" onClick={() => handleLoginRedirection()}>
+                                    <Button fullWidth sx={{ mt: 1 }} onClick={() => handleLoginRedirection()}>
                                         Login
                                     </Button>
                                 </form>

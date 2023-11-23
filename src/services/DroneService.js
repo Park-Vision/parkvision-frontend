@@ -22,5 +22,9 @@ class DroneService {
     async deleteDroneById(droneId) {
         return await axios.delete(urlConst + "/" + droneId);
     }
+
+    async commandDrone(droneId, command) {
+        return await axios.post(urlConst + "/" + droneId + "/" + command)
+    }
 }
 export default new DroneService();

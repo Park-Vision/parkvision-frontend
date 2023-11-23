@@ -86,3 +86,21 @@ export const registerUser = (userData) => async (dispatch) => {
         return Promise.reject(error)
     }
 }
+
+export const resetPassword = (email) => async (dispatch) => {
+    try {
+        const response = await UserService.resetPassword(email)
+        return Promise.resolve(response.data)
+    } catch (error){
+        return Promise.reject(error)
+    }
+}
+
+export const setPasswordFromReset = (userData) => async (dispatch) => {
+    try {
+        const response = await UserService.setPasswordFromReset(userData)
+        return Promise.resolve(response.data)
+    } catch (error){
+        return Promise.reject(error)
+    }
+}

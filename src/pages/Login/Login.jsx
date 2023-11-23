@@ -1,38 +1,65 @@
-// generate login page with login, password and submit button
-import React, {useEffect} from 'react';
+import React, { useEffect, useState } from 'react';
 
 // use @mui/material
-import Container from '@mui/material/Container';
-import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
-import TextField from '@mui/material/TextField';
-import Button from '@mui/material/Button';
-import Typography from '@mui/material/Typography';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import pvlogo from "../../assets/pv_transparent.png";
+import {
+    Box,
+    Container,
+    Typography,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    Button,
+    TextField
+} from '@mui/material';
 
-
-import {useDispatch, useSelector} from "react-redux";
-import {login} from "../../actions/authenticationActions";
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import IconButton from '@mui/material/IconButton';
+import InputAdornment from '@mui/material/InputAdornment';
+import InputLabel from '@mui/material/InputLabel';
+import { useDispatch, useSelector } from "react-redux";
+import { login } from "../../actions/authenticationActions";
+import { resetPassword } from '../../actions/userActions';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { useNavigate } from 'react-router-dom';
-import {validateEmail, validatePassword} from "../../utils/validation";
+import { Form, useNavigate } from 'react-router-dom';
+import { validateEmail, validatePassword } from "../../utils/validation";
 import decodeToken from "../../utils/decodeToken";
+import { FormControl, OutlinedInput } from '@mui/material';
 
 
 export default function Login() {
+    const [showPassword, setShowPassword] = React.useState(false);
+
+    const handleClickShowPassword = () => setShowPassword((show) => !show);
+
+    const handleMouseDownPassword = (event) => {
+        event.preventDefault();
+    };
 
     const [email, setEmail] = React.useState("")
     const [password, setPassword] = React.useState("")
+    const [emailReset, setEmailReset] = React.useState("")
     const dispatch = useDispatch()
     const navigate = useNavigate()
+
+    const [openResetPasswordDialog, setResetPasswordDialog] = useState(false);
 
     const handleEmail = (event) => {
         setEmail(event.target.value);
     };
+
+
+    const handleEmailReset = (event) => {
+        setEmailReset(event.target.value);
+    };
+
 
     const handlePassword = (event) => {
         setPassword(event.target.value);
@@ -44,7 +71,7 @@ export default function Login() {
 
     const handleLogin = (e) => {
         e.preventDefault()
-        if (!validateEmail(email) || !validatePassword(password)){
+        if (!validateEmail(email) || !validatePassword(password)) {
             toast.info('Please enter valid email and password');
         } else {
             dispatch(login(email, password))
@@ -72,66 +99,121 @@ export default function Login() {
 
     };
 
+    const handleCloseResetPassword = () => {
+        setResetPasswordDialog(false);
+    };
+
+    const handleOpenResetPassword = () => {
+        setResetPasswordDialog(true);
+        setEmailReset("");
+    }
+
     const navigateToHome = () => {
         navigate('/')
     }
 
+    const handleSendPasswordReset = () => {
+        dispatch(resetPassword(emailReset));
+        setResetPasswordDialog(false);
+        toast.success('Password reset email sent. Check your inbox.');
+    }
+
     return (
-        <Container maxWidth="lg">
-            <Box sx={{ 
-                    display: 'flex',
-                    justifyContent: 'center', // Center horizontally
-                    alignItems: 'center',     // Center vertically
-                    height: '100vh',          // Set a minimum height for centering
+        <Container maxWidth="sm">
+            <Box sx={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                height: '100vh',
             }}>
-            <Grid item  >
+                <Grid item  >
                     <Card>
-                        <CardMedia  
+                        <CardMedia
                             component="img"
                             height="300"
                             image={pvlogo}
                             alt="random"
                         />
-                <CardContent>
-                    <Typography gutterBottom variant="h5" component="div">
-                    Login
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                        <form onSubmit={handleLogin}>
-                            <TextField
-                                label="Email address"
-                                variant="outlined"
-                                fullWidth
-                                margin="normal"
-                                required={true}
-                                onChange={handleEmail}
-                                value={email}
-                            />
-                            <TextField
-                                label="Password"
-                                variant="outlined"
-                                fullWidth
-                                margin="normal"
-                                type="password"
-                                required={true}
-                                onChange={handlePassword}
-                                value={password}
-                            />
-                            <Button type="submit" variant="contained" fullWidth margin="normal" >
+                        <CardContent>
+                            <Typography gutterBottom variant="h5" component="div">
                                 Login
-                            </Button>
-                            <Button fullWidth margin="normal">
-                                Password reset
-                            </Button>
-                            <Button variant="contained" fullWidth margin="normal" onClick={() => handleRegister()}>
-                                Register
-                            </Button>
-                        </form>
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary">
+                                <form onSubmit={handleLogin}>
+                                    <FormControl fullWidth variant="outlined" margin="normal">
+                                        <InputLabel htmlFor="email">E-mail</InputLabel>
+                                        <OutlinedInput
+                                            label="E-mail"
+                                            id="email"
+                                            variant="outlined"
+                                            required={true}
+                                            onChange={handleEmail}
+                                            value={email}
+                                        />
+                                    </FormControl>
+                                    <FormControl fullWidth variant="outlined" margin="normal">
+                                        <InputLabel htmlFor="password">Password</InputLabel>
+                                        <OutlinedInput
+                                            label="Password"
+                                            id="password"
+                                            type={showPassword ? 'text' : 'password'}
+                                            required={true}
+                                            onChange={handlePassword}
+                                            value={password}
+                                            endAdornment={
+                                                <InputAdornment position="end">
+                                                    <IconButton
+                                                        aria-label="toggle password visibility"
+                                                        onClick={handleClickShowPassword}
+                                                        onMouseDown={handleMouseDownPassword}
+                                                        edge="end"
+                                                    >
+                                                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                                                    </IconButton>
+                                                </InputAdornment>
+                                            }
+                                        />
+                                    </FormControl>
+                                    <Button type="submit" variant="contained" fullWidth sx={{ mt: 1 }} >
+                                        Login
+                                    </Button>
+                                    <Button fullWidth sx={{ mt: 1 }} onClick={handleOpenResetPassword}>
+                                        Password reset
+                                    </Button>
+                                    <Button
+                                        variant="contained"
+                                        fullWidth
+                                        sx={{ mt: 1 }}
+                                        onClick={() => handleRegister()}>
+                                        Register
+                                    </Button>
+                                </form>
+                            </Typography>
+                        </CardContent>
+                    </Card>
+                </Grid>
+            </Box>
+            <Dialog open={openResetPasswordDialog}>
+                <DialogTitle>Password reset</DialogTitle>
+                <DialogContent>
+                    <Typography>
+                        Please enter your email address.<br></br> We will send you a link to reset your password.
                     </Typography>
-                </CardContent>
-                </Card>
-            </Grid>
-        </Box>
+                    <TextField
+                        autoFocus
+                        margin="normal"
+                        id="email"
+                        label="Email Address"
+                        type="email"
+                        fullWidth
+                        onChange={handleEmailReset}
+                    />
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCloseResetPassword}>Cancel</Button>
+                    <Button onClick={handleSendPasswordReset}>Send</Button>
+                </DialogActions>
+            </Dialog>
         </Container>
     );
 }
