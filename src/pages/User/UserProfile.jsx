@@ -13,12 +13,14 @@ import {
     DialogActions,
     DialogContent,
     DialogTitle,
-    Paper
+    Paper, InputLabel, OutlinedInput, InputAdornment
 } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import { toast } from "react-toastify";
 import {validateName, validatePassword} from "../../utils/validation";
 import {logout} from "../../actions/authenticationActions";
+import IconButton from "@mui/material/IconButton";
+import {Visibility, VisibilityOff} from "@mui/icons-material";
 
 export default function UserProfile() {
     const authenticationReducer = useSelector((state) => state.authenticationReducer);
@@ -34,6 +36,13 @@ export default function UserProfile() {
     const [lastName, setLastName] = useState("");
     const [newPassword, setNewPassword] = useState("");
     const [newPasswordRepeat, setNewPasswordRepeat] = useState("");
+    const [showPassword, setShowPassword] = React.useState(false);
+
+    const handleClickShowPassword = () => setShowPassword((show) => !show);
+
+    const handleMouseDownPassword = (event) => {
+        event.preventDefault();
+    };
 
     useEffect(() => {
         if (authenticationReducer.decodedUser && authenticationReducer.decodedUser.role === "USER") {
@@ -186,25 +195,47 @@ export default function UserProfile() {
                         <DialogContent>
                             {changingPassword ? (
                                 <>
-                                    <TextField
+                                    <InputLabel htmlFor="newPassword">New Password</InputLabel>
+                                    <OutlinedInput
                                         label="New Password"
-                                        type="password"
-                                        variant="outlined"
-                                        fullWidth
-                                        margin="normal"
-                                        value={newPassword}
-                                        required
+                                        type={showPassword ? 'text' : 'password'}
+                                        required={true}
+                                        margin={"normal"}
                                         onChange={(e) => setNewPassword(e.target.value)}
+                                        value={newPassword}
+                                        endAdornment={
+                                            <InputAdornment position="end">
+                                                <IconButton
+                                                    aria-label="toggle password visibility"
+                                                    onClick={handleClickShowPassword}
+                                                    onMouseDown={handleMouseDownPassword}
+                                                    edge="end"
+                                                >
+                                                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                                                </IconButton>
+                                            </InputAdornment>
+                                        }
                                     />
-                                    <TextField
+                                    <InputLabel htmlFor="newPasswordRepeat">New Password Repeat</InputLabel>
+                                    <OutlinedInput
                                         label="New Password Repeat"
-                                        type="password"
-                                        variant="outlined"
-                                        fullWidth
-                                        margin="normal"
-                                        value={newPasswordRepeat}
-                                        required
+                                        type={showPassword ? 'text' : 'password'}
+                                        required={true}
+                                        margin={"normal"}
                                         onChange={(e) => setNewPasswordRepeat(e.target.value)}
+                                        value={newPasswordRepeat}
+                                        endAdornment={
+                                            <InputAdornment position="end">
+                                                <IconButton
+                                                    aria-label="toggle password visibility"
+                                                    onClick={handleClickShowPassword}
+                                                    onMouseDown={handleMouseDownPassword}
+                                                    edge="end"
+                                                >
+                                                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                                                </IconButton>
+                                            </InputAdornment>
+                                        }
                                     />
                                 </>
                             ) : deletingAccount ? (
