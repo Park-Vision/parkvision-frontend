@@ -84,7 +84,6 @@ export default function ReservationEdit(props) {
 
 
     const transformResevationDates = (reservation, parking) => {
-        debugger
         const start = getLocalISOTime(startDate, parking.timeZone);
         const end = getLocalISOTime(endDate, parking.timeZone);
         return {

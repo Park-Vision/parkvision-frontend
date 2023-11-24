@@ -208,7 +208,6 @@ function ParkingEditor(props) {
                 if (spot !== undefined) {
                     spot.pointsDTO = pointsDTO;
                 } else {
-                    debugger
                     spot = {
                         id: spotId,
                         spotNumber: "newly created spot",

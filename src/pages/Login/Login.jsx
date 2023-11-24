@@ -138,57 +138,55 @@ export default function Login() {
                             <Typography gutterBottom variant="h5" component="div">
                                 Login
                             </Typography>
-                            <Typography variant="body2" color="text.secondary">
-                                <form onSubmit={handleLogin}>
-                                    <FormControl fullWidth variant="outlined" margin="normal">
-                                        <InputLabel htmlFor="email">E-mail</InputLabel>
-                                        <OutlinedInput
-                                            label="E-mail"
-                                            id="email"
-                                            variant="outlined"
-                                            required={true}
-                                            onChange={handleEmail}
-                                            value={email}
-                                        />
-                                    </FormControl>
-                                    <FormControl fullWidth variant="outlined" margin="normal">
-                                        <InputLabel htmlFor="password">Password</InputLabel>
-                                        <OutlinedInput
-                                            label="Password"
-                                            id="password"
-                                            type={showPassword ? 'text' : 'password'}
-                                            required={true}
-                                            onChange={handlePassword}
-                                            value={password}
-                                            endAdornment={
-                                                <InputAdornment position="end">
-                                                    <IconButton
-                                                        aria-label="toggle password visibility"
-                                                        onClick={handleClickShowPassword}
-                                                        onMouseDown={handleMouseDownPassword}
-                                                        edge="end"
-                                                    >
-                                                        {showPassword ? <VisibilityOff /> : <Visibility />}
-                                                    </IconButton>
-                                                </InputAdornment>
-                                            }
-                                        />
-                                    </FormControl>
-                                    <Button type="submit" variant="contained" fullWidth sx={{ mt: 1 }} >
-                                        Login
-                                    </Button>
-                                    <Button fullWidth sx={{ mt: 1 }} onClick={handleOpenResetPassword}>
-                                        Password reset
-                                    </Button>
-                                    <Button
-                                        variant="contained"
-                                        fullWidth
-                                        sx={{ mt: 1 }}
-                                        onClick={() => handleRegister()}>
-                                        Register
-                                    </Button>
-                                </form>
-                            </Typography>
+                            <form onSubmit={handleLogin}>
+                                <FormControl fullWidth variant="outlined" margin="normal">
+                                    <InputLabel htmlFor="email">E-mail</InputLabel>
+                                    <OutlinedInput
+                                        label="E-mail"
+                                        id="email"
+                                        variant="outlined"
+                                        required={true}
+                                        onChange={handleEmail}
+                                        value={email}
+                                    />
+                                </FormControl>
+                                <FormControl fullWidth variant="outlined" margin="normal">
+                                    <InputLabel htmlFor="password">Password</InputLabel>
+                                    <OutlinedInput
+                                        label="Password"
+                                        id="password"
+                                        type={showPassword ? 'text' : 'password'}
+                                        required={true}
+                                        onChange={handlePassword}
+                                        value={password}
+                                        endAdornment={
+                                            <InputAdornment position="end">
+                                                <IconButton
+                                                    aria-label="toggle password visibility"
+                                                    onClick={handleClickShowPassword}
+                                                    onMouseDown={handleMouseDownPassword}
+                                                    edge="end"
+                                                >
+                                                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                                                </IconButton>
+                                            </InputAdornment>
+                                        }
+                                    />
+                                </FormControl>
+                                <Button type="submit" variant="contained" fullWidth sx={{ mt: 1 }} >
+                                    Login
+                                </Button>
+                                <Button fullWidth sx={{ mt: 1 }} onClick={handleOpenResetPassword}>
+                                    Password reset
+                                </Button>
+                                <Button
+                                    variant="contained"
+                                    fullWidth
+                                    sx={{ mt: 1 }}
+                                    onClick={() => handleRegister()}>
+                                    Register
+                                </Button>
+                            </form>
                         </CardContent>
                     </Card>
                 </Grid>
