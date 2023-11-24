@@ -248,7 +248,8 @@ function ParkingDetails(props) {
         setStartTime(localTimeDayjs.set("minute", localTimeDayjs.minute() - (localTimeDayjs.minute() % 15)).set("second", 0).set("millisecond", 0));
         setEndTime(localTimeDayjs.set("minute", localTimeDayjs.minute() - (localTimeDayjs.minute() % 15)).set("second", 0).set("millisecond", 0).add(15, "minute"));
         setEndDay(localTimeDayjs);
-
+        setStart(startTime);
+        setEnd(endTime);
         const start = startTime.toDate().toISOString()
         const end = endTime.toDate().toISOString()
 
@@ -496,7 +497,7 @@ function ParkingDetails(props) {
                                             }}
                                             interactive
                                         >
-                                            <Popup>{`Selected spot number: ${parkingSpot.id}`} <br></br> Click to deselect</Popup>
+                                            <Popup>{`Selected spot number: ${parkingSpot.spotNumber}`} <br></br> Click to deselect</Popup>
                                         </Polygon>
                                     )}
                                 </MapContainer>
@@ -656,7 +657,7 @@ function ParkingDetails(props) {
                                         <TextField
                                             sx={{ m: 1 }}
                                             fullWidth
-                                            value={parkingSpot?.id || ""}
+                                            value={parkingSpot?.spotNumber || ""}
                                             id='outlined-basic'
                                             label='Parking spot'
                                             variant='outlined'

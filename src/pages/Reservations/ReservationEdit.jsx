@@ -33,6 +33,7 @@ export default function ReservationEdit(props) {
 
     const userjson = JSON.parse(localStorage.getItem("user"));
     const user = decodeToken(userjson?.token);
+
     useEffect(() => {
         dispatch(getReservation(reservationId)).then((response) => {
             setStartDate(dayjs(response.startDate));
@@ -83,7 +84,6 @@ export default function ReservationEdit(props) {
 
 
     const transformResevationDates = (reservation, parking) => {
-        debugger
         const start = getLocalISOTime(startDate, parking.timeZone);
         const end = getLocalISOTime(endDate, parking.timeZone);
         return {
@@ -184,7 +184,7 @@ export default function ReservationEdit(props) {
                                                 color='orange'
                                                 interactive
                                             >
-                                                <Popup>{`Selected Parking Spot ID: ${parkingSpotReducer.parkingSpot.id}`} <br></br> Click to deselect</Popup>
+                                                <Popup>{`Selected Parking Spot ID: ${parkingSpotReducer.parkingSpot.spotNumber}`} <br></br> Click to deselect</Popup>
                                             </Polygon>
                                         )}
 
