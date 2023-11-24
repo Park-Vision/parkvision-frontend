@@ -37,15 +37,19 @@ class UserService {
     }
 
     async setPasswordFromReset(userData) {
-        return await axios.post(urlConst + "/setPasswordFromReset", userData);
+        return await axios.put(urlConst + "/setPasswordFromReset", userData);
     }
 
     async updateName(userData) {
-        return await axios.post(urlConst + "/updateName", userData);
+        return await axios.put(urlConst + "/updateName", userData);
     }
 
     async updatePassword(userData) {
-        return await axios.post(urlConst + "/updatePassword", userData);
+        return await axios.put(urlConst + "/updatePassword", userData);
+    }
+
+    async disableUser(userId) {
+        return await axios.put(urlConst + "/disableUser/" + userId);
     }
 
 }

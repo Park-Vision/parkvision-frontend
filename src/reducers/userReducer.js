@@ -1,6 +1,6 @@
 import {
     ADD_USER, UPDATE_USER, GET_USER, DELETE_USER,
-    AUTHENTICATE_USER, GET_USERS, REGISTER_USER, UPDATE_NAME, UPDATE_PASSWORD
+    AUTHENTICATE_USER, GET_USERS, REGISTER_USER, UPDATE_NAME, UPDATE_PASSWORD, DISABLE_USER
 } from "../actions/types"
 
 const initialState = {
@@ -61,6 +61,11 @@ const userReducer = (state = initialState, action) => {
             return {
                 ...state,
                 user: action.value
+            }
+        case DISABLE_USER:
+            return {
+                ...state,
+                users: state.users.filter(item => item.id !== parseInt(action.value))
             }
         default:
             return state;

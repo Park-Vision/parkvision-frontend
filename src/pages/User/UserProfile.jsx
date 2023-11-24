@@ -2,23 +2,36 @@ import React, {useEffect, useState} from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import Home from "../Home/Home";
-import {updatePassword, updateName, getUser} from "../../actions/userActions";
-import { Box, Button, Container, Typography, TextField, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
+import {updatePassword, updateName, getUser, disableUser} from "../../actions/userActions";
+import {
+    Box,
+    Button,
+    Container,
+    Typography,
+    TextField,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    Paper
+} from "@mui/material";
 import Grid from "@mui/material/Grid";
 import { toast } from "react-toastify";
-import { validatePassword } from "../../utils/validation";
+import {validateName, validatePassword} from "../../utils/validation";
+import {logout} from "../../actions/authenticationActions";
 
 export default function UserProfile() {
     const authenticationReducer = useSelector((state) => state.authenticationReducer);
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
+    const [action, setAction] = useState(false);
     const [editing, setEditing] = useState(false);
     const [changingPassword, setChangingPassword] = useState(false);
     const [deletingAccount, setDeletingAccount] = useState(false);
     const user = useSelector((state) => state.userReducer.user);
-    const [firstName, setFirstName] = useState(authenticationReducer.user.firstName);
-    const [lastName, setLastName] = useState(authenticationReducer.user.lastName);
+    const [firstName, setFirstName] = useState("");
+    const [lastName, setLastName] = useState("");
     const [newPassword, setNewPassword] = useState("");
     const [newPasswordRepeat, setNewPasswordRepeat] = useState("");
 
@@ -34,31 +47,50 @@ export default function UserProfile() {
     }, []);
 
     const handleOpenDialog = (type) => {
-        setEditing(true);
+        setAction(true);
         if (type === "password") {
             setChangingPassword(true);
         } else if (type === "delete") {
             setDeletingAccount(true);
+        } else if (type === "profile") {
+            setEditing(true);
         }
     };
 
     const handleCloseDialog = () => {
+
         setEditing(false);
         setChangingPassword(false);
         setDeletingAccount(false);
+        setAction(false);
     };
 
     const handleSaveProfile = () => {
+        if (!validateName(firstName)){
+            toast.info("First name can not be empty.");
+            return;
+        }
+        else if (!validateName(lastName)){
+            toast.info("Last name can not be empty.");
+            return;
+        }
         const userId = authenticationReducer.decodedUser.userId;
         const updatedUser = {
             id: userId,
             firstName: firstName,
             lastName: lastName,
         };
-        dispatch(updateName(updatedUser)).then(() => {
-            toast.success("Account data successfully updated!");
-            setEditing(false);
-        });
+        dispatch(updateName(updatedUser))
+            .then(() => {
+                toast.success("Account data successfully updated!");
+                setEditing(false);
+                setAction(false);
+                dispatch(getUser(userId));
+            })
+            .catch((error) => {
+                console.error("Error updating account data:", error);
+                toast.error("An error occurred while updating account data. Please try again.");
+            });
         handleCloseDialog();
     };
 
@@ -76,19 +108,37 @@ export default function UserProfile() {
             id: userId,
             password: newPassword,
         };
-        dispatch(updatePassword(passwordData)).then(() => {
-            toast.success("Password successfully changed!");
-            setEditing(false);
-        });
+        dispatch(updatePassword(passwordData))
+            .then(() => {
+                toast.success("Password successfully changed!");
+                setNewPassword("");
+                setNewPasswordRepeat("");
+                setChangingPassword(false);
+                setAction(false);
+            })
+            .catch((error) => {
+                console.error("Error changing password:", error);
+                toast.error("An error occurred while changing the password. Please try again.");
+            });
         handleCloseDialog();
     };
 
     const handleDeleteAccount = () => {
         const userId = authenticationReducer.decodedUser.userId;
-        // dispatch(deleteUser(userId)).then(() => {
-        //     toast.success("Account successfully deleted!");
-        //     setEditing(false);
-        // });
+        dispatch(disableUser(userId))
+            .then(() => {
+                toast.success("Account successfully deleted!");
+                setDeletingAccount(false);
+                setAction(false);
+                dispatch(logout());
+                navigate("/");
+                return <Home />;
+
+            })
+            .catch((error) => {
+                console.error("Error deleting account:", error);
+                toast.error("An error occurred while deleting the account. Please try again.");
+            });
         handleCloseDialog();
     };
 
@@ -101,8 +151,17 @@ export default function UserProfile() {
         <Container maxWidth="lg">
             <Box sx={{ my: 4 }}>
                 <Typography variant="h4" align="center" gutterBottom>
-                    YOUR PROFILE SETTINGS
+                    PROFILE SETTINGS
                 </Typography>
+                <Grid item xs={12}>
+                    <Paper elevation={3} style={{ padding: 20, margin: 10 }}>
+                        <Typography variant="subtitle1" sx={{ fontWeight: 'bold', fontSize: '1.2rem' }}>
+                            Email: {authenticationReducer.decodedUser.sub}
+                        </Typography>
+                        <Typography variant="body1">First name: {user.firstName}</Typography>
+                        <Typography variant="body1">Last name: {user.lastName}</Typography>
+                    </Paper>
+                </Grid>
                 <Grid container justifyContent="center" spacing={2}>
                     <Grid item>
                         <Button variant="contained" margin="normal" onClick={() => handleOpenDialog("profile")}>
@@ -121,71 +180,76 @@ export default function UserProfile() {
                     </Grid>
                 </Grid>
 
-                <Dialog open={editing} onClose={handleCloseDialog}>
-                    <DialogTitle>{changingPassword ? "Change Password" : deletingAccount ? "Delete Account" : "Edit Profile"}</DialogTitle>
-                    <DialogContent>
-                        {changingPassword ? (
-                            <>
-                                <TextField
-                                    label="Current Password"
-                                    type="password"
-                                    variant="outlined"
-                                    fullWidth
-                                    margin="normal"
-                                    value={newPassword}
-                                    required
-                                    onChange={(e) => setNewPassword(e.target.value)}
-                                />
-                                <TextField
-                                    label="New Password"
-                                    type="password"
-                                    variant="outlined"
-                                    fullWidth
-                                    margin="normal"
-                                    value={newPasswordRepeat}
-                                    required
-                                    onChange={(e) => setNewPasswordRepeat(e.target.value)}
-                                />
-                            </>
-                        ) : deletingAccount ? (
-                            <>
-                                <Typography variant="body1" gutterBottom>
-                                    Are you sure you want to delete your account?
-                                </Typography>
-                            </>
-                        ) : (
-                            <>
-                                <TextField
-                                    label="First Name"
-                                    variant="outlined"
-                                    fullWidth
-                                    margin="normal"
-                                    value={firstName}
-                                    required
-                                    onChange={(e) => setFirstName(e.target.value)}
-                                />
-                                <TextField
-                                    label="Last Name"
-                                    variant="outlined"
-                                    fullWidth
-                                    margin="normal"
-                                    value={lastName}
-                                    required
-                                    onChange={(e) => setLastName(e.target.value)}
-                                />
-                            </>
-                        )}
-                    </DialogContent>
-                    <DialogActions>
-                        <Button onClick={handleCloseDialog}>Cancel</Button>
-                        <Button onClick={changingPassword ?
-                            handleChangePassword : deletingAccount ?
-                                handleDeleteAccount : handleSaveProfile}
-                                variant="contained">
-                            Save
-                        </Button>
-                    </DialogActions>
-                </Dialog>
+                {action && (
+                    <Dialog open={action} onClose={handleCloseDialog}>
+                        <DialogTitle>{changingPassword ? "Change Password" : deletingAccount ? "Delete Account" : editing ? "Edit Profile" : ""}</DialogTitle>
+                        <DialogContent>
+                            {changingPassword ? (
+                                <>
+                                    <TextField
+                                        label="New Password"
+                                        type="password"
+                                        variant="outlined"
+                                        fullWidth
+                                        margin="normal"
+                                        value={newPassword}
+                                        required
+                                        onChange={(e) => setNewPassword(e.target.value)}
+                                    />
+                                    <TextField
+                                        label="New Password Repeat"
+                                        type="password"
+                                        variant="outlined"
+                                        fullWidth
+                                        margin="normal"
+                                        value={newPasswordRepeat}
+                                        required
+                                        onChange={(e) => setNewPasswordRepeat(e.target.value)}
+                                    />
+                                </>
+                            ) : deletingAccount ? (
+                                <>
+                                    <Typography variant="body1" gutterBottom>
+                                        Are you sure you want to delete your account?
+                                    </Typography>
+                                </>
+                            ) : editing ? (
+                                <>
+                                    <TextField
+                                        label="First Name"
+                                        variant="outlined"
+                                        fullWidth
+                                        margin="normal"
+                                        value={firstName}
+                                        required
+                                        onChange={(e) => setFirstName(e.target.value)}
+                                    />
+                                    <TextField
+                                        label="Last Name"
+                                        variant="outlined"
+                                        fullWidth
+                                        margin="normal"
+                                        value={lastName}
+                                        required
+                                        onChange={(e) => setLastName(e.target.value)}
+                                    />
+                                </>
+                            ) : (
+                                <>
+                                </>
+                            )}
+                        </DialogContent>
+                        <DialogActions>
+                            <Button onClick={handleCloseDialog}>Cancel</Button>
+                            <Button onClick={changingPassword ?
+                                handleChangePassword : deletingAccount ?
+                                    handleDeleteAccount : handleSaveProfile}
+                                    variant="contained">
+                                Save
+                            </Button>
+                        </DialogActions>
+                    </Dialog>
+                )}
             </Box>
         </Container>
     );

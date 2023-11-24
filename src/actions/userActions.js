@@ -122,3 +122,12 @@ export const updatePassword = (userData) => async (dispatch) => {
         return Promise.reject(error)
     }
 }
+
+export const disableUser = (userId) => async (dispatch) => {
+    try {
+        const response = await UserService.disableUser(userId)
+        return Promise.resolve(response.data)
+    } catch (error){
+        return Promise.reject(error)
+    }
+}
