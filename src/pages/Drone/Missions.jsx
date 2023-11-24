@@ -1,9 +1,9 @@
-import {useDispatch, useSelector} from "react-redux";
-import React, {useEffect, useState} from "react";
-import {useNavigate, useParams} from "react-router-dom";
-import {getDroneMissions} from "../../actions/droneMissionActions";
-import {Box, Container} from "@mui/material";
-import {DataGrid} from "@mui/x-data-grid";
+import { useDispatch, useSelector } from "react-redux";
+import React, { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { getDroneMissions } from "../../actions/droneMissionActions";
+import { Box, Container } from "@mui/material";
+import { DataGrid } from "@mui/x-data-grid";
 import convertDate from "../../utils/convertDate";
 import Home from "../Home/Home";
 
@@ -27,28 +27,40 @@ export default function ManagerReservations(props) {
     }
 
     const columns = [
-        { field: 'id', headerName: 'ID', flex: 0.3, align: 'right', },
-        { field: 'startDate', headerName: 'Start Date', flex: 0.8,
-            valueGetter: ({row}) => convertDate(row.missionStartDate)},
-        { field: 'endDate', headerName: 'End Date', flex: 0.8,
-            valueGetter: ({row}) => convertDate(row.missionEndDate) },
-        { field: 'status', headerName: 'Status', flex: 1 },
-        {field: 'occupiedSpotsCount', headerName: 'Occupied', flex: 0.4, align: 'right',
+        { field: 'id', headerName: 'ID', flex: 0.3, align: 'right', minWidth: 50 },
+        {
+            field: 'startDate', headerName: 'Start Date', flex: 0.8, minWidth: 200,
+            valueGetter: ({ row }) => convertDate(row.missionStartDate)
+        },
+        {
+            field: 'endDate', headerName: 'End Date', flex: 0.8, minWidth: 200,
+            valueGetter: ({ row }) => convertDate(row.missionEndDate)
+        },
+        { field: 'status', headerName: 'Status', flex: 1, minWidth: 100 },
+        {
+            field: 'occupiedSpotsCount', headerName: 'Occupied', flex: 0.4, align: 'right', minWidth: 80,
             valueGetter: (params) => {
                 return params.row.missionSpotResultList.filter(spot => spot.occupied).length;
             },
         },
-        {field: 'visitedSpotsCount', headerName: 'Visited', flex: 0.4, align: 'right',
+        {
+            field: 'visitedSpotsCount', headerName: 'Visited', flex: 0.4, align: 'right', minWidth: 80,
             valueGetter: (params) => {
-                return  params.row.missionSpotResultList.length;
+                return params.row.missionSpotResultList.length;
             },
         },
-        { field: 'parking', headerName: 'Parking', flex: 0.6,
-            valueGetter: ({row}) => row.parkingDTO.name },
-        { field: 'drone', headerName: 'Drone', flex: 1,
-            valueGetter: ({row}) => row.droneDTO.name},
-        { field: 'droneModel', headerName: 'Drone Model', flex: 1,
-            valueGetter: ({row}) => row.droneDTO.model},
+        {
+            field: 'parking', headerName: 'Parking', flex: 0.6, minWidth: 100,
+            valueGetter: ({ row }) => row.parkingDTO.name
+        },
+        {
+            field: 'drone', headerName: 'Drone', flex: 1, minWidth: 100,
+            valueGetter: ({ row }) => row.droneDTO.name
+        },
+        {
+            field: 'droneModel', headerName: 'Drone Model', flex: 1, minWidth: 100,
+            valueGetter: ({ row }) => row.droneDTO.model
+        },
     ];
 
     return (
