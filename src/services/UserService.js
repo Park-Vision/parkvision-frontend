@@ -51,6 +51,5 @@ class UserService {
     async disableUser(userId) {
         return await axios.put(urlConst + "/disableUser/" + userId);
     }
-
 }
 export default new UserService();

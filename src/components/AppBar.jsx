@@ -11,10 +11,11 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
-import {Link} from "@mui/material";
-import {useDispatch, useSelector} from "react-redux";
-import {logout} from "../actions/authenticationActions";
+import { Link } from "@mui/material";
+import { useDispatch, useSelector } from "react-redux";
+import { logout } from "../actions/authenticationActions";
 import { useNavigate } from 'react-router-dom';
+import decodeToken from '../utils/decodeToken';
 
 const pages = ['Home', 'Contact', 'About'];
 const links = ['/', '/contact', '/about'];
@@ -26,6 +27,9 @@ function ResponsiveAppBar() {
   const dispatch = useDispatch()
   const isLoggedIn = useSelector((state) => state.authenticationReducer.isLoggedIn);
   const currentUser = useSelector((state) => state.authenticationReducer.decodedUser);
+
+  const userjson = JSON.parse(localStorage.getItem("user"));
+  const user = decodeToken(userjson?.token);
 
   const navigate = useNavigate()
 
@@ -44,16 +48,16 @@ function ResponsiveAppBar() {
     setAnchorElUser(null);
   };
 
-    const handleLogin = () => {
-      navigate('/login');
-      handleCloseNavMenu();
+  const handleLogin = () => {
+    navigate('/login');
+    handleCloseNavMenu();
   }
 
   const handleLogout = () => {
-      dispatch(logout());
-      navigate('/');
-      handleCloseUserMenu();
-      handleCloseNavMenu();
+    dispatch(logout());
+    navigate('/');
+    handleCloseUserMenu();
+    handleCloseNavMenu();
   }
 
   const handleProfile = () => {
@@ -61,10 +65,10 @@ function ResponsiveAppBar() {
     handleCloseUserMenu();
   }
 
-    const handleCars = () => {
-        navigate('/cars');
-        handleCloseUserMenu();
-    }
+  const handleCars = () => {
+    navigate('/cars');
+    handleCloseUserMenu();
+  }
 
   const handleReservations = () => {
     navigate('/profile/reservations');
@@ -72,8 +76,8 @@ function ResponsiveAppBar() {
   }
 
   const getInitials = () => {
-        const result = currentUser.role.charAt(0) + currentUser.sub.charAt(0);
-        return result.toUpperCase();
+    const result = currentUser.role.charAt(0) + currentUser.sub.charAt(0);
+    return result.toUpperCase();
   }
 
   const handleClick = (path) => {
@@ -82,7 +86,7 @@ function ResponsiveAppBar() {
   }
 
 
-    return (
+  return (
     <AppBar position="fixed">
       <Container maxWidth="xl">
         <Toolbar disableGutters>
@@ -134,25 +138,25 @@ function ResponsiveAppBar() {
             >
               {pages.map((page, index) => (
                 <MenuItem key={page} onClick={() => handleClick(links[index])} >
-                      <Link style={{ textDecoration: 'none' }} >
-                          <Typography textAlign="center">{page}</Typography>
-                      </Link>
-                  </MenuItem>
-                        
+                  <Link style={{ textDecoration: 'none' }} >
+                    <Typography textAlign="center">{page}</Typography>
+                  </Link>
+                </MenuItem>
+
               ))}
-                {!isLoggedIn ? (
-                    <MenuItem onClick={handleLogin}>
-                        <Link style={{ textDecoration: 'none' }}>
-                            Login
-                        </Link>
-                    </MenuItem>
-                ) : (
-                    <MenuItem onClick={handleLogout}>
-                        <Link style={{ textDecoration: 'none' }}>
-                            Logout
-                        </Link>
-                    </MenuItem>
-                )}
+              {!isLoggedIn ? (
+                <MenuItem onClick={handleLogin}>
+                  <Link style={{ textDecoration: 'none' }}>
+                    Login
+                  </Link>
+                </MenuItem>
+              ) : (
+                <MenuItem onClick={handleLogout}>
+                  <Link style={{ textDecoration: 'none' }}>
+                    Logout
+                  </Link>
+                </MenuItem>
+              )}
 
 
             </Menu>
@@ -180,69 +184,71 @@ function ResponsiveAppBar() {
                 key={page}
                 onClick={() => handleClick(links[index])}
                 sx={{ my: 2, color: 'white', display: 'block' }}>
-                  <Link style={{ textDecoration: 'none', color: 'inherit' }}>
-                      {page}
-                  </Link>
+                <Link style={{ textDecoration: 'none', color: 'inherit' }}>
+                  {page}
+                </Link>
               </Button>
             ))}
-              {!isLoggedIn ? (
-                  <Button
-                      onClick={handleLogin}
-                      sx={{ my: 2, color: 'white', display: 'block' }}>
-                      <Link style={{ textDecoration: 'none', color: 'inherit' }}>
-                          Login
-                      </Link>
-                  </Button>
-              ) : (
-                  <Button
-                      onClick={handleLogout}
-                      sx={{ my: 2, color: 'white', display: 'block' }}>
-                      <Link style={{ textDecoration: 'none', color: 'inherit' }}>
-                          Logout
-                      </Link>
-                  </Button>
-              )}
+            {!isLoggedIn ? (
+              <Button
+                onClick={handleLogin}
+                sx={{ my: 2, color: 'white', display: 'block' }}>
+                <Link style={{ textDecoration: 'none', color: 'inherit' }}>
+                  Login
+                </Link>
+              </Button>
+            ) : (
+              <Button
+                onClick={handleLogout}
+                sx={{ my: 2, color: 'white', display: 'block' }}>
+                <Link style={{ textDecoration: 'none', color: 'inherit' }}>
+                  Logout
+                </Link>
+              </Button>
+            )}
           </Box>
 
-            {currentUser && (
-                <Box sx={{ flexGrow: 0 }}>
-                    <Tooltip title="Open settings">
-                        <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                            <Avatar alt="Remy Sharp">{getInitials()}</Avatar>
-                        </IconButton>
-                    </Tooltip>
-                    <Menu
-                        sx={{ mt: '45px' }}
-                        id="menu-appbar"
-                        anchorEl={anchorElUser}
-                        anchorOrigin={{
-                            vertical: 'top',
-                            horizontal: 'right',
-                        }}
-                        keepMounted
-                        transformOrigin={{
-                            vertical: 'top',
-                            horizontal: 'right',
-                        }}
-                        open={Boolean(anchorElUser)}
-                        onClose={handleCloseUserMenu}
-                    >
-                        <MenuItem onClick={handleProfile}>
-                            <Typography textAlign="center">Profile</Typography>
-                        </MenuItem>
-                        <MenuItem onClick={handleReservations}>
-                            <Typography textAlign="center">Reservations</Typography>
-                        </MenuItem>
-                        <MenuItem onClick={handleCars}>
-                            <Typography textAlign="center">Cars</Typography>
-                        </MenuItem>
-                        <MenuItem onClick={handleLogout}>
-                            <Typography textAlign="center">Logout</Typography>
-                        </MenuItem>
+          {currentUser && (
+            <Box sx={{ flexGrow: 0 }}>
+              <Tooltip title="Open settings">
+                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                  <Avatar alt="Remy Sharp">{getInitials()}</Avatar>
+                </IconButton>
+              </Tooltip>
+              <Menu
+                sx={{ mt: '45px' }}
+                id="menu-appbar"
+                anchorEl={anchorElUser}
+                anchorOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                keepMounted
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                open={Boolean(anchorElUser)}
+                onClose={handleCloseUserMenu}
+              >
+                <MenuItem onClick={handleProfile}>
+                  <Typography textAlign="center">Profile</Typography>
+                </MenuItem>
+                <MenuItem onClick={handleReservations}>
+                  <Typography textAlign="center">Reservations</Typography>
+                </MenuItem>
+                {user && user.role === 'USER' && (
+                  <MenuItem onClick={handleCars}>
+                    <Typography textAlign="center">Cars</Typography>
+                  </MenuItem>
+                )}
+                <MenuItem onClick={handleLogout}>
+                  <Typography textAlign="center">Logout</Typography>
+                </MenuItem>
 
-                    </Menu>
-                </Box>
-            )}
+              </Menu>
+            </Box>
+          )}
         </Toolbar>
       </Container>
     </AppBar>

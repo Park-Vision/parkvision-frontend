@@ -171,9 +171,9 @@ function ManagerParkingDetails() {
     const [city, setCity] = useState('');
     const [street, setStreet] = useState('');
     const [zipCode, setZipCode] = useState('');
-    const [costRate, setCostRate] = useState();
-    const [startTime, setStartTime] = useState();
-    const [endTime, setEndTime] = useState();
+    const [costRate, setCostRate] = useState(0);
+    const [startTime, setStartTime] = useState(dayjs());
+    const [endTime, setEndTime] = useState(dayjs());
     const [latitude, setLatitude] = useState(0);
     const [longitude, setLongitude] = useState(0);
     const [timeZone, setTimeZone] = useState('');
@@ -185,7 +185,9 @@ function ManagerParkingDetails() {
     const dispatch = useDispatch();
 
     const handleCancelEdit = () => {
-        navigate(`/parking/${parkingId}`)
+        dispatch(getParking(parkingId)).then(() => {
+            navigate(`/parking/${parkingId}`);
+        });
     };
 
     const handleSubmit = (event) => {
@@ -278,7 +280,7 @@ function ManagerParkingDetails() {
         <Container maxWidth="xl">
             <Box sx={{ my: 4 }}>
                 <Typography variant="h4" component="h1" gutterBottom>
-                    New Parking Creation
+                    Parking Details
                 </Typography>
                 <Paper>
                     <CardContent>
@@ -348,8 +350,7 @@ function ManagerParkingDetails() {
                                         value={costRate}
                                         onChange={(event) => {
                                             setCostRate(event.target.value)
-                                        }
-                                        }
+                                        }}
                                         inputProps={{ min: 0, step: 0.01, max: 1000 }}
                                         InputLabelProps={
                                             { shrink: true }
@@ -364,9 +365,7 @@ function ManagerParkingDetails() {
                                             slotProps={{ textField: { fullWidth: true } }}
                                             label="Start Time"
                                             value={startTime}
-                                            onChange={(newValue) => {
-                                                setStartTime(newValue);
-                                            }}
+                                            onChange={setStartTime}
                                             views={['hours', 'minutes']}
                                             inputFormat="HH:mm"
                                             ampm={false}
@@ -381,10 +380,8 @@ function ManagerParkingDetails() {
                                             id="endTime"
                                             label="End Time"
                                             value={endTime}
-                                            onChange={(newValue) => {
-                                                setEndTime(newValue);
-                                            }}
-                                            renderInput={(params) => <TextField {...params} />}
+                                            onChange={setEndTime}
+                                            textField={(params) => <TextField {...params} />}
                                             views={['hours', 'minutes']}
                                             inputFormat="HH:mm"
                                             ampm={false}

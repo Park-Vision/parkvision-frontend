@@ -149,3 +149,11 @@ export const addStagedParkingSpot = (parkingSpotData) => async (dispatch) => {
         return Promise.reject(error)
     }
 }
+export const checkParkingSpotAviability = (parkingSpotId, reservationId, start, end) => async (dispatch) => {
+    try {
+        const response = await ParkingSpotService.checkParkingSpotAviability(parkingSpotId, reservationId, start, end);
+        return Promise.resolve(response.data)
+    } catch (error) {
+        return Promise.reject(error)
+    }
+}

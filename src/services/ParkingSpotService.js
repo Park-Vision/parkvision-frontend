@@ -45,5 +45,11 @@ class ParkingSpotService {
             params: { startDate: start }
         });
     }
+
+    async checkParkingSpotAviability(parkingSpotId, reservationId, start, end) {
+        return await axios.get(urlConst + "/" + parkingSpotId + "/free-time/" + reservationId, {
+            params: { startDate: start, endDate: end }
+        });
+    }
 }
 export default new ParkingSpotService();

@@ -12,11 +12,11 @@ import L, { point } from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet-draw/dist/leaflet.draw.css";
 import { EditControl } from "react-leaflet-draw";
-import "./Editor.css"; // Create a CSS file for styling
+import "../Editor.css"; // Create a CSS file for styling
 import { useNavigate } from "react-router-dom";
 
 import { MapContainer, Polygon, Popup, TileLayer, FeatureGroup } from "react-leaflet";
-import { getParkingSpotsByParkingId, addStagedParkingSpot, addParkingSpot, addParkingSpots, updateParkingSpot, getParkingSpot, getParkingSpots } from "../../actions/parkingSpotActions";
+import { getParkingSpotsByParkingId, addParkingSpot, addParkingSpots, updateParkingSpot, getParkingSpot, getParkingSpots } from "../../actions/parkingSpotActions";
 import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
 import {
@@ -27,7 +27,7 @@ import decodeToken from "../../utils/decodeToken";
 import { getUser } from "../../actions/userActions";
 import { toast } from "react-toastify";
 import 'leaflet-path-drag'
-import { areParkingSpotsColliding } from "../../utils/parkingUtils";
+import { areParkingSpotsColliding, getArea, isSpotAreaTooBig, isSpotAreaTooSmall } from "../../utils/parkingUtils";
 delete L.Icon.Default.prototype._getIconUrl;
 
 L.Icon.Default.mergeOptions({
@@ -116,11 +116,6 @@ function ParkingEditor(props) {
         });
     };
 
-    const handleSaveToDB = async (event) => {
-        await dispatch(addParkingSpots(parking.id, stagedParkingSpots));
-        await dispatch(getParkingSpotsByParkingId(parseInt(parkingId)));
-    };
-
     const handleExitClick = () => {
         navigate(`/parking/${parking.id}`);
     };
@@ -139,7 +134,7 @@ function ParkingEditor(props) {
                     }
                 });
             }
-        }); 
+        });
 
         const transformedSpotsLayer = [];
         list.forEach((layer) => {
@@ -213,7 +208,6 @@ function ParkingEditor(props) {
                 if (spot !== undefined) {
                     spot.pointsDTO = pointsDTO;
                 } else {
-                    debugger
                     spot = {
                         id: spotId,
                         spotNumber: "newly created spot",
@@ -237,20 +231,35 @@ function ParkingEditor(props) {
         );
 
         let isColliding = false;
-
+        let inValidArea = false;
         transformedSpots.forEach((editedSpot) => {
+            if (isSpotAreaTooBig(editedSpot)) {
+                inValidArea = true;
+                let area = getArea(editedSpot);
+                toast.error("Parking spot area is too big!"
+                    + " Area: " + area.toFixed(2) + " m2. "
+                    + "Maximal area: 12.5 m2"
+                );
+            }
+            if (isSpotAreaTooSmall(editedSpot)) {
+                inValidArea = true;
+                let area = getArea(editedSpot);
+                toast.error("Parking spot area is too small!"
+                    + " Area: " + area.toFixed(2) + " m2. "
+                    + "Minimal area: 8 m2 "
+                );
+            }
             uniqueSpots.forEach((otherspot) => {
                 if (editedSpot.id !== otherspot.id) {
                     const coliding = areParkingSpotsColliding(otherspot, editedSpot);
                     if (coliding) {
                         isColliding = true;
                         toast.error("Parking spots are colliding!");
-                        debugger
                     }
                 }
             });
 
-            if (!isColliding) {
+            if (!isColliding && !inValidArea) {
                 dispatch(updateParkingSpot(editedSpot)).then(() => {
                     dispatch(getParkingSpotsByParkingId(parkingId));
                 });
@@ -279,7 +288,7 @@ function ParkingEditor(props) {
                     }
                 });
             }
-        }); 
+        });
 
         const transformedSpots = [];
         list.forEach((layer) => {
@@ -355,6 +364,26 @@ function ParkingEditor(props) {
             pointsDTO: pointsDTO
         }
 
+        if (isSpotAreaTooBig(newParkingSpot)) {
+            let area = getArea(newParkingSpot);
+            toast.error("Parking spot area is too big!"
+                + " Area: " + area.toFixed(2) + " m2. "
+                + "Maximal area: 12.5 m2"
+            );
+            clearLayerWithNoIds();
+            return;
+        }
+
+        if (isSpotAreaTooSmall(newParkingSpot)) {
+            let area = getArea(newParkingSpot);
+            toast.error("Parking spot area is too small!"
+                + " Area: " + area.toFixed(2) + " m2. "
+                + "Minimal area: 8 m2 "
+            );
+            clearLayerWithNoIds();
+            return;
+        }
+
         let isColliding = false;
 
         allSpots.forEach((otherspot) => {
@@ -378,8 +407,14 @@ function ParkingEditor(props) {
         }
     };
 
-    const mapPonitsToParkingSpot = (points, editedSpot) => {
-
+    const mapPonitsToParkingSpot = (e, points, editedSpot) => {
+        let toMuchDrag = false;
+        if (e.distance > 300.0) {
+            toMuchDrag = true;
+            toast.error("You can't drag parking spot that much! drag distance: " +
+                e.distance.toFixed(2) + " cm. " +
+                "Max distance: 300 cm");
+        }
 
         const mappedPoints = points[0].map((coord) => {
             return { latitude: coord[1], longitude: coord[0], id: coord[2] };
@@ -414,7 +449,7 @@ function ParkingEditor(props) {
             }
         });
 
-        if (!isColliding) {
+        if (!isColliding && !toMuchDrag) {
             dispatch(updateParkingSpot(editedParkingSpot)).then(() => {
                 dispatch(getParkingSpot(editedParkingSpot.id));
             });
@@ -525,7 +560,7 @@ function ParkingEditor(props) {
                                                                 list[index].push(spot.pointsDTO[i].id);
                                                                 index = index + 1;
                                                             }
-                                                            mapPonitsToParkingSpot(eventJson.geometry.coordinates, spot);
+                                                            mapPonitsToParkingSpot(e, eventJson.geometry.coordinates, spot);
                                                         },
 
                                                     }}
@@ -537,10 +572,10 @@ function ParkingEditor(props) {
                                                                 fontSize: `${Math.min(20, 450 / parking.name.length)}px`, fontWeight: 'bold',
                                                                 whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'
                                                             }}>
-                                                                Spot: {spot.id}
+                                                                Spot: {spot.spotNumber}
                                                             </div>
                                                             <div style={{ marginBottom: '5px' }}>
-                                                                <span style={{ fontWeight: 'bold' }}>Spot number:</span> {spot.spotNumber}
+                                                                <span style={{ fontWeight: 'bold' }}>Spot ID:</span> {spot.id}
                                                             </div>
                                                             <Button
                                                                 variant="contained"
@@ -583,7 +618,7 @@ function ParkingEditor(props) {
                                                             fontSize: `${Math.min(20, 450 / parking.name.length)}px`, fontWeight: 'bold',
                                                             whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'
                                                         }}>
-                                                            Spot: {spot.id}
+                                                            Spot: {spot.spotNumber}
                                                         </div>
                                                         <div style={{ marginBottom: '5px' }}>
                                                             Save parking staged spots to edit them.
@@ -629,15 +664,6 @@ function ParkingEditor(props) {
                                 <Typography>$/h: {parking.costRate}</Typography>
                             </CardContent>
                             <Grid container>
-                                <Button
-                                    sx={{ m: 1 }}
-                                    variant='contained'
-                                    onClick={handleSaveToDB}
-                                    fullWidth
-                                    disabled={stagedParkingSpots.length === 0}
-                                >
-                                    Save parking
-                                </Button>
                                 <Button
                                     sx={{ m: 1 }}
                                     variant='contained'
