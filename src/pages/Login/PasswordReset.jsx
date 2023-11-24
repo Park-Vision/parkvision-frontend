@@ -68,7 +68,8 @@ export default function PasswordReset() {
         event.preventDefault()
 
         if (!validatePassword(password)) {
-            toast.info('Password must contains eight characters, including at least one capital letter and number');
+            toast.info('Password must contains eight characters or more, including at least one capital ' +
+                'letter, special character and a number.');
         } else if (passwordRepeat !== password) {
             toast.info('Passwords must be the same');
         } else {
@@ -88,7 +89,6 @@ export default function PasswordReset() {
     const handleGoToLogin = () => {
         navigate("/login");
     }
-
 
     return (
         <Container maxWidth="sm">
@@ -134,15 +134,6 @@ export default function PasswordReset() {
                                     />
                                     <Button type="submit" variant="contained" fullWidth margin="normal" >
                                         Password reset
-                                    </Button>
-                                    <Button onClick={handleGoToLogin} fullWidth margin="normal" >
-                                        Login
-                                    </Button>
-                                    <Button
-                                        variant="contained"
-                                        fullWidth
-                                        margin="normal">
-                                        Register
                                     </Button>
                                 </form>
                             </Typography>

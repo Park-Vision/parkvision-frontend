@@ -1,7 +1,5 @@
 const convertTime = (time, timezoneOffset) => {
-
     // if timezoneOffset == 'Z' then return time as is
-
 
     if (!time || !timezoneOffset) {
         return null;

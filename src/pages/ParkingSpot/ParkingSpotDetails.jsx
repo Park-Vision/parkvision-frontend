@@ -1,5 +1,5 @@
 import { useNavigate, useParams } from 'react-router-dom';
-import { Container, Box, Typography, Paper, CardContent, TextField, Button, CircularProgress, RadioGroup, Grid, Switch} from '@mui/material';
+import { Container, Box, Typography, Paper, CardContent, TextField, Button, CircularProgress, RadioGroup, Grid, Switch } from '@mui/material';
 import { useDispatch, useSelector } from "react-redux";
 import { MapContainer, TileLayer, FeatureGroup, Polygon, Popup } from 'react-leaflet';
 import { EditControl } from "react-leaflet-draw";
@@ -167,15 +167,15 @@ export default function ParkingSpotDetails(props) {
     };
 
     const handleDelete = () => {
-    dispatch(deleteParkingSpotSoft(parkingSpotReducer.parkingSpot.id))
-        .then(() => {
-            toast.success("Parking spot deleted successfully!");
-            navigate('/parking/' + parkingSpotReducer.parkingSpot.parkingDTO.id + '/editor');
-        })
-        .catch((error) => {
+        dispatch(deleteParkingSpotSoft(parkingSpotReducer.parkingSpot.id))
+            .then(() => {
+                toast.success("Parking spot deleted successfully!");
+                navigate('/parking/' + parkingSpotReducer.parkingSpot.parkingDTO.id + '/editor');
+            })
+            .catch((error) => {
                 toast.error("Parking spot cannot be deleted because there are reservations on it!");
                 dispatch(getParkingSpot(params.parkingSpotId));
-        });
+            });
     };
 
     return (
@@ -249,54 +249,54 @@ export default function ParkingSpotDetails(props) {
                                 )}
                             </div>
                             <Grid container>
-                            <TextField sx={{ m: 1 }} fullWidth
-                                value={`${parkingSpotReducer.parkingSpot.parkingDTO.name}, ${parkingSpotReducer.parkingSpot.parkingDTO.street}, ${parkingSpotReducer.parkingSpot.parkingDTO.city}`}
-                                id="outlined-basic"
-                                label="Parking name"
-                                variant="outlined"
-                                InputProps={{
-                                    readOnly: true,
-                                }}
-                            />
-                            <TextField sx={{ m: 1 }} fullWidth
-                                value={parkingSpotReducer.parkingSpot.id}
-                                label="Parking spot id"
-                                variant="outlined"
-                                InputProps={{
-                                    readOnly: true,
-                                }}
-                            />
-                            <TextField sx={{ m: 1 }} fullWidth
-                                value={parkingSpotReducer.parkingSpot.spotNumber}
-                                InputLabelProps={{ shrink: true }}
-                                onChange={(event) => setSpotNumber(event.target.value)}
-                                label="Parking spot number"
-                                variant="outlined"
-                            />
+                                <TextField sx={{ m: 1 }} fullWidth
+                                    value={`${parkingSpotReducer.parkingSpot.parkingDTO.name}, ${parkingSpotReducer.parkingSpot.parkingDTO.street}, ${parkingSpotReducer.parkingSpot.parkingDTO.city}`}
+                                    id="outlined-basic"
+                                    label="Parking name"
+                                    variant="outlined"
+                                    InputProps={{
+                                        readOnly: true,
+                                    }}
+                                />
+                                <TextField sx={{ m: 1 }} fullWidth
+                                    value={parkingSpotReducer.parkingSpot.id}
+                                    label="Parking spot id"
+                                    variant="outlined"
+                                    InputProps={{
+                                        readOnly: true,
+                                    }}
+                                />
+                                <TextField sx={{ m: 1 }} fullWidth
+                                    value={parkingSpotReducer.parkingSpot.spotNumber}
+                                    InputLabelProps={{ shrink: true }}
+                                    onChange={(event) => setSpotNumber(event.target.value)}
+                                    label="Parking spot number"
+                                    variant="outlined"
+                                />
                                 <FormControl sx={{ m: 1 }} fullWidth>
                                     <FormControlLabel control={
-                                    <Switch 
-                                        checked={parkingSpotReducer.parkingSpot.active}
-                                        onChange={(event) => {
-                                            const newValue = event.target.checked;
-                                            setActive(newValue);
-                                        }}
-                                        inputProps={{ 'aria-label': 'controlled' }}
-                                    />
-                                }
-                                label="Active" />
+                                        <Switch
+                                            checked={parkingSpotReducer.parkingSpot.active}
+                                            onChange={(event) => {
+                                                const newValue = event.target.checked;
+                                                setActive(newValue);
+                                            }}
+                                            inputProps={{ 'aria-label': 'controlled' }}
+                                        />
+                                    }
+                                        label="Active" />
                                 </FormControl>
-                            <Button sx={{ m: 1 }} variant='contained' onClick={handleEditInfo} fullWidth>
-                                Edit
-                            </Button>
+                                <Button sx={{ m: 1 }} variant='contained' onClick={handleEditInfo} fullWidth>
+                                    Edit
+                                </Button>
                                 <Button sx={{ m: 1 }}
                                     variant="contained"
                                     onClick={handleDelete}
                                     fullWidth disabled={parkingSpotReducer.parkingSpot.active}
                                     color='error'
                                 >
-                                Delete
-                            </Button>
+                                    Delete
+                                </Button>
                             </Grid>
 
                         </CardContent>

@@ -149,7 +149,15 @@ const timeZones = [
     {
         value: '+12:00',
         label: 'UTC+12:00',
-    }
+    },
+    {
+        value: '+13:00',
+        label: 'UTC+13:00',
+    },
+    {
+        value: '+14:00',
+        label: 'UTC+14:00',
+    },
 ];
 
 const parkingIcon = new L.DivIcon({
@@ -327,6 +335,7 @@ function ManagerParkingCreate() {
                                             views={['hours', 'minutes']}
                                             inputFormat="HH:mm"
                                             ampm={false}
+                                            minutesStep={15}
                                         />
                                     </LocalizationProvider>
                                 </Grid>
@@ -346,6 +355,7 @@ function ManagerParkingCreate() {
                                             inputFormat="HH:mm"
                                             ampm={false}
                                             minTime={startTime}
+                                            minutesStep={15}
                                         />
                                     </LocalizationProvider>
                                 </Grid>

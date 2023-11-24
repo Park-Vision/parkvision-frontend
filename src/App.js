@@ -11,14 +11,17 @@ import Cars from "./pages/Car/Cars";
 import ParkingDetails from "./pages/Home/ParkingDetails";
 import Toolbar from "@mui/material/Toolbar";
 import Register from "./pages/Login/Register";
+import Missions from "./pages/Drone/Missions";
 import ReservationDetails from "./pages/Reservations/ReservationDetails";
 import ReservationEdit from "./pages/Reservations/ReservationEdit";
 import ManagerProfile from "./pages/ParkingManagement/ManagerProfile";
 import UserProfile from "./pages/User/UserProfile";
 import * as React from "react";
+
 import UserReservations from "./pages/User/UserReservations";
 import ParkingSpotDetails from "./pages/ParkingSpot/ParkingSpotDetails";
 import ParkingEditor from "./pages/Editor/Editor"
+import DroneManager from "./pages/DroneManager/DroneManager"
 import axios from "axios";
 import useErrorHandler from "./utils/ErrorHandler";
 import ManagerReservations from "./pages/ParkingManagement/ManagerReservations";
@@ -49,6 +52,7 @@ axios.interceptors.request.use(
 
 
 function App() {
+
     const [mode, setMode] = React.useState("light");
     const colorMode = React.useMemo(
         () => ({
@@ -147,6 +151,10 @@ function App() {
                                 element={<ManagerParkingDetails />}
                             />
                             <Route 
+                                path={'/parking/:parkingId/drone'} 
+                                element={<DroneManager/>}
+                            />
+                            <Route 
                                 path={"/parkingspot/:parkingSpotId"} 
                                 element={<ParkingSpotDetails />}
                             />
@@ -158,6 +166,10 @@ function App() {
                                 path={"/parking/:parkingId/reservations"}
                                 element={<ManagerReservations />}
                             />
+                            <Route
+                                path={"/parking/:parkingId/missions"}
+                                element={<Missions />}
+                             />
                             <Route
                                 path={"/parking/create"}
                                 element={<ManagerParkingCreate />}
