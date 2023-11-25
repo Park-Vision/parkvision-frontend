@@ -1,8 +1,8 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import Home from "../Home/Home";
-import {updatePassword, updateName, getUser, disableUser} from "../../actions/userActions";
+import { updatePassword, updateName, getUser, disableUser } from "../../actions/userActions";
 import {
     Box,
     Button,
@@ -13,14 +13,15 @@ import {
     DialogActions,
     DialogContent,
     DialogTitle,
+    FormControl,
     Paper, InputLabel, OutlinedInput, InputAdornment
 } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import { toast } from "react-toastify";
-import {validateName, validatePassword} from "../../utils/validation";
-import {logout} from "../../actions/authenticationActions";
+import { validateName, validatePassword } from "../../utils/validation";
+import { logout } from "../../actions/authenticationActions";
 import IconButton from "@mui/material/IconButton";
-import {Visibility, VisibilityOff} from "@mui/icons-material";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 
 export default function UserProfile() {
     const authenticationReducer = useSelector((state) => state.authenticationReducer);
@@ -48,15 +49,20 @@ export default function UserProfile() {
         if (authenticationReducer.decodedUser && authenticationReducer.decodedUser.role === "USER") {
             dispatch(getUser(authenticationReducer.decodedUser.userId))
                 .then((response) => {
-                    console.log(response)
                     setFirstName(response.firstName);
                     setLastName(response.lastName);
                 }
-            );
+                );
         }
     }, []);
 
     const handleOpenDialog = (type) => {
+        setFirstName(user.firstName);
+        setLastName(user.lastName);
+
+        setNewPassword("");
+        setNewPasswordRepeat("");
+
         setAction(true);
         if (type === "password") {
             setChangingPassword(true);
@@ -68,6 +74,9 @@ export default function UserProfile() {
     };
 
     const handleCloseDialog = () => {
+        setFirstName(user.firstName);
+        setLastName(user.lastName);
+
 
         setEditing(false);
         setChangingPassword(false);
@@ -76,11 +85,11 @@ export default function UserProfile() {
     };
 
     const handleSaveProfile = () => {
-        if (!validateName(firstName)){
+        if (!validateName(firstName)) {
             toast.info("First name can not be empty.");
             return;
         }
-        else if (!validateName(lastName)){
+        else if (!validateName(lastName)) {
             toast.info("Last name can not be empty.");
             return;
         }
@@ -120,11 +129,13 @@ export default function UserProfile() {
         };
         dispatch(updatePassword(passwordData))
             .then(() => {
-                toast.success("Password successfully changed!");
+                toast.success("Password successfully changed! Please log in again with the new password.");
                 setNewPassword("");
                 setNewPasswordRepeat("");
                 setChangingPassword(false);
                 setAction(false);
+                dispatch(logout());
+                navigate("/login");
             })
             .catch((error) => {
                 console.error("Error changing password:", error);
@@ -196,48 +207,54 @@ export default function UserProfile() {
                         <DialogContent>
                             {changingPassword ? (
                                 <>
-                                    <InputLabel htmlFor="newPassword">New Password</InputLabel>
-                                    <OutlinedInput
-                                        label="New Password"
-                                        type={showPassword ? 'text' : 'password'}
-                                        required={true}
-                                        margin={"normal"}
-                                        onChange={(e) => setNewPassword(e.target.value)}
-                                        value={newPassword}
-                                        endAdornment={
-                                            <InputAdornment position="end">
-                                                <IconButton
-                                                    aria-label="toggle password visibility"
-                                                    onClick={handleClickShowPassword}
-                                                    onMouseDown={handleMouseDownPassword}
-                                                    edge="end"
-                                                >
-                                                    {showPassword ? <VisibilityOff /> : <Visibility />}
-                                                </IconButton>
-                                            </InputAdornment>
-                                        }
-                                    />
-                                    <InputLabel htmlFor="newPasswordRepeat">New Password Repeat</InputLabel>
-                                    <OutlinedInput
-                                        label="New Password Repeat"
-                                        type={showPassword ? 'text' : 'password'}
-                                        required={true}
-                                        margin={"normal"}
-                                        onChange={(e) => setNewPasswordRepeat(e.target.value)}
-                                        value={newPasswordRepeat}
-                                        endAdornment={
-                                            <InputAdornment position="end">
-                                                <IconButton
-                                                    aria-label="toggle password visibility"
-                                                    onClick={handleClickShowPassword}
-                                                    onMouseDown={handleMouseDownPassword}
-                                                    edge="end"
-                                                >
-                                                    {showPassword ? <VisibilityOff /> : <Visibility />}
-                                                </IconButton>
-                                            </InputAdornment>
-                                        }
-                                    />
+                                    <FormControl fullWidth variant="outlined" margin="normal">
+                                        <InputLabel htmlFor="newPassword">New Password</InputLabel>
+                                        <OutlinedInput
+                                            id="newPassword"
+                                            label="New Password"
+                                            type={showPassword ? 'text' : 'password'}
+                                            required={true}
+                                            margin={"normal"}
+                                            onChange={(e) => setNewPassword(e.target.value)}
+                                            value={newPassword}
+                                            endAdornment={
+                                                <InputAdornment position="end">
+                                                    <IconButton
+                                                        aria-label="toggle password visibility"
+                                                        onClick={handleClickShowPassword}
+                                                        onMouseDown={handleMouseDownPassword}
+                                                        edge="end"
+                                                    >
+                                                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                                                    </IconButton>
+                                                </InputAdornment>
+                                            }
+                                        />
+                                    </FormControl>
+                                    <FormControl fullWidth variant="outlined" margin="normal">
+                                        <InputLabel htmlFor="newPasswordRepeat">New Password Repeat</InputLabel>
+                                        <OutlinedInput
+                                            id="newPasswordRepeat"
+                                            label="New Password Repeat"
+                                            type={showPassword ? 'text' : 'password'}
+                                            required={true}
+                                            margin={"normal"}
+                                            onChange={(e) => setNewPasswordRepeat(e.target.value)}
+                                            value={newPasswordRepeat}
+                                            endAdornment={
+                                                <InputAdornment position="end">
+                                                    <IconButton
+                                                        aria-label="toggle password visibility"
+                                                        onClick={handleClickShowPassword}
+                                                        onMouseDown={handleMouseDownPassword}
+                                                        edge="end"
+                                                    >
+                                                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                                                    </IconButton>
+                                                </InputAdornment>
+                                            }
+                                        />
+                                    </FormControl>
                                 </>
                             ) : deletingAccount ? (
                                 <>
@@ -276,7 +293,7 @@ export default function UserProfile() {
                             <Button onClick={changingPassword ?
                                 handleChangePassword : deletingAccount ?
                                     handleDeleteAccount : handleSaveProfile}
-                                    variant="contained">
+                                variant="contained">
                                 Save
                             </Button>
                         </DialogActions>
