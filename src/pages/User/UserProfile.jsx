@@ -48,8 +48,9 @@ export default function UserProfile() {
         if (authenticationReducer.decodedUser && authenticationReducer.decodedUser.role === "USER") {
             dispatch(getUser(authenticationReducer.decodedUser.userId))
                 .then((response) => {
-                    setFirstName(user.firstName);
-                    setLastName(user.lastName);
+                    console.log(response)
+                    setFirstName(response.firstName);
+                    setLastName(response.lastName);
                 }
             );
         }

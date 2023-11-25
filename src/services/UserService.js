@@ -37,7 +37,7 @@ class UserService {
     }
 
     async setPasswordFromReset(userData) {
-        return await axios.put(urlConst + "/setPasswordFromReset", userData);
+        return await axios.post(urlConst + "/setPasswordFromReset", userData);
     }
 
     async updateName(userData) {
