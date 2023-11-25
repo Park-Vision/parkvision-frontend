@@ -44,6 +44,7 @@ export const UPDATE_RESERVATION = "UPDATE_RESERVATION";
 export const ADD_USER = "ADD_USER";
 export const GET_USER = "GET_USER";
 export const GET_USERS = "GET_USERS";
+export const GET_MANAGERS = "GET_MANAGERS";
 export const DELETE_USER = "DELETE_USER";
 export const UPDATE_USER = "UPDATE_USER";
 export const UPDATE_PASSWORD = "UPDATE_PASSWORD";

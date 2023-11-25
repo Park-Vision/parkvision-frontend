@@ -87,6 +87,9 @@ export default function Login() {
                         if (decodedUser.role === "USER") {
                             navigate('/');
                         }
+                        if (decodedUser.role === "ADMIN") {
+                            navigate('/admin');
+                        }
                     } else {
                         console.log('Login failed');
                     }

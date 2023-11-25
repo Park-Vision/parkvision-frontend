@@ -28,6 +28,7 @@ import ManagerReservations from "./pages/ParkingManagement/ManagerReservations";
 import ManagerParkingCreate from "./pages/ParkingManagement/ManagerParkingCreate";
 import ManagerParkingDetails from "./pages/ParkingManagement/ManagerParkingDetails";
 import PasswordReset from "./pages/Login/PasswordReset";
+import AdminProfile from "./pages/Admin/AdminProfile";
 const ColorModeContext = React.createContext({ toggleColorMode: () => { } });
 
 axios.defaults.baseURL = process.env.REACT_APP_BACKEND_URL;
@@ -181,6 +182,10 @@ function App() {
                             <Route
                                 path={"reset-password"}
                                 element={<PasswordReset />}
+                            />
+                            <Route
+                                path={"/admin"}
+                                element={<AdminProfile />}
                             />
                             <Route path="*" element={<Navigate replace to="/" />} />
                         </Routes>

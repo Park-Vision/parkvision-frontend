@@ -1,6 +1,6 @@
 import {
     ADD_USER, UPDATE_USER, GET_USER, DELETE_USER,
-    AUTHENTICATE_USER, GET_USERS, REGISTER_USER, UPDATE_NAME, UPDATE_PASSWORD, DISABLE_USER
+    AUTHENTICATE_USER, GET_USERS, REGISTER_USER, UPDATE_NAME, UPDATE_PASSWORD, DISABLE_USER, GET_MANAGERS
 } from "../actions/types"
 
 const initialState = {
@@ -19,6 +19,11 @@ const userReducer = (state = initialState, action) => {
                 user: {}
             }
         case GET_USERS:
+            return {
+                ...state,
+                users: action.value
+            }
+        case GET_MANAGERS:
             return {
                 ...state,
                 users: action.value

@@ -28,6 +28,15 @@ class AuthenticationService {
         });
     }
 
+    async registerManager(email, firstName, lastName, password) {
+        return await axios.post(process.env.REACT_APP_BACKEND_URL + urlConst + "/registerManager", {
+            email: email,
+            firstName: firstName,
+            lastName: lastName,
+            password: password,
+        });
+    }
+
     async refresh(token) {
         return await axios.post(process.env.REACT_APP_BACKEND_URL + urlConst + "/refreshToken", { token: token });
     }
