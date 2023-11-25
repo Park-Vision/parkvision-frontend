@@ -118,14 +118,13 @@ export default function AdminProfile() {
                     setEmail("");
                     setFirstName("");
                     setLastName("");
+                    dispatch(getManagers());
                     toast.success('Registration successful');
                 })
                 .catch(error => {
                     toast.error('Something went wrong. Try again.');
                 })
             setOpenAddDialog(false);
-            dispatch(getManagers());
-
         }
 
     };
