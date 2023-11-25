@@ -55,5 +55,10 @@ class UserService {
     async getManagers() {
         return await axios.get(urlConst + "/managers");
     }
+
+    async assignParking(userData) {
+        return await axios.put(urlConst + "/assignParking", userData);
+    }
+
 }
 export default new UserService();

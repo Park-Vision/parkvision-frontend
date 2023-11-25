@@ -148,3 +148,12 @@ export const disableUser = (userId) => async (dispatch) => {
     }
 }
 
+export const assignParking = (userData) => async (dispatch) => {
+    try {
+        const response = await UserService.assignParking(userData)
+        return Promise.resolve(response.data)
+    } catch (error){
+        return Promise.reject(error)
+    }
+}
+

@@ -2,10 +2,9 @@ import {useDispatch, useSelector} from "react-redux";
 import {useNavigate} from "react-router-dom";
 import React, {useEffect, useState} from "react";
 import Home from "../Home/Home";
-import {deleteUser, getManagers} from "../../actions/userActions";
+import {assignParking, deleteUser, disableUser, getManagers} from "../../actions/userActions";
 import convertDate from "../../utils/convertDate";
 import IconButton from "@mui/material/IconButton";
-import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import {
     Box,
@@ -14,21 +13,27 @@ import {
     Dialog,
     DialogActions,
     DialogContent,
-    DialogTitle,
+    DialogTitle, InputLabel, Select,
     TextField,
     Typography
 } from "@mui/material";
 import {DataGrid} from "@mui/x-data-grid";
-import {deleteReservation} from "../../actions/reservationActions";
 import {toast} from "react-toastify";
 import Grid from "@mui/material/Grid";
 import {validateEmail, validateName} from "../../utils/validation";
 import {registerManager} from "../../actions/authenticationActions";
+import {getParkings} from "../../actions/parkingActions";
+import ModeEditIcon from "@mui/icons-material/ModeEdit";
+import MenuItem from "@mui/material/MenuItem";
 
 export default function AdminProfile() {
     const authenticationReducer = useSelector((state) => state.authenticationReducer);
     const users = useSelector((state) => state.userReducer.users);
+    const parkings = useSelector((state) => state.parkingReducer.parkings);
     const [openAddDialog, setOpenAddDialog] = useState(false);
+    const [openAssignDialog, setOpenAssignDialog] = useState(false);
+    const [parkingId, setParkingId] = useState("");
+    const [managerId, setManagerId] = useState("");
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
@@ -39,11 +44,12 @@ export default function AdminProfile() {
     useEffect(() => {
         if (authenticationReducer.decodedUser && authenticationReducer.decodedUser.role === "ADMIN") {
             dispatch(getManagers());
-            console.log(users)
+            dispatch(getParkings());
         }
     }, []);
 
     console.log(users)
+    console.log(parkings);
 
     if (!authenticationReducer.decodedUser && authenticationReducer.decodedUser.role === "ADMIN") {
         navigate('/');
@@ -51,12 +57,24 @@ export default function AdminProfile() {
     }
 
     const handleDelete = (userId) => {
-        dispatch(deleteUser(userId)).then(() => {
+        dispatch(disableUser(userId)).then(() => {
             toast.success('Manager deleted successfully.');
         }).catch((error) => {
             toast.error('Error deleting manager:' + error.message);
         });
     };
+
+    const handleAssignParking = (managerId) => {
+        setManagerId(managerId);
+        setOpenAssignDialog(true);
+        console.log(parkings)
+        console.log(parkingId)
+    }
+
+    const handleAssignDialogClose = () => {
+        setOpenAssignDialog(false);
+        console.log(parkings)
+    }
 
     const handleAdd = () => {
         setOpenAddDialog(true);
@@ -64,7 +82,6 @@ export default function AdminProfile() {
 
     const handleAddDialogClose = () => {
         setOpenAddDialog(false);
-
     };
 
     function generateRandomPassword() {
@@ -112,6 +129,23 @@ export default function AdminProfile() {
         }
 
     };
+    const handleAssignSubmit = () => {
+        const assignData = {
+            userId: managerId,
+            parkingId: parkingId,
+        }
+        console.log(assignData)
+        dispatch(assignParking(assignData))
+            .then(response => {
+                setParkingId("");
+                toast.success('Parking assigned successfully.');
+            })
+            .catch(error => {
+                toast.error('Something went wrong. Try again.');
+            })
+        dispatch(getManagers());
+        setOpenAssignDialog(false);
+    }
 
     const columns = [
         { field: 'id', headerName: 'ID', flex: 0.3, align: 'right', minWidth: 50 },
@@ -138,6 +172,11 @@ export default function AdminProfile() {
             field: 'actions', headerName: 'Actions', flex: 0.5, minWidth: 100, align: 'center', sortable: false, filterable: false,
             renderCell: (params) => (
                 <>
+                    {!params.row.parkingDTO && (
+                        <IconButton style={{ fontSize: 30 }} color="primary" aria-label="edit" onClick={() => handleAssignParking(params.row.id)}>
+                            <ModeEditIcon style={{ fontSize: 30 }} />
+                        </IconButton>
+                    ) }
                     <IconButton style={{ fontSize: 30 }} color="primary" aria-label="cancel" onClick={() => handleDelete(params.row.id)}>
                         <DeleteIcon style={{ fontSize: 30 }} />
                     </IconButton>
@@ -206,6 +245,40 @@ export default function AdminProfile() {
                         Cancel
                     </Button>
                     <Button onClick={handleAddSubmit} color="primary">
+                        Save
+                    </Button>
+                </DialogActions>
+            </Dialog>
+
+            <Dialog open={openAssignDialog} onClose={handleAssignDialogClose}>
+                <DialogTitle>ASSIGN PARKING</DialogTitle>
+                <DialogContent>
+                    <Grid>
+                        <InputLabel id="parking-select-label">Parking</InputLabel>
+                        <Select
+                            labelId="parking-select-label"
+                            id="parking-select"
+                            value={parkingId}
+                            onChange={(e) => setParkingId(e.target.value)}
+                            label="Parking"
+                            style={{ width: '300px' }}
+                        >
+                            <MenuItem value="" disabled>
+                                Select Parking
+                            </MenuItem>
+                            {parkings.map((parking) => (
+                                <MenuItem key={parking.id} value={parking.id}>
+                                    {parking.name}, {parking.city}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </Grid>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleAssignDialogClose} color="primary">
+                        Cancel
+                    </Button>
+                    <Button onClick={handleAssignSubmit} color="primary">
                         Save
                     </Button>
                 </DialogActions>
