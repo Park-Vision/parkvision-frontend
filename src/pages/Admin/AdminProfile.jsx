@@ -57,7 +57,7 @@ export default function AdminProfile() {
     }
 
     const handleDelete = (userId) => {
-        dispatch(disableUser(userId)).then(() => {
+        dispatch(deleteUser(userId)).then(() => {
             toast.success('Manager deleted successfully.');
         }).catch((error) => {
             toast.error('Error deleting manager:' + error.message);
