@@ -271,8 +271,6 @@ function ManagerParkingDetails() {
             });
         }
 
-
-
     }, [parkingId]);
 
 
