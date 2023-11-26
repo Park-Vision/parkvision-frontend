@@ -47,9 +47,6 @@ export default function AdminProfile() {
         }
     }, []);
 
-    console.log(users)
-    console.log(parkings);
-
     if (!authenticationReducer.decodedUser && authenticationReducer.decodedUser.role !== "ADMIN") {
         navigate('/');
         return <Home />;
@@ -111,10 +108,8 @@ export default function AdminProfile() {
         }
         else {
             const password = generateRandomPassword();
-            console.log(password)
             dispatch(registerManager(email, firstName, lastName, password))
                 .then(response => {
-                    console.log(response);
                     setEmail("");
                     setFirstName("");
                     setLastName("");
@@ -133,7 +128,6 @@ export default function AdminProfile() {
             userId: managerId,
             parkingId: parkingId,
         }
-        console.log(assignData)
         dispatch(assignParking(assignData))
             .then(response => {
                 setParkingId("");
@@ -187,7 +181,7 @@ export default function AdminProfile() {
 
     return (
         <Container maxWidth="xl" style={{ height: "100%" }}>
-            <Box sx={{ my: 4 }}>
+            <Box style={{ height: "15%" }}>
                 <Typography variant="h4" align="center" gutterBottom>
                     MANAGERS
                 </Typography>
@@ -195,7 +189,7 @@ export default function AdminProfile() {
                     <Button variant="contained" margin="normal" onClick={handleAdd}>NEW MANAGER</Button>
                 </Grid>
             </Box>
-            <Box style={{ height: "100%" }}>
+            <Box style={{ height: "85%", overflowY: "auto" }}>
                 <div style={{ height: "100%" }}>
                     <DataGrid
                         rows={users}
