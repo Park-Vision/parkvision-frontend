@@ -43,9 +43,9 @@ export default function UserProfile() {
     const handleMouseDownPassword = (event) => {
         event.preventDefault();
     };
-
     useEffect(() => {
-        if (authenticationReducer.decodedUser && authenticationReducer.decodedUser.role === "USER") {
+        if (authenticationReducer.decodedUser && (authenticationReducer.decodedUser.role === "USER" ||
+            authenticationReducer.decodedUser.role === "PARKING_MANAGER")) {
             dispatch(getUser(authenticationReducer.decodedUser.userId))
                 .then((response) => {
                     console.log(response)
@@ -55,6 +55,11 @@ export default function UserProfile() {
             );
         }
     }, []);
+
+    if (!authenticationReducer.decodedUser || authenticationReducer.decodedUser.role === "ADMIN") {
+        navigate("/");
+        return <Home />;
+    }
 
     const handleOpenDialog = (type) => {
         setAction(true);
@@ -151,11 +156,6 @@ export default function UserProfile() {
             });
         handleCloseDialog();
     };
-
-    if (!authenticationReducer.decodedUser || authenticationReducer.decodedUser.role !== "USER") {
-        navigate("/");
-        return <Home />;
-    }
 
     return (
         <Container maxWidth="lg">

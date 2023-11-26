@@ -24,7 +24,7 @@ export default function ManagerReservations(props) {
         }
     }, []);
 
-    if (!authenticationReducer.decodedUser && authenticationReducer.decodedUser.role === "PARKING_MANAGER") {
+    if (!authenticationReducer.decodedUser && authenticationReducer.decodedUser.role !== "PARKING_MANAGER") {
         navigate('/');
         return <Home />;
     }

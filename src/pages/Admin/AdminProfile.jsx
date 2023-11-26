@@ -51,7 +51,7 @@ export default function AdminProfile() {
     console.log(users)
     console.log(parkings);
 
-    if (!authenticationReducer.decodedUser && authenticationReducer.decodedUser.role === "ADMIN") {
+    if (!authenticationReducer.decodedUser && authenticationReducer.decodedUser.role !== "ADMIN") {
         navigate('/');
         return <Home />;
     }
@@ -67,13 +67,11 @@ export default function AdminProfile() {
     const handleAssignParking = (managerId) => {
         setManagerId(managerId);
         setOpenAssignDialog(true);
-        console.log(parkings)
-        console.log(parkingId)
     }
 
     const handleAssignDialogClose = () => {
         setOpenAssignDialog(false);
-        console.log(parkings)
+        setParkingId("");
     }
 
     const handleAdd = () => {
@@ -82,6 +80,9 @@ export default function AdminProfile() {
 
     const handleAddDialogClose = () => {
         setOpenAddDialog(false);
+        setEmail("");
+        setFirstName("");
+        setLastName("");
     };
 
     function generateRandomPassword() {
@@ -137,12 +138,12 @@ export default function AdminProfile() {
         dispatch(assignParking(assignData))
             .then(response => {
                 setParkingId("");
+                dispatch(getManagers());
                 toast.success('Parking assigned successfully.');
             })
             .catch(error => {
                 toast.error('Something went wrong. Try again.');
             })
-        dispatch(getManagers());
         setOpenAssignDialog(false);
     }
 
