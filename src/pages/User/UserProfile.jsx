@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -23,6 +24,7 @@ import { logout } from "../../actions/authenticationActions";
 import IconButton from "@mui/material/IconButton";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 
+
 export default function UserProfile() {
     const authenticationReducer = useSelector((state) => state.authenticationReducer);
     const navigate = useNavigate();
@@ -44,9 +46,9 @@ export default function UserProfile() {
     const handleMouseDownPassword = (event) => {
         event.preventDefault();
     };
-
     useEffect(() => {
-        if (authenticationReducer.decodedUser && authenticationReducer.decodedUser.role === "USER") {
+        if (authenticationReducer.decodedUser && (authenticationReducer.decodedUser.role === "USER" ||
+            authenticationReducer.decodedUser.role === "PARKING_MANAGER")) {
             dispatch(getUser(authenticationReducer.decodedUser.userId))
                 .then((response) => {
                     setFirstName(response.firstName);
@@ -56,13 +58,16 @@ export default function UserProfile() {
         }
     }, []);
 
+    if (!authenticationReducer.decodedUser || authenticationReducer.decodedUser.role === "ADMIN") {
+        navigate("/");
+        return <Home />;
+    }
+
     const handleOpenDialog = (type) => {
         setFirstName(user.firstName);
-        setLastName(user.lastName);
-
+        setLastName(user.lastName)
         setNewPassword("");
         setNewPasswordRepeat("");
-
         setAction(true);
         if (type === "password") {
             setChangingPassword(true);
@@ -76,7 +81,6 @@ export default function UserProfile() {
     const handleCloseDialog = () => {
         setFirstName(user.firstName);
         setLastName(user.lastName);
-
 
         setEditing(false);
         setChangingPassword(false);
@@ -162,11 +166,6 @@ export default function UserProfile() {
             });
         handleCloseDialog();
     };
-
-    if (!authenticationReducer.decodedUser || authenticationReducer.decodedUser.role !== "USER") {
-        navigate("/");
-        return <Home />;
-    }
 
     return (
         <Container maxWidth="lg">

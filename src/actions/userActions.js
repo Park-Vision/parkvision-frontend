@@ -1,5 +1,7 @@
-import {ADD_USER, UPDATE_USER, GET_USER, DELETE_USER,
-    AUTHENTICATE_USER, GET_USERS, REGISTER_USER} from "./types"
+import {
+    ADD_USER, UPDATE_USER, GET_USER, DELETE_USER,
+    AUTHENTICATE_USER, GET_USERS, REGISTER_USER, GET_MANAGERS
+} from "./types"
 import UserService from "../services/UserService"
 
 export const addUser = (userData) => async (dispatch) => {
@@ -26,6 +28,20 @@ export const getUsers = () => async (dispatch) => {
         return Promise.reject(error)
     }
 }
+
+export const getManagers = () => async (dispatch) => {
+    try {
+        const response = await UserService.getManagers()
+        dispatch({
+            type: GET_MANAGERS,
+            value: response.data
+        })
+        return Promise.resolve(response.data)
+    } catch (error){
+        return Promise.reject(error)
+    }
+}
+
 export const getUser = (userId) => async (dispatch) => {
     try {
         const response = await UserService.getUserById(userId)
@@ -126,6 +142,15 @@ export const updatePassword = (userData) => async (dispatch) => {
 export const disableUser = (userId) => async (dispatch) => {
     try {
         const response = await UserService.disableUser(userId)
+        return Promise.resolve(response.data)
+    } catch (error){
+        return Promise.reject(error)
+    }
+}
+
+export const assignParking = (userData) => async (dispatch) => {
+    try {
+        const response = await UserService.assignParking(userData)
         return Promise.resolve(response.data)
     } catch (error){
         return Promise.reject(error)

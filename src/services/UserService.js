@@ -51,5 +51,13 @@ class UserService {
     async disableUser(userId) {
         return await axios.put(urlConst + "/disableUser/" + userId);
     }
+
+    async getManagers() {
+        return await axios.get(urlConst + "/managers");
+    }
+
+    async assignParking(userData) {
+        return await axios.put(urlConst + "/assignParking", userData);
+    }
 }
 export default new UserService();

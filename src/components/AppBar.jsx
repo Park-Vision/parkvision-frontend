@@ -85,6 +85,11 @@ function ResponsiveAppBar() {
     handleCloseNavMenu();
   }
 
+  const handleAdmin = () => {
+    navigate('/admin');
+    handleCloseUserMenu();
+  }
+
 
   return (
     <AppBar position="fixed">
@@ -231,16 +236,25 @@ function ResponsiveAppBar() {
                 open={Boolean(anchorElUser)}
                 onClose={handleCloseUserMenu}
               >
-                <MenuItem onClick={handleProfile}>
-                  <Typography textAlign="center">Profile</Typography>
-                </MenuItem>
-                <MenuItem onClick={handleReservations}>
-                  <Typography textAlign="center">Reservations</Typography>
-                </MenuItem>
+                {user && (user.role === 'USER' || user.role === 'PARKING_MANAGER' ) && (
+                    <>
+                      <MenuItem onClick={handleReservations}>
+                        <Typography textAlign="center">Reservations</Typography>
+                      </MenuItem>
+                      <MenuItem onClick={handleProfile}>
+                        <Typography textAlign="center">Profile</Typography>
+                      </MenuItem>
+                    </>
+                )}
                 {user && user.role === 'USER' && (
-                  <MenuItem onClick={handleCars}>
-                    <Typography textAlign="center">Cars</Typography>
-                  </MenuItem>
+                    <MenuItem onClick={handleCars}>
+                      <Typography textAlign="center">Cars</Typography>
+                    </MenuItem>
+                )}
+                {user && user.role === 'ADMIN' && (
+                    <MenuItem onClick={handleAdmin}>
+                      <Typography textAlign="center">Admin</Typography>
+                    </MenuItem>
                 )}
                 <MenuItem onClick={handleLogout}>
                   <Typography textAlign="center">Logout</Typography>

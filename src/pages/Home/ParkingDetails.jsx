@@ -38,6 +38,7 @@ import { toast } from "react-toastify";
 import convertTime from "../../utils/convertTime";
 import convertDate from "../../utils/convertDate";
 import getLocalISOTime from "../../utils/getLocalISOTime";
+import AdminProfile from "../Admin/AdminProfile";
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
     iconRetinaUrl:
@@ -75,22 +76,29 @@ function ParkingDetails(props) {
     const numOfSpotsList = useSelector(state => state.parkingReducer.numOfSpotsInParkings);
     const numOfFreeSpotsList = useSelector(state => state.parkingReducer.numOfFreeSpotsInParkings);
     const [parkingTime, setParkingTime] = React.useState(new Date());
-
+    const mapRef = useRef(null);
 
     useEffect(() => {
-        const startDayUTC = dayjs(new Date(startDay));
-        const startTimeUTC = dayjs(new Date(startTime));
-        const endTimeUTC = dayjs(new Date(endTime));
-        dispatch(getParking(parkingId)).then((res) => {
-            dispatch(getParkingFreeSpotsNumber(parkingId, startDayUTC.toISOString()))
-            dispatch(getParkingSpotsNumber(parkingId))
-            firstSearch(startTimeUTC, endTimeUTC, res);
-        });
-        dispatch(getParkingSpotsByParkingId(parkingId));
-        unsetParkingSpot();
-        tryGetUser();
-        tryGetUserCars();
+        if (authenticationReducer.decodedUser && authenticationReducer.decodedUser.role !== "ADMIN") {
+            const startDayUTC = dayjs(new Date(startDay));
+            const startTimeUTC = dayjs(new Date(startTime));
+            const endTimeUTC = dayjs(new Date(endTime));
+            dispatch(getParking(parkingId)).then((res) => {
+                dispatch(getParkingFreeSpotsNumber(parkingId, startDayUTC.toISOString()))
+                dispatch(getParkingSpotsNumber(parkingId))
+                firstSearch(startTimeUTC, endTimeUTC, res);
+            });
+            dispatch(getParkingSpotsByParkingId(parkingId));
+            unsetParkingSpot();
+            tryGetUser();
+            tryGetUserCars();
+        }
     }, []);
+
+    if (!authenticationReducer.decodedUser || authenticationReducer.decodedUser.role === "ADMIN") {
+        navigate('/admin');
+        return <AdminProfile />;
+    }
 
     const unsetParkingSpot = () => {
         dispatch({
@@ -115,7 +123,6 @@ function ParkingDetails(props) {
         }
     };
 
-    const mapRef = useRef(null);
 
     const parseTime = (timeString) => {
         const [hours, minutes, seconds] = timeString.split(':');
