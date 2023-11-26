@@ -59,6 +59,5 @@ class UserService {
     async assignParking(userData) {
         return await axios.put(urlConst + "/assignParking", userData);
     }
-
 }
 export default new UserService();
