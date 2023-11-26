@@ -1,8 +1,8 @@
-import {useDispatch, useSelector} from "react-redux";
-import {useNavigate} from "react-router-dom";
-import React, {useEffect, useState} from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
 import Home from "../Home/Home";
-import {assignParking, deleteUser, getManagers} from "../../actions/userActions";
+import { assignParking, deleteUser, getManagers } from "../../actions/userActions";
 import IconButton from "@mui/material/IconButton";
 import DeleteIcon from "@mui/icons-material/Delete";
 import {
@@ -16,12 +16,12 @@ import {
     TextField,
     Typography
 } from "@mui/material";
-import {DataGrid} from "@mui/x-data-grid";
-import {toast} from "react-toastify";
+import { DataGrid } from "@mui/x-data-grid";
+import { toast } from "react-toastify";
 import Grid from "@mui/material/Grid";
-import {validateEmail, validateName} from "../../utils/validation";
-import {registerManager} from "../../actions/authenticationActions";
-import {getParkings} from "../../actions/parkingActions";
+import { validateEmail, validateName } from "../../utils/validation";
+import { registerManager } from "../../actions/authenticationActions";
+import { getParkings } from "../../actions/parkingActions";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import MenuItem from "@mui/material/MenuItem";
 
@@ -84,7 +84,7 @@ export default function AdminProfile() {
     function generateRandomPassword() {
         const length = 8;
         const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJK" +
-                                "LMNOPQRSTUVWXYZ0123456789!@#$%&*_-?";
+            "LMNOPQRSTUVWXYZ0123456789!@#$%&*_-?";
         let password = "";
         for (let i = 0; i < length; i++) {
             const randomIndex = Math.floor(Math.random() * charset.length);
@@ -94,15 +94,15 @@ export default function AdminProfile() {
     }
 
     const handleAddSubmit = () => {
-        if (!validateEmail(email)){
+        if (!validateEmail(email)) {
             toast.info('Invalid email data.');
             return;
         }
-        if (!validateName(firstName)){
+        if (!validateName(firstName)) {
             toast.info('Invalid first name data.');
             return;
         }
-        if (!validateName(lastName)){
+        if (!validateName(lastName)) {
             toast.info('Invalid last name data.');
             return;
         }
@@ -153,7 +153,8 @@ export default function AdminProfile() {
             field: 'email', headerName: 'Email', flex: 0.8, minWidth: 200,
 
         },
-        { field: 'parkingId', headerName: 'Parking ID', flex: 1, align: 'right', minWidth: 50,
+        {
+            field: 'parkingId', headerName: 'Parking ID', flex: 1, align: 'right', minWidth: 50,
             valueGetter: ({ row }) => row.parkingDTO?.id || 'N/A'
         },
 
@@ -169,7 +170,7 @@ export default function AdminProfile() {
                         <IconButton style={{ fontSize: 30 }} color="primary" aria-label="edit" onClick={() => handleAssignParking(params.row.id)}>
                             <ModeEditIcon style={{ fontSize: 30 }} />
                         </IconButton>
-                    ) }
+                    )}
                     <IconButton style={{ fontSize: 30 }} color="primary" aria-label="cancel" onClick={() => handleDelete(params.row.id)}>
                         <DeleteIcon style={{ fontSize: 30 }} />
                     </IconButton>
@@ -180,8 +181,8 @@ export default function AdminProfile() {
     ];
 
     return (
-        <Container maxWidth="xl" style={{ height: "100%" }}>
-            <Box style={{ height: "15%" }}>
+        <Container maxWidth="xl" style={{ height: "100%", display: "flex", flexDirection: "column" }}>
+            <Box sx={{ m: 2 }}>
                 <Typography variant="h4" align="center" gutterBottom>
                     MANAGERS
                 </Typography>
@@ -189,7 +190,7 @@ export default function AdminProfile() {
                     <Button variant="contained" margin="normal" onClick={handleAdd}>NEW MANAGER</Button>
                 </Grid>
             </Box>
-            <Box style={{ height: "85%", overflowY: "auto" }}>
+            <Box style={{ flex: "1", overflowY: "auto" }}>
                 <div style={{ height: "100%" }}>
                     <DataGrid
                         rows={users}
