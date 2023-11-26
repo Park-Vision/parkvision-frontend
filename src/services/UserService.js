@@ -17,7 +17,7 @@ class UserService {
     }
 
     async updateUser(userData) {
-        return await axios.put(urlConst + "/", userData);
+        return await axios.put(urlConst, userData);
     }
 
     async deleteUserById(userId) {
@@ -40,5 +40,24 @@ class UserService {
         return await axios.post(urlConst + "/setPasswordFromReset", userData);
     }
 
+    async updateName(userData) {
+        return await axios.put(urlConst + "/updateName", userData);
+    }
+
+    async updatePassword(userData) {
+        return await axios.put(urlConst + "/updatePassword", userData);
+    }
+
+    async disableUser(userId) {
+        return await axios.put(urlConst + "/disableUser/" + userId);
+    }
+
+    async getManagers() {
+        return await axios.get(urlConst + "/managers");
+    }
+
+    async assignParking(userData) {
+        return await axios.put(urlConst + "/assignParking", userData);
+    }
 }
 export default new UserService();

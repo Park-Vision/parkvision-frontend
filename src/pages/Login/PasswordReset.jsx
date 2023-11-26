@@ -86,6 +86,10 @@ export default function PasswordReset() {
         }
     }
 
+    const handleGoToLogin = () => {
+        navigate("/login");
+    }
+
     return (
         <Container maxWidth="sm">
             <Box sx={{

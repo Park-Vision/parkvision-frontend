@@ -18,6 +18,22 @@ export const register = (email, firstName, lastName, password) => async (dispatc
     }
 };
 
+export const registerManager = (email, firstName, lastName, password) => async (dispatch) => {
+    try {
+        const response = await AuthenticationService.registerManager(email, firstName, lastName, password);
+        dispatch({
+            type: REGISTER_SUCCESS,
+            value: response,
+        });
+        return Promise.resolve(response);
+    } catch (error) {
+        dispatch({
+            type: REGISTER_FAIL,
+        });
+        return Promise.reject(error);
+    }
+};
+
 export const login = (email, password) => async (dispatch) => {
     try {
         const response = await AuthenticationService.login(email, password);
