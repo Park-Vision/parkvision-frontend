@@ -1,15 +1,21 @@
-import {useDispatch, useSelector} from "react-redux";
-import {useNavigate} from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import Home from "../Home/Home";
-import React, {useEffect, useState} from "react";
-import {deleteReservation, getUserReservations} from "../../actions/reservationActions";
+import React, { useEffect, useState } from "react";
+import { deleteReservation, getUserReservations } from "../../actions/reservationActions";
 import {
     Box,
     Container,
     List,
     Paper,
-    Typography
+    Typography,
+    Tooltip,
+    Card,
+    CardHeader,
+    CardContent,
+    CardActions
 } from "@mui/material";
+import InfoIcon from '@mui/icons-material/Info';
 import Grid from "@mui/material/Grid";
 import Button from "@mui/material/Button";
 import ModeEditIcon from '@mui/icons-material/ModeEdit';
@@ -91,10 +97,13 @@ export default function UserReservations() {
         dispatch(deleteReservation(selectedReservation.id)).then(() => {
             toast.success('Reservation deleted successfully.');
         }).catch((error) => {
-            toast.error('Error deleting reservation: '+ error.message);
+            toast.error('Error deleting reservation: ' + error.message);
         });
     }
 
+    const isReservationEditable = (reservation) => {
+        return new Date(reservation.startDate) > (user.role === "USER" ? twoHoursFromNow : new Date());
+    }
 
     return (
         <Container maxWidth="lg">
@@ -127,12 +136,24 @@ export default function UserReservations() {
             {showArchived ? (
                 <Grid item xs={12}>
                     {archivedReservations && archivedReservations?.length > 0 ? (
-                            <List>
-                                {archivedReservations.map((reservation) => (
-                                    <Paper key={reservation.id} elevation={3} style={{ padding: 20, margin: 10 }}>
-                                        <Typography variant="subtitle1" sx={{ fontWeight: 'bold', fontSize: '1.2rem' }}>
-                                            Reservation ID: {reservation.id}
-                                        </Typography>
+                        <List>
+                            {archivedReservations.map((reservation) => (
+                                <Card key={reservation.id} elevation={3} style={{ padding: 20, margin: 10 }}>
+                                    <CardHeader
+                                        title={
+                                            <Typography variant="subtitle1" sx={{ fontWeight: 'bold', fontSize: '1.2rem' }}>
+                                                Reservation ID: {reservation.id}
+                                            </Typography>
+                                        }
+                                        action={
+                                            <Tooltip title={`You cannot edit or cancel reservation`} arrow placement="top">
+                                                <IconButton>
+                                                    <InfoIcon />
+                                                </IconButton>
+                                            </Tooltip>
+                                        }>
+                                    </CardHeader>
+                                    <CardContent>
                                         <Typography variant="body1">Parking: {reservation.parkingSpotDTO.parkingDTO.name}</Typography>
                                         <Typography variant="body1">Spot Number: {reservation.parkingSpotDTO.spotNumber}</Typography>
                                         <Typography variant="body1">Start: {convertDate(reservation.startDate)}</Typography>
@@ -140,10 +161,10 @@ export default function UserReservations() {
                                         <Typography variant="body1">Registration Number: {reservation.registrationNumber}</Typography>
                                         <Typography variant="body1">Name: {reservation.userDTO.firstName} {reservation.userDTO.lastName}</Typography>
                                         <Typography variant="body1">Amount: {reservation.amount} {reservation.parkingSpotDTO.parkingDTO.currency}</Typography>
-
-                                    </Paper>
-                                ))}
-                            </List>
+                                    </CardContent>
+                                </Card>
+                            ))}
+                        </List>
                     ) : (
                         <Typography variant="body1" align="center">
                             No archived reservations found.
@@ -154,28 +175,55 @@ export default function UserReservations() {
                 <Grid item xs={12}>
                     {pendingReservations && pendingReservations?.length > 0 ? (
                         pendingReservations.map((reservation) => (
-                            <Paper key={reservation.id} elevation={3} style={{ padding: 20, margin: 10 }}>
-                                <Typography variant="subtitle1" sx={{ fontWeight: 'bold', fontSize: '1.2rem' }}>
-                                    Reservation ID: {reservation.id}
-                                </Typography>
-                                <Typography variant="body1">Parking: {reservation.parkingSpotDTO.parkingDTO.name}</Typography>
-                                <Typography variant="body1">Spot Number: {reservation.parkingSpotDTO.spotNumber}</Typography>
-                                <Typography variant="body1">Start: {convertDate(reservation.startDate)}</Typography>
-                                <Typography variant="body1">End: {convertDate(reservation.endDate)}</Typography>
-                                <Typography variant="body1">Registration Number: {reservation.registrationNumber}</Typography>
-                                <Typography variant="body1">Name: {reservation.userDTO.firstName} {reservation.userDTO.lastName}</Typography>
-                                <Typography variant="body1">Amount: {reservation.amount} {reservation.parkingSpotDTO.parkingDTO.currency}</Typography>
-                                {new Date(reservation.startDate) > (user.role === "USER" ? twoHoursFromNow : new Date()) && (
-                                    <div style={{ textAlign: 'right' }}>
-                                        <IconButton style={{ fontSize: 30 }} color="primary" aria-label="edit" onClick={() => handleEdit(reservation)}>
-                                            <ModeEditIcon />
-                                        </IconButton>
-                                        <IconButton style={{ fontSize: 30 }} color="primary" aria-label="cancel" onClick={() => handleCancel(reservation)}>
-                                            <DeleteIcon style={{ fontSize: 30 }} />
-                                        </IconButton>
-                                    </div>
-                                )}
-                            </Paper>
+                            <Card key={reservation.id} elevation={3} style={{ padding: 20, margin: 10 }}>
+                                <CardHeader
+                                    title={
+                                        <Typography variant="subtitle1" sx={{ fontWeight: 'bold', fontSize: '1.2rem' }}>
+                                            Reservation ID: {reservation.id}
+                                        </Typography>
+                                    }
+                                    action={
+                                        isReservationEditable(reservation) ? (
+                                            <Tooltip title={`You can edit or cancel reservation up to ${hourRule} 
+                                        hours before the start time and still get a refund.`} arrow placement="top">
+                                                <IconButton>
+                                                    <InfoIcon />
+                                                </IconButton>
+                                            </Tooltip>
+                                        ) : (
+                                            <Tooltip title={`You cannot edit or cancel reservation`} arrow placement="top">
+                                                <IconButton>
+                                                    <InfoIcon />
+                                                </IconButton>
+                                            </Tooltip>
+                                        )
+
+                                    }>
+                                </CardHeader>
+                                <CardContent>
+                                    <Typography variant="body1">Parking: {reservation.parkingSpotDTO.parkingDTO.name}</Typography>
+                                    <Typography variant="body1">Spot Number: {reservation.parkingSpotDTO.spotNumber}</Typography>
+                                    <Typography variant="body1">Start: {convertDate(reservation.startDate)}</Typography>
+                                    <Typography variant="body1">End: {convertDate(reservation.endDate)}</Typography>
+                                    <Typography variant="body1">Registration Number: {reservation.registrationNumber}</Typography>
+                                    <Typography variant="body1">Name: {reservation.userDTO.firstName} {reservation.userDTO.lastName}</Typography>
+                                    <Typography variant="body1">Amount: {reservation.amount} {reservation.parkingSpotDTO.parkingDTO.currency}</Typography>
+                                </CardContent>
+                                <CardActions>
+                                    {
+                                        isReservationEditable(reservation) && (
+                                            <div style={{ textAlign: 'right' }}>
+                                                <IconButton style={{ fontSize: 30 }} color="primary" aria-label="edit" onClick={() => handleEdit(reservation)}>
+                                                    <ModeEditIcon />
+                                                </IconButton>
+                                                <IconButton style={{ fontSize: 30 }} color="primary" aria-label="cancel" onClick={() => handleCancel(reservation)}>
+                                                    <DeleteIcon style={{ fontSize: 30 }} />
+                                                </IconButton>
+                                            </div>
+                                        )
+                                    }
+                                </CardActions>
+                            </Card>
                         ))
                     ) : (
                         <Typography variant="body1" align="center">
@@ -183,7 +231,8 @@ export default function UserReservations() {
                         </Typography>
                     )}
                 </Grid>
-            )}
+            )
+            }
             <Dialog
                 open={openDialog}
                 onClose={() => setOpenDialog(false)}
@@ -208,7 +257,7 @@ export default function UserReservations() {
                     </Button>
                 </DialogActions>
             </Dialog>
-        </Container>
+        </Container >
 
-        );
+    );
 }
