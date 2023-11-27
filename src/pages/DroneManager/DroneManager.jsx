@@ -77,7 +77,7 @@ function ParkingEditor(props) {
     const [availableDrones, setAvailableDrones] = useState([])
 
     const [selectedDroneId, setSelectedDroneId] = useState(0)
-    const [dronePosition, setDronePosition] = useState([0, 0])
+    const [dronePosition, setDronePosition] = useState([0, 0, 0])
     const [droneStage, setDroneStage] = useState(0)
     const [droneBatteryPercentage, setDroneBatteryPercentage] = useState(0)
     const [droneSatellites, setDroneSatellites] = useState(0)
