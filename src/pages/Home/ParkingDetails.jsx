@@ -389,6 +389,10 @@ function ParkingDetails(props) {
         navigate(`/parking/${parkingId}/missions`);
     };
 
+    const handleGoToDashboard = () => {
+        navigate(`/parking/${parkingId}/dashboard`);
+    };
+
     return (
         <Container
             maxWidth='xl'
@@ -551,6 +555,14 @@ function ParkingDetails(props) {
                                     && authenticationReducer.isLoggedIn
                                     && authenticationReducer.decodedUser.role === "PARKING_MANAGER" ? (
                                     <Grid container>
+                                        <Button
+                                            sx={{ m: 1 }}
+                                            variant='contained'
+                                            onClick={handleGoToDashboard}
+                                            fullWidth
+                                        >
+                                            Parking dashboard
+                                        </Button>
                                         <Button
                                             sx={{ m: 1 }}
                                             variant='contained'
