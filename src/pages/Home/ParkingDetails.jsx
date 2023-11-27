@@ -39,6 +39,8 @@ import convertTime from "../../utils/convertTime";
 import convertDate from "../../utils/convertDate";
 import getLocalISOTime from "../../utils/getLocalISOTime";
 import AdminProfile from "../Admin/AdminProfile";
+import AppBar from "@mui/material/AppBar";
+import Home from "./Home";
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
     iconRetinaUrl:
@@ -96,8 +98,14 @@ function ParkingDetails(props) {
     }, []);
 
     if (!authenticationReducer.decodedUser || authenticationReducer.decodedUser.role === "ADMIN") {
-        navigate('/admin');
-        return <AdminProfile />;
+        if (authenticationReducer.decodedUser.role === "ADMIN"){
+            navigate('/admin');
+            return <AdminProfile />;
+        } else {
+            navigate('/');
+            return <Home />;
+        }
+
     }
 
     const unsetParkingSpot = () => {
