@@ -454,7 +454,7 @@ function ParkingDetails(props) {
                                                     )}
                                                     {occupiedParkingSpotsMap && occupiedParkingSpotsMap[parkingSpot.id] == null && (
                                                         <Popup>
-                                                            {`Not be available for the rest of the day.`}
+                                                            {`Will not be available for the rest of the day.`}
                                                         </Popup>
                                                     )}
                                                 </Polygon>
