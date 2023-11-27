@@ -81,31 +81,23 @@ function ParkingDetails(props) {
     const mapRef = useRef(null);
 
     useEffect(() => {
-        if (authenticationReducer.decodedUser && authenticationReducer.decodedUser.role !== "ADMIN") {
-            const startDayUTC = dayjs(new Date(startDay));
-            const startTimeUTC = dayjs(new Date(startTime));
-            const endTimeUTC = dayjs(new Date(endTime));
-            dispatch(getParking(parkingId)).then((res) => {
-                dispatch(getParkingFreeSpotsNumber(parkingId, startDayUTC.toISOString()))
-                dispatch(getParkingSpotsNumber(parkingId))
-                firstSearch(startTimeUTC, endTimeUTC, res);
-            });
-            dispatch(getParkingSpotsByParkingId(parkingId));
-            unsetParkingSpot();
-            tryGetUser();
-            tryGetUserCars();
-        }
+        const startDayUTC = dayjs(new Date(startDay));
+        const startTimeUTC = dayjs(new Date(startTime));
+        const endTimeUTC = dayjs(new Date(endTime));
+        dispatch(getParking(parkingId)).then((res) => {
+            dispatch(getParkingFreeSpotsNumber(parkingId, startDayUTC.toISOString()))
+            dispatch(getParkingSpotsNumber(parkingId))
+            firstSearch(startTimeUTC, endTimeUTC, res);
+        });
+        dispatch(getParkingSpotsByParkingId(parkingId));
+        unsetParkingSpot();
+        tryGetUser();
+        tryGetUserCars();
     }, []);
 
-    if (!authenticationReducer.decodedUser || authenticationReducer.decodedUser.role === "ADMIN") {
-        if (authenticationReducer.decodedUser.role === "ADMIN"){
-            navigate('/admin');
-            return <AdminProfile />;
-        } else {
-            navigate('/');
-            return <Home />;
-        }
-
+    if (authenticationReducer.decodedUser !== null && authenticationReducer.decodedUser.role === "ADMIN") {
+        navigate('/admin');
+        return <AdminProfile />;
     }
 
     const unsetParkingSpot = () => {
