@@ -32,8 +32,7 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import DroneTimeline from "../../components/DroneTimeline";
-
-delete L.Icon.Default.prototype._getIconUrl;
+import CreateDronePopup from "../../components/CreateDronePopup";
 
 L.Icon.Default.mergeOptions({
     iconRetinaUrl:
@@ -64,6 +63,8 @@ function ParkingEditor(props) {
     const [selectedDroneId, setSelectedDroneId] = useState(0)
     const [dronePosition, setDronePosition] = useState([0, 0])
     const [droneStage, setDroneStage] = useState(0)
+
+    const [openDialog, setOpenDialog] = useState(false);
 
     const processIncomingMessage = (recievedMessage) => {
         setMessages((messages) => [...messages, recievedMessage]);
@@ -107,11 +108,15 @@ function ParkingEditor(props) {
         dispatch(getParking(parkingId)).then((response) => {
             setDronePosition([response.latitude, response.longitude]);
         });
+        refreshDrones()
+        return () => disposeSocket()
+    }, []);
+
+    const refreshDrones = () => {
         dispatch(getDronesByParkingId(parkingId)).then((response) => {
             setAvailableDrones(response);
         });
-        return () => disposeSocket()
-    }, []);
+    }
 
     const disposeSocket = () => {
         if (stompClient) {
@@ -197,6 +202,9 @@ function ParkingEditor(props) {
             .catch((error) => {
                 console.log(error);
             });
+    }
+    const handleOpenPopup = (event) => {
+        setOpenDialog(true);
     }
 
     return (
@@ -289,18 +297,28 @@ function ParkingEditor(props) {
                         <Paper className='reserve'>
                             <CardContent>
                                 <Typography variant='h4'>{parking.name}</Typography>
-                                <FormControl fullWidth>
-                                    <InputLabel id="demo-simple-select-label">Drone</InputLabel>
-                                    <Select
-                                        labelId="demo-simple-select-label"
-                                        id="demo-simple-select"
-                                        value={selectedDroneId}
-                                        label="Drone"
-                                        onChange={handleSelectDrone}
+                                <Grid container>
+                                    <FormControl fullWidth sx={{ m: "5%", width: "60%" }}>
+                                        <InputLabel id="demo-simple-select-label">Drone</InputLabel>
+                                        <Select
+                                            labelId="demo-simple-select-label"
+                                            id="demo-simple-select"
+                                            value={selectedDroneId}
+                                            label="Drone"
+                                            onChange={handleSelectDrone}
+                                        >
+                                            {availableDrones.map(drone => <MenuItem value={drone.id}>{drone.id} - {drone.name}</MenuItem>)}
+                                        </Select>
+                                    </FormControl>
+                                    <Button
+                                        sx={{ m: "5%", width: "20%" }}
+                                        variant='contained'
+                                        color="secondary"
+                                        onClick={handleOpenPopup}
                                     >
-                                        {availableDrones.map(drone => <MenuItem value={drone.id}>{drone.id} - {drone.name}</MenuItem>)}
-                                    </Select>
-                                </FormControl>
+                                        +
+                                    </Button>
+                                </Grid>
                                 <DroneTimeline stageId={droneStage} />
                             </CardContent>
                             <Grid container>
@@ -333,6 +351,10 @@ function ParkingEditor(props) {
                     </Grid>
                 </Grid>
             </Box>
+            <CreateDronePopup open={openDialog}
+                setOpen={setOpenDialog}
+                refreshDrones={refreshDrones}
+                parkingId={parkingId} />
         </Container>
     );
 }
