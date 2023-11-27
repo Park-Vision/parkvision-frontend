@@ -1,13 +1,14 @@
-import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate, useParams } from 'react-router-dom';
-import { getReservationsByParking } from '../../actions/reservationActions';
+import React, {useEffect} from 'react';
+import {useDispatch, useSelector} from 'react-redux';
+import {useNavigate, useParams} from 'react-router-dom';
+import {getReservationsByParking} from '../../actions/reservationActions';
 import Home from '../Home/Home';
-import { getParking, getParkingFreeSpotsNumber, getParkingSpotsNumber } from '../../actions/parkingActions';
-import { Bar, Line} from 'react-chartjs-2';
-import { Chart, ArcElement, CategoryScale, registerables } from 'chart.js'
-import { Card, CardContent, Container, Typography } from "@mui/material";
-import { PieChart } from "@mui/x-charts";
+import {getParking, getParkingFreeSpotsNumber, getParkingSpotsNumber} from '../../actions/parkingActions';
+import {Bar, Line} from 'react-chartjs-2';
+import {ArcElement, CategoryScale, Chart, registerables} from 'chart.js'
+import {Card, CardContent, Container, Typography} from "@mui/material";
+import {PieChart} from "@mui/x-charts";
+
 Chart.register(ArcElement);
 Chart.register(CategoryScale);
 Chart.register(...registerables);
@@ -124,22 +125,43 @@ export default function ManagerDashboard(props) {
         },
     };
 
+    const currentDate = new Date();
+    const currentYear = currentDate.getFullYear();
+    const currentMonth = currentDate.getMonth();
+
+    const lastThreeMonths = Array.from({ length: 3 }, (_, index) => {
+        const month = (currentMonth - index + 12) % 12 || 12;
+        const year = currentYear - Math.floor((index + currentMonth - 1) / 12);
+        return { month, year };
+    }).reverse();
+
+    const nextNineMonths = Array.from({ length: 9 }, (_, index) => {
+        const nextMonth = (currentMonth + index + 1) % 12;
+        const nextYear = currentYear + Math.floor((currentMonth + index + 1) / 12);
+        return { month: nextMonth, year: nextYear };
+    });
+
     const monthlyCounts = reservations.length > 0
         ? reservations.reduce((acc, reservation) => {
             const startDate = new Date(reservation.startDate);
-            const month = startDate.getMonth();
-            acc[month] = (acc[month] || 0) + 1;
+            const month = startDate.getMonth(); // Adjust month to be 1-indexed
+            const year = startDate.getFullYear();
+            acc[`${year}-${month}`] = (acc[`${year}-${month}`] || 0) + 1;
             return acc;
         }, {})
         : {};
 
-    const monthlyData = Array.from({ length: 12 }, (_, month) => monthlyCounts[month] || 0);
+    const labelsWithYear = lastThreeMonths.concat(nextNineMonths).map(({ month, year }) => {
+        return `${year}-${month + 1}`;
+    });
+
+    const aggregatedMonthlyData = labelsWithYear.map(label => {
+        const [year, month] = label.split('-').map(Number);
+        return monthlyCounts[`${year}-${month - 1}`] || 0;
+    });
 
     const dataMonthly = {
-        labels: [
-            'January', 'February', 'March', 'April', 'May', 'June',
-            'July', 'August', 'September', 'October', 'November', 'December'
-        ],
+        labels: labelsWithYear,
         datasets: [
             {
                 label: 'Number of Reservations',
@@ -148,7 +170,7 @@ export default function ManagerDashboard(props) {
                 borderWidth: 1,
                 hoverBackgroundColor: 'rgba(75,192,192,0.6)',
                 hoverBorderColor: 'rgba(75,192,192,1)',
-                data: monthlyData,
+                data: aggregatedMonthlyData,
             },
         ],
         options: {
@@ -158,6 +180,65 @@ export default function ManagerDashboard(props) {
         },
     };
 
+    const generateDaysArray = (month, year) => {
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        return Array.from({ length: daysInMonth }, (_, index) => index + 1);
+    };
+
+    const dataMonthlySum = (reservations) => {
+        const currentMonth = new Date().getMonth();
+        const currentYear = new Date().getFullYear();
+
+        const reservationsSumByDay = generateDaysArray(currentMonth, currentYear).map((day) => {
+            const reservationsOnDay = reservations.filter((reservation) => {
+                const startDate = new Date(reservation.startDate);
+                const reservationDay = startDate.getDate();
+                const reservationMonth = startDate.getMonth();
+                const reservationYear = startDate.getFullYear();
+
+                return (
+                    reservationDay === day &&
+                    reservationMonth === currentMonth &&
+                    reservationYear === currentYear
+                );
+            });
+
+            const sum = reservationsOnDay.reduce((total, reservation) => total + reservation.amount, 0);
+
+            return sum;
+        });
+
+        return {
+            labels: generateDaysArray(currentMonth, currentYear),
+            datasets: [
+                {
+                    label: 'Reservations Sum',
+                    backgroundColor: 'rgba(75,192,192,0.4)',
+                    borderColor: 'rgba(75,192,192,1)',
+                    borderWidth: 1,
+                    hoverBackgroundColor: 'rgba(75,192,192,0.6)',
+                    hoverBorderColor: 'rgba(75,192,192,1)',
+                    data: reservationsSumByDay,
+                },
+            ],
+        };
+    };
+
+    const optionsMonthlySum = {
+        scales: {
+            x: { title: { display: true, text: 'Day' } },
+            y: { title: { display: true, text: 'Reservations Sum' } },
+        },
+    };
+
+    const getMonthName = (monthIndex) => {
+        const monthNames = [
+            'January', 'February', 'March', 'April', 'May', 'June',
+            'July', 'August', 'September', 'October', 'November', 'December'
+        ];
+
+        return monthNames[monthIndex];
+    };
 
     return (
         <Container maxWidth="l">
@@ -211,6 +292,16 @@ export default function ManagerDashboard(props) {
                     </Typography>
                     <div style={{ width: '100%' }}>
                         <Line data={dataMonthly} />
+                    </div>
+                </CardContent>
+            </Card>
+            <Card>
+                <CardContent>
+                    <Typography variant="h6" component="div">
+                        Daily income in { getMonthName(new Date().getMonth())}
+                    </Typography>
+                    <div style={{ width: '100%' }}>
+                        <Bar data={dataMonthlySum(reservations)} options={optionsMonthlySum} />
                     </div>
                 </CardContent>
             </Card>
