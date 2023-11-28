@@ -20,12 +20,15 @@ import { getParkingSpotsByParkingId } from "../../actions/parkingSpotActions";
 import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
 import AddIcon from '@mui/icons-material/Add';
+import IconButton from "@mui/material/IconButton";
+import AddIcon from '@mui/icons-material/Add';
 import CircularProgress from "@mui/material/CircularProgress";
 import {
     GET_PARKING_SPOT,
 } from "../../actions/types";
 import decodeToken from "../../utils/decodeToken";
 import { getUser } from "../../actions/userActions";
+import { commandDrone, getDronesByParkingId } from "../../actions/droneActions";
 import { commandDrone, getDronesByParkingId } from "../../actions/droneActions";
 import { toast } from "react-toastify";
 import DroneMarker from "../../components/DroneMarker"
@@ -70,9 +73,11 @@ function ParkingEditor(props) {
 
     // Drones assigned to this parking
     const [availableDrones, setAvailableDrones] = useState([])
+    // Drones assigned to this parking
+    const [availableDrones, setAvailableDrones] = useState([])
 
     const [selectedDroneId, setSelectedDroneId] = useState(0)
-    const [dronePosition, setDronePosition] = useState([0, 0, 0])
+    const [dronePosition, setDronePosition] = useState([0, 0])
     const [droneStage, setDroneStage] = useState(0)
     const [droneBatteryPercentage, setDroneBatteryPercentage] = useState(0)
     const [droneSatellites, setDroneSatellites] = useState(0)
