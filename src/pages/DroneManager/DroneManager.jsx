@@ -20,15 +20,12 @@ import { getParkingSpotsByParkingId } from "../../actions/parkingSpotActions";
 import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
 import AddIcon from '@mui/icons-material/Add';
-import IconButton from "@mui/material/IconButton";
-import AddIcon from '@mui/icons-material/Add';
 import CircularProgress from "@mui/material/CircularProgress";
 import {
     GET_PARKING_SPOT,
 } from "../../actions/types";
 import decodeToken from "../../utils/decodeToken";
 import { getUser } from "../../actions/userActions";
-import { commandDrone, getDronesByParkingId } from "../../actions/droneActions";
 import { commandDrone, getDronesByParkingId } from "../../actions/droneActions";
 import { toast } from "react-toastify";
 import DroneMarker from "../../components/DroneMarker"
@@ -71,8 +68,6 @@ function ParkingEditor(props) {
 
     const [stompClient, setStompClient] = useState(null);
 
-    // Drones assigned to this parking
-    const [availableDrones, setAvailableDrones] = useState([])
     // Drones assigned to this parking
     const [availableDrones, setAvailableDrones] = useState([])
 
