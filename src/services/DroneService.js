@@ -26,5 +26,9 @@ class DroneService {
     async commandDrone(droneId, command) {
         return await axios.post(urlConst + "/" + droneId + "/" + command)
     }
+
+    async getDronesByParkingId(parkingId) {
+        return await axios.get(urlConst + "/parking/" + parkingId);
+    }
 }
 export default new DroneService();
