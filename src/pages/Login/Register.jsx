@@ -105,14 +105,13 @@ export default function Register() {
     }
 
     return (
-        <Container maxWidth="lg">
+        <Container maxWidth="sm">
             <Box sx={{
                 display: 'flex',
                 justifyContent: 'center', // Center horizontally
                 alignItems: 'center',     // Center vertically
                 height: '100vh',
                 width: '300',
-                // Set a minimum height for centering
             }}>
                 <Grid item  >
                     <Card>
