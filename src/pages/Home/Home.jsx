@@ -20,6 +20,7 @@ import { MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet';
 import { renderToString } from "react-dom/server";
 import { getUser } from "../../actions/userActions";
 import decodeToken from '../../utils/decodeToken';
+import { GradientButton } from '../../components/GradientButton';
 
 
 
@@ -153,7 +154,7 @@ export default function Home() {
             <Box sx={{ my: 4 }}>
                 <div style={{ marginBottom: '20px' }}>
                     <Grid container spacing={2} justifyContent="flex-end">
-                        <Button
+                        <GradientButton
                             variant="contained"
                             color="primary"
                             onClick={handleShowList}
@@ -161,15 +162,15 @@ export default function Home() {
                             disabled={!showMap}
                         >
                             <ListIcon />
-                        </Button>
-                        <Button
+                        </GradientButton>
+                        <GradientButton
                             variant="contained"
                             color="primary"
                             onClick={handleShowMap}
                             disabled={showMap}
                         >
                             <PlaceIcon />
-                        </Button>
+                        </GradientButton>
                     </Grid>
                 </div>
                 {showMap ? (
@@ -221,14 +222,14 @@ export default function Home() {
                                                         <div style={{ marginBottom: '10px' }}>
                                                             <span style={{ fontWeight: 'bold' }}>{parking.currency}/h:</span> {parking.costRate}
                                                         </div>
-                                                        <Button
+                                                        <GradientButton
                                                             variant="contained"
                                                             color="primary"
                                                             onClick={() => handleClick(parking.id)}
                                                             style={{ width: '100%' }}
                                                         >
                                                             MORE
-                                                        </Button>
+                                                        </GradientButton>
                                                     </div>
                                                 </Popup>
                                             </Marker>
@@ -253,7 +254,7 @@ export default function Home() {
                                     />
                                 </Grid>
                                 <Grid item>
-                                    <Button
+                                    <GradientButton
                                         variant="contained"
                                         color="primary"
                                         type="submit"
@@ -261,7 +262,7 @@ export default function Home() {
                                         style={{ height: '40px' }}
                                     >
                                         Search
-                                    </Button>
+                                    </GradientButton>
                                 </Grid>
                             </Grid>
                         </form>
@@ -272,24 +273,24 @@ export default function Home() {
                                         sx={{
                                             height: '100%',
                                             display: 'flex',
-                                            flexDirection: 'row', // Ensure the content and map are displayed side by side
+                                            flexDirection: 'row',
                                         }}
                                         onClick={() => handleClick(parking.id)}
                                     >
                                         <Grid item xs={6} sm={6} md={6} style={{ padding: '20px', paddingRight: 0 }}>
                                             <CardContent sx={{ flexGrow: 1 }}>
-                                                <Typography gutterBottom variant="h5" component="h2">
+                                                <Typography gutterBottom variant="h5" fontWeight='bold'>
                                                     {parking.name}
                                                 </Typography>
-                                                <Typography variant='h5'>Available: {numOfFreeSpotsList[parking.id]}/{numOfSpotsList[parking.id]}</Typography>
-                                                <Typography>Address: {parking.street}, {parking.zipCode} {parking.city}</Typography>
+                                                <Typography variant='h6'>Available: {numOfFreeSpotsList[parking.id]}/{numOfSpotsList[parking.id]}</Typography>
+                                                <Typography variant='h6'>Address: {parking.street}, {parking.zipCode} {parking.city}</Typography>
                                                 {isParking24h(parking) ? (
                                                     <Typography variant="h6">Open hours: 24/7</Typography>
                                                 ) : (
                                                     <Typography variant="h6">Open hours: {convertTime(parking.startTime, parking.timeZone)} -  {convertTime(parking.endTime, parking.timeZone)} </Typography>
                                                 )
                                                 }
-                                                <Typography>{parking.currency}/h: {parking.costRate}</Typography>
+                                                <Typography variant='h6'>{parking.currency}/h: {parking.costRate}</Typography>
                                             </CardContent>
                                         </Grid>
                                         <Grid item xs={6} sm={6} md={6} style={{ margin: 10, padding: 10 }}>

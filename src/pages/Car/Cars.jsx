@@ -20,9 +20,10 @@ import ModeEditIcon from '@mui/icons-material/ModeEdit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import DriveEtaIcon from '@mui/icons-material/DriveEta';
 import { useNavigate } from 'react-router-dom';
-import {validateRegistraionNumber} from "../../utils/validation";
-import {toast} from "react-toastify";
+import { validateRegistraionNumber } from "../../utils/validation";
+import { toast } from "react-toastify";
 import Home from "../Home/Home";
+import { GradientButton } from '../../components/GradientButton';
 
 
 export default function Cars() {
@@ -59,18 +60,18 @@ export default function Cars() {
     };
 
     const handleEditSubmit = () => {
-        if (!validateRegistraionNumber(editCar.registrationNumber)){
+        if (!validateRegistraionNumber(editCar.registrationNumber)) {
             toast.info('Invalid registration number');
             return;
         }
-        if ((editCar.brand.length <= 0 || editCar.color.length <= 0)){
+        if ((editCar.brand.length <= 0 || editCar.color.length <= 0)) {
             toast.info('Invalid car details');
             return;
         }
         dispatch(updateCar(editCar)).then(() => {
-                toast.success('Car successfully edited!');
-                setOpenAddDialog(false);
-            })
+            toast.success('Car successfully edited!');
+            setOpenAddDialog(false);
+        })
             .catch((error) => {
                 console.error('Error during adding car:', error);
                 toast.error('Error during adding car. Please try again.');
@@ -91,11 +92,11 @@ export default function Cars() {
     };
 
     const handleAddSubmit = () => {
-        if (!validateRegistraionNumber(registrationNumber)){
+        if (!validateRegistraionNumber(registrationNumber)) {
             toast.info('Invalid registration number');
             return;
         }
-        if ((brand.length <= 0 || color.length <= 0)){
+        if ((brand.length <= 0 || color.length <= 0)) {
             toast.info('Invalid car details');
             return;
         }
@@ -119,7 +120,7 @@ export default function Cars() {
                     toast.error('Error during adding car. Please try again.');
                     setOpenAddDialog(false);
                 })
-        } catch (e){
+        } catch (e) {
             console.error('General error:', e);
             toast.error('Something went wrong. Please try again.');
             setOpenAddDialog(false);
@@ -152,7 +153,7 @@ export default function Cars() {
                     YOUR CARS
                 </Typography>
                 <Grid container justifyContent="flex-end">
-                    <Button variant="contained" margin="normal" onClick={handleAdd}>NEW CAR</Button>
+                    <GradientButton variant="contained" margin="normal" onClick={handleAdd}>NEW CAR</GradientButton>
                 </Grid>
                 <Grid item xs={12}>
                     {cars && cars.length > 0 ? (

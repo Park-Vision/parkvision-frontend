@@ -10,6 +10,7 @@ import {
     TextField,
     Button,
     CircularProgress, FormControl, FormLabel, Input, Divider,
+    Backdrop
 } from '@mui/material';
 import { useDispatch, useSelector } from "react-redux";
 import { MapContainer, TileLayer, FeatureGroup, Polygon, Popup } from 'react-leaflet';
@@ -20,6 +21,7 @@ import CreditCardIcon from '@mui/icons-material/CreditCard';
 import { addPayment } from "../../actions/paymentActions";
 import { addStripeCharge } from "../../actions/stripeChargeActions";
 import getLocalISOTime from '../../utils/getLocalISOTime';
+import { GradientButton } from '../../components/GradientButton';
 
 export default function ReservationDetails(props) {
     const navigate = useNavigate();
@@ -193,18 +195,13 @@ export default function ReservationDetails(props) {
                 <Typography variant="h4" component="h1" gutterBottom>
                     Rerservation Details
                 </Typography>
-                {loading && <Box
-                    sx={{
-                        display: "flex",
-                        "align-content": "center",
-                        "justify-content": "center",
-                        "flex-direction": "row",
-                        "flex-wrap": "wrap",
-                    }}
-                    style={{ width: "100%", height: "100%" }}
+                {loading && <Backdrop
+                    sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                    open={loading}
                 >
-                    <CircularProgress />
-                </Box>}
+                    <CircularProgress color="secondary" />
+                </Backdrop>
+                }
                 <Paper>
                     <CardContent>
                         <div style={{ height: '500px' }}>
@@ -375,12 +372,12 @@ export default function ReservationDetails(props) {
                                     </CardContent>
                                 </Card>
                             )}
-                        <Button
+                        <GradientButton
                             onClick={handleReservation}
                             variant='contained'
                             fullWidth>
                             RESERVE
-                        </Button>
+                        </GradientButton>
                         <Button
                             onClick={handleBackClick}
                             fullWidth>

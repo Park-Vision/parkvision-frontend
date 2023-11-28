@@ -17,7 +17,7 @@ import ReservationEdit from "./pages/Reservations/ReservationEdit";
 import ManagerProfile from "./pages/ParkingManagement/ManagerProfile";
 import UserProfile from "./pages/User/UserProfile";
 import * as React from "react";
-
+import CssBaseline from '@mui/material/CssBaseline';
 import UserReservations from "./pages/User/UserReservations";
 import ParkingSpotDetails from "./pages/ParkingSpot/ParkingSpotDetails";
 import ParkingEditor from "./pages/Editor/Editor"
@@ -91,6 +91,7 @@ function App() {
         <BrowserRouter>
             <ColorModeContext.Provider value={colorMode}>
                 <ThemeProvider theme={theme}>
+                    <CssBaseline />
                     <AppBar />
                     <Toolbar />
                     <div className='home'>

@@ -25,6 +25,7 @@ import { addParking } from '../../actions/parkingActions';
 import LocalParkingIcon from '@mui/icons-material/LocalParking';
 import decodeToken from '../../utils/decodeToken';
 import { toast } from 'react-toastify';
+import { GradientButton } from '../../components/GradientButton';
 
 const currencies = [
     {
@@ -453,9 +454,9 @@ function ManagerParkingCreate() {
                                     </TextField>
                                 </Grid>
                                 <Grid item xs={12}>
-                                    <Button type="submit" variant="contained" color="primary" fullWidth>
+                                    <GradientButton type="submit" variant="contained" color="primary" fullWidth>
                                         Submit
-                                    </Button>
+                                    </GradientButton>
                                 </Grid>
                             </Grid>
                         </form>

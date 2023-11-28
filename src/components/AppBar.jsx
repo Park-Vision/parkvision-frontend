@@ -16,6 +16,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../actions/authenticationActions";
 import { useNavigate } from 'react-router-dom';
 import decodeToken from '../utils/decodeToken';
+import { getUser } from '../actions/userActions';
 
 const pages = ['Home', 'Contact', 'About'];
 const links = ['/', '/contact', '/about'];
@@ -27,7 +28,8 @@ function ResponsiveAppBar() {
   const dispatch = useDispatch()
   const isLoggedIn = useSelector((state) => state.authenticationReducer.isLoggedIn);
   const currentUser = useSelector((state) => state.authenticationReducer.decodedUser);
-
+  const userInfo = useSelector((state) => state.userReducer.user);
+  const [initials, setinitials] = React.useState('');
   const userjson = JSON.parse(localStorage.getItem("user"));
   const user = decodeToken(userjson?.token);
 
@@ -56,6 +58,7 @@ function ResponsiveAppBar() {
   const handleLogout = () => {
     dispatch(logout());
     navigate('/');
+    setinitials('');
     handleCloseUserMenu();
     handleCloseNavMenu();
   }
@@ -75,9 +78,11 @@ function ResponsiveAppBar() {
     handleCloseUserMenu();
   }
 
-  const getInitials = () => {
-    const result = currentUser.role.charAt(0) + currentUser.sub.charAt(0);
-    return result.toUpperCase();
+  const getInitials = (userInfo) => {
+    if (userInfo.firstName && userInfo.lastName) {
+      const result = userInfo.firstName.charAt(0) + userInfo.lastName.charAt(0);
+      return result.toUpperCase();
+    }
   }
 
   const handleClick = (path) => {
@@ -90,9 +95,23 @@ function ResponsiveAppBar() {
     handleCloseUserMenu();
   }
 
+  React.useEffect(() => {
+    if (user) {
+      dispatch(getUser(user.userId)).then((response) => {
+        console.log(response)
+        setinitials(getInitials(response));
+      }
+      );
+    }
+  }, [currentUser]);
+
 
   return (
-    <AppBar position="fixed">
+    <AppBar position="fixed"
+      sx={{
+        background: "linear-gradient(to right, #00838f ,#3d8c62)",
+      }}
+    >
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           <Typography
@@ -217,7 +236,7 @@ function ResponsiveAppBar() {
             <Box sx={{ flexGrow: 0 }}>
               <Tooltip title="Open settings">
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                  <Avatar alt="Remy Sharp">{getInitials()}</Avatar>
+                  <Avatar alt="Initials">{initials}</Avatar>
                 </IconButton>
               </Tooltip>
               <Menu
@@ -236,25 +255,25 @@ function ResponsiveAppBar() {
                 open={Boolean(anchorElUser)}
                 onClose={handleCloseUserMenu}
               >
-                {user && (user.role === 'USER' || user.role === 'PARKING_MANAGER' ) && (
-                    <>
-                      <MenuItem onClick={handleReservations}>
-                        <Typography textAlign="center">Reservations</Typography>
-                      </MenuItem>
-                      <MenuItem onClick={handleProfile}>
-                        <Typography textAlign="center">Profile</Typography>
-                      </MenuItem>
-                    </>
+                {user && (user.role === 'USER' || user.role === 'PARKING_MANAGER') && (
+                  <>
+                    <MenuItem onClick={handleReservations}>
+                      <Typography textAlign="center">Reservations</Typography>
+                    </MenuItem>
+                    <MenuItem onClick={handleProfile}>
+                      <Typography textAlign="center">Profile</Typography>
+                    </MenuItem>
+                  </>
                 )}
                 {user && user.role === 'USER' && (
-                    <MenuItem onClick={handleCars}>
-                      <Typography textAlign="center">Cars</Typography>
-                    </MenuItem>
+                  <MenuItem onClick={handleCars}>
+                    <Typography textAlign="center">Cars</Typography>
+                  </MenuItem>
                 )}
                 {user && user.role === 'ADMIN' && (
-                    <MenuItem onClick={handleAdmin}>
-                      <Typography textAlign="center">Admin</Typography>
-                    </MenuItem>
+                  <MenuItem onClick={handleAdmin}>
+                    <Typography textAlign="center">Admin</Typography>
+                  </MenuItem>
                 )}
                 <MenuItem onClick={handleLogout}>
                   <Typography textAlign="center">Logout</Typography>

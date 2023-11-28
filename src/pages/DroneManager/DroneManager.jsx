@@ -298,15 +298,15 @@ function ParkingEditor(props) {
                     >
                         <Paper className='reserve'>
                             <CardContent>
-                                <Typography variant='h4'>{parking.name}</Typography>
+                                <Typography variant='h4' fontWeight='bold'>{parking.name}</Typography>
                                 <Grid container spacing={2}>
                                     <Grid item
                                         xs={10}>
                                         <FormControl fullWidth sx={{ mt: 1 }}>
-                                            <InputLabel id="demo-simple-select-label">Drone</InputLabel>
+                                            <InputLabel id="drone-select-label">Drone</InputLabel>
                                             <Select
-                                                labelId="demo-simple-select-label"
-                                                id="demo-simple-select"
+                                                labelId="drone-select-label"
+                                                id="drone-select"
                                                 value={selectedDroneId}
                                                 label="Drone"
                                                 onChange={handleSelectDrone}

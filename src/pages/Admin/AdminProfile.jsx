@@ -24,6 +24,7 @@ import { registerManager } from "../../actions/authenticationActions";
 import { getParkings } from "../../actions/parkingActions";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import MenuItem from "@mui/material/MenuItem";
+import { GradientButton } from "../../components/GradientButton";
 
 export default function AdminProfile() {
     const authenticationReducer = useSelector((state) => state.authenticationReducer);
@@ -187,7 +188,7 @@ export default function AdminProfile() {
                     MANAGERS
                 </Typography>
                 <Grid container justifyContent="flex-end">
-                    <Button variant="contained" margin="normal" onClick={handleAdd}>NEW MANAGER</Button>
+                    <GradientButton variant="contained" margin="normal" onClick={handleAdd}>NEW MANAGER</GradientButton>
                 </Grid>
             </Box>
             <Box style={{ flex: "1", overflowY: "auto" }}>

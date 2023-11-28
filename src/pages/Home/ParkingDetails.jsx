@@ -41,6 +41,7 @@ import getLocalISOTime from "../../utils/getLocalISOTime";
 import AdminProfile from "../Admin/AdminProfile";
 import AppBar from "@mui/material/AppBar";
 import Home from "./Home";
+import { GradientButton } from "../../components/GradientButton";
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
     iconRetinaUrl:
@@ -543,11 +544,10 @@ function ParkingDetails(props) {
                     >
                         <Paper className='reserve'>
                             <CardContent>
-                                <Typography variant='h4'>{parking.name}</Typography>
+                                <Typography variant='h4' fontWeight='bold'>{parking.name}</Typography>
                                 {numOfFreeSpotsList && numOfSpotsList && parking.id && (
                                     <Typography variant='h5'>Available: {numOfFreeSpotsList[parking.id.toString()]}/{numOfSpotsList[parking.id.toString()]}</Typography>
                                 )}
-                                <Typography variant='string'>{parking.description}</Typography>
                                 <Typography variant="h6">
                                     Address: {parking.street}, {parking.zipCode} {parking.city}
                                 </Typography>
@@ -557,10 +557,11 @@ function ParkingDetails(props) {
                                     <Typography variant="h6">Open hours: {convertTime(parking.startTime, parking.timeZone)} -  {convertTime(parking.endTime, parking.timeZone)} </Typography>
                                 )
                                 }
+                                <Typography variant='h6'>{parking.currency}/h: {parking.costRate}</Typography>
+                                <Typography variant='string'>{parking.description}</Typography>
                                 <Typography>
                                     Dates and times are based on parking time zone {parkingTime.toLocaleString()} ({parking.timeZone}) compared to UTC.
                                 </Typography>
-                                <Typography>{parking.currency}/h: {parking.costRate}</Typography>
                             </CardContent>
                             <Grid container>
                                 {user && user.parkingDTO &&
@@ -568,54 +569,54 @@ function ParkingDetails(props) {
                                     && authenticationReducer.isLoggedIn
                                     && authenticationReducer.decodedUser.role === "PARKING_MANAGER" ? (
                                     <Grid container>
-                                        <Button
+                                        <GradientButton
                                             sx={{ m: 1 }}
                                             variant='contained'
                                             onClick={handleGoToDashboard}
                                             fullWidth
                                         >
                                             Parking dashboard
-                                        </Button>
-                                        <Button
+                                        </GradientButton>
+                                        <GradientButton
                                             sx={{ m: 1 }}
                                             variant='contained'
                                             onClick={handleGoToEditor}
                                             fullWidth
                                         >
                                             Parking editor
-                                        </Button>
-                                        <Button
+                                        </GradientButton>
+                                        <GradientButton
                                             sx={{ m: 1 }}
                                             variant='contained'
                                             onClick={handleGoToReservations}
                                             fullWidth
                                         >
                                             Parking reservations
-                                        </Button>
-                                        <Button
+                                        </GradientButton>
+                                        <GradientButton
                                             sx={{ m: 1 }}
                                             variant='contained'
                                             onClick={handleGoToParkingDetails}
                                             fullWidth
                                         >
                                             Change parking details
-                                        </Button>
-                                        <Button
+                                        </GradientButton>
+                                        <GradientButton
                                             sx={{ m: 1 }}
                                             variant='contained'
                                             onClick={handleGoToMission}
                                             fullWidth
                                         >
                                             Drone mission
-                                        </Button>
-                                        <Button
+                                        </GradientButton>
+                                        <GradientButton
                                             sx={{ m: 1 }}
                                             variant='contained'
                                             onClick={handleGoToDroneManager}
                                             fullWidth
                                         >
                                             Drone manager
-                                        </Button>
+                                        </GradientButton>
                                     </Grid>
                                 ) : (
                                     <div></div>
@@ -741,14 +742,14 @@ function ParkingDetails(props) {
                                         <div></div>
                                     )}
                                     <Grid container>
-                                        <Button
+                                        <GradientButton
                                             sx={{ m: 1 }}
                                             variant='contained'
                                             onClick={handleCreateReservation}
                                             fullWidth
                                         >
                                             Reserve
-                                        </Button>
+                                        </GradientButton>
                                     </Grid>
                                 </CardContent>
                             )}

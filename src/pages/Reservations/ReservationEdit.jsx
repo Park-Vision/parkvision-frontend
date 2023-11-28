@@ -17,6 +17,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs from 'dayjs';
 import getLocalISOTime from '../../utils/getLocalISOTime';
 import { checkParkingSpotAviability } from '../../actions/parkingSpotActions';
+import { GradientButton } from '../../components/GradientButton';
 export default function ReservationEdit(props) {
     const { reservationId } = useParams();
     const navigate = useNavigate();
@@ -265,14 +266,14 @@ export default function ReservationEdit(props) {
 
 
                             />
-                            <Button
+                            <GradientButton
                                 sx={{ mt: 2 }}
                                 margin='normal'
                                 variant="contained"
                                 onClick={() => handleEditClick(reservation.parkingSpotDTO.parkingDTO)}
                                 fullWidth>
-                                Save
-                            </Button>
+                                Confirm
+                            </GradientButton>
                             <Button
                                 sx={{ mt: 2 }}
                                 variant="outlined"
