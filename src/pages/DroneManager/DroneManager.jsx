@@ -18,13 +18,15 @@ import SockJS from 'sockjs-client';
 import { MapContainer, Polygon, Popup, TileLayer, FeatureGroup, LayersControl } from "react-leaflet";
 import { getParkingSpotsByParkingId } from "../../actions/parkingSpotActions";
 import Button from "@mui/material/Button";
+import IconButton from "@mui/material/IconButton";
+import AddIcon from '@mui/icons-material/Add';
 import CircularProgress from "@mui/material/CircularProgress";
 import {
     GET_PARKING_SPOT,
 } from "../../actions/types";
 import decodeToken from "../../utils/decodeToken";
 import { getUser } from "../../actions/userActions";
-import { commandDrone } from "../../actions/droneActions";
+import { commandDrone, getDronesByParkingId } from "../../actions/droneActions";
 import { toast } from "react-toastify";
 import DroneMarker from "../../components/DroneMarker"
 import InputLabel from '@mui/material/InputLabel';
@@ -32,8 +34,7 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import DroneTimeline from "../../components/DroneTimeline";
-
-delete L.Icon.Default.prototype._getIconUrl;
+import CreateDronePopup from "../../components/CreateDronePopup";
 
 L.Icon.Default.mergeOptions({
     iconRetinaUrl:
@@ -58,12 +59,14 @@ function ParkingEditor(props) {
     const [messages, setMessages] = useState([]);
     const [stompClient, setStompClient] = useState(null);
 
-    // mock list of drones for this parking, TODO add handling /api/drones/parking/{id} endpoint
-    const mockDronesForParking = [1, 2, 3]
+    // Drones assigned to this parking
+    const [availableDrones, setAvailableDrones] = useState([])
 
-    const [selectedDroneId, setSelectedDroneId] = useState(mockDronesForParking[0])
+    const [selectedDroneId, setSelectedDroneId] = useState(0)
     const [dronePosition, setDronePosition] = useState([0, 0])
     const [droneStage, setDroneStage] = useState(0)
+
+    const [openDialog, setOpenDialog] = useState(false);
 
     const processIncomingMessage = (recievedMessage) => {
         setMessages((messages) => [...messages, recievedMessage]);
@@ -107,8 +110,15 @@ function ParkingEditor(props) {
         dispatch(getParking(parkingId)).then((response) => {
             setDronePosition([response.latitude, response.longitude]);
         });
+        refreshDrones()
         return () => disposeSocket()
     }, []);
+
+    const refreshDrones = () => {
+        dispatch(getDronesByParkingId(parkingId)).then((response) => {
+            setAvailableDrones(response);
+        });
+    }
 
     const disposeSocket = () => {
         if (stompClient) {
@@ -194,6 +204,9 @@ function ParkingEditor(props) {
             .catch((error) => {
                 console.log(error);
             });
+    }
+    const handleOpenPopup = (event) => {
+        setOpenDialog(true);
     }
 
     return (
@@ -286,18 +299,35 @@ function ParkingEditor(props) {
                         <Paper className='reserve'>
                             <CardContent>
                                 <Typography variant='h4'>{parking.name}</Typography>
-                                <FormControl fullWidth>
-                                    <InputLabel id="demo-simple-select-label">Drone</InputLabel>
-                                    <Select
-                                        labelId="demo-simple-select-label"
-                                        id="demo-simple-select"
-                                        value={selectedDroneId}
-                                        label="Drone"
-                                        onChange={handleSelectDrone}
-                                    >
-                                        {mockDronesForParking.map(drone => <MenuItem value={drone}>{drone}</MenuItem>)}
-                                    </Select>
-                                </FormControl>
+                                <Grid container spacing={2}>
+                                    <Grid item
+                                        xs={10}>
+                                        <FormControl fullWidth sx={{ mt: 1 }}>
+                                            <InputLabel id="demo-simple-select-label">Drone</InputLabel>
+                                            <Select
+                                                labelId="demo-simple-select-label"
+                                                id="demo-simple-select"
+                                                value={selectedDroneId}
+                                                label="Drone"
+                                                onChange={handleSelectDrone}
+                                            >
+                                                {availableDrones.map(drone => <MenuItem value={drone.id}>{drone.id} - {drone.name}</MenuItem>)}
+                                            </Select>
+                                        </FormControl>
+                                    </Grid>
+                                    <Grid item xs={2} fullWidth>
+                                        <Box display="flex" justifyContent="center" alignItems="center" height="100%"> {/* Center the IconButton */}
+                                            <IconButton
+                                                size="large"
+                                                variant="outlined"
+                                                color="secondary"
+                                                onClick={handleOpenPopup}
+                                            >
+                                                <AddIcon />
+                                            </IconButton>
+                                        </Box>
+                                    </Grid>
+                                </Grid>
                                 <DroneTimeline stageId={droneStage} />
                             </CardContent>
                             <Grid container>
@@ -330,6 +360,10 @@ function ParkingEditor(props) {
                     </Grid>
                 </Grid>
             </Box>
+            <CreateDronePopup open={openDialog}
+                setOpen={setOpenDialog}
+                refreshDrones={refreshDrones}
+                parkingId={parkingId} />
         </Container>
     );
 }

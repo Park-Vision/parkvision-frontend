@@ -39,6 +39,8 @@ import convertTime from "../../utils/convertTime";
 import convertDate from "../../utils/convertDate";
 import getLocalISOTime from "../../utils/getLocalISOTime";
 import AdminProfile from "../Admin/AdminProfile";
+import AppBar from "@mui/material/AppBar";
+import Home from "./Home";
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
     iconRetinaUrl:
@@ -79,23 +81,21 @@ function ParkingDetails(props) {
     const mapRef = useRef(null);
 
     useEffect(() => {
-        if (authenticationReducer.decodedUser && authenticationReducer.decodedUser.role !== "ADMIN") {
-            const startDayUTC = dayjs(new Date(startDay));
-            const startTimeUTC = dayjs(new Date(startTime));
-            const endTimeUTC = dayjs(new Date(endTime));
-            dispatch(getParking(parkingId)).then((res) => {
-                dispatch(getParkingFreeSpotsNumber(parkingId, startDayUTC.toISOString()))
-                dispatch(getParkingSpotsNumber(parkingId))
-                firstSearch(startTimeUTC, endTimeUTC, res);
-            });
-            dispatch(getParkingSpotsByParkingId(parkingId));
-            unsetParkingSpot();
-            tryGetUser();
-            tryGetUserCars();
-        }
+        const startDayUTC = dayjs(new Date(startDay));
+        const startTimeUTC = dayjs(new Date(startTime));
+        const endTimeUTC = dayjs(new Date(endTime));
+        dispatch(getParking(parkingId)).then((res) => {
+            dispatch(getParkingFreeSpotsNumber(parkingId, startDayUTC.toISOString()))
+            dispatch(getParkingSpotsNumber(parkingId))
+            firstSearch(startTimeUTC, endTimeUTC, res);
+        });
+        dispatch(getParkingSpotsByParkingId(parkingId));
+        unsetParkingSpot();
+        tryGetUser();
+        tryGetUserCars();
     }, []);
 
-    if (!authenticationReducer.decodedUser || authenticationReducer.decodedUser.role === "ADMIN") {
+    if (authenticationReducer.decodedUser !== null && authenticationReducer.decodedUser.role === "ADMIN") {
         navigate('/admin');
         return <AdminProfile />;
     }
@@ -389,6 +389,10 @@ function ParkingDetails(props) {
         navigate(`/parking/${parkingId}/missions`);
     };
 
+    const handleGoToDashboard = () => {
+        navigate(`/parking/${parkingId}/dashboard`);
+    };
+
     return (
         <Container
             maxWidth='xl'
@@ -551,6 +555,14 @@ function ParkingDetails(props) {
                                     && authenticationReducer.isLoggedIn
                                     && authenticationReducer.decodedUser.role === "PARKING_MANAGER" ? (
                                     <Grid container>
+                                        <Button
+                                            sx={{ m: 1 }}
+                                            variant='contained'
+                                            onClick={handleGoToDashboard}
+                                            fullWidth
+                                        >
+                                            Parking dashboard
+                                        </Button>
                                         <Button
                                             sx={{ m: 1 }}
                                             variant='contained'
