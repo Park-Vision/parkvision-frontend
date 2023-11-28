@@ -148,6 +148,9 @@ function ParkingDetails(props) {
             return true;
         }
 
+        if (isParking24h(parking)) {
+            return false;
+        }
 
         let hour = value.hour();
         let minute = value.minute();
@@ -182,7 +185,7 @@ function ParkingDetails(props) {
         if (!parking) {
             return false;
         }
-        return convertTime(parking.startTime, parking.timeZone) === "00:00" && convertTime(parking.endTime, parking.timeZone) === "23:45";
+        return convertTime(parking.startTime, parking.timeZone) === "00:00" && convertTime(parking.endTime, parking.timeZone) === "00:00";
     };
 
 
@@ -214,6 +217,7 @@ function ParkingDetails(props) {
 
         if (startTime.toDate().getTime() >= endTime.toDate().getTime()) {
             endTime = startTime.add(15, "minute");
+            endDay = endTime;
         }
         setEndTime(endTime);
 
@@ -364,8 +368,6 @@ function ParkingDetails(props) {
         });
 
         navigate("/reservation-details");
-
-        // dispatch(addReservation(newReservation))
     };
 
     const handleGoToEditor = () => {
@@ -451,13 +453,19 @@ function ParkingDetails(props) {
                                                     interactive>
                                                     {occupiedParkingSpotsMap && occupiedParkingSpotsMap[parkingSpot.id] && (
                                                         <Popup>
-                                                            {`This spot will be available from: ${convertDate(occupiedParkingSpotsMap[parkingSpot.id].earliestStart)}`} <br></br>
-                                                            {`This spot will be available to: ${convertDate(occupiedParkingSpotsMap[parkingSpot.id].earliestEnd)}`}
+                                                            Available from: <br />
+                                                            {`${convertDate(occupiedParkingSpotsMap[parkingSpot.id].earliestStart)}`}
+                                                            {occupiedParkingSpotsMap[parkingSpot.id].earliestEnd && (
+                                                                <div>
+                                                                    Available to: <br />
+                                                                    {convertDate(occupiedParkingSpotsMap[parkingSpot.id].earliestEnd)}
+                                                                </div>
+                                                            )}
                                                         </Popup>
                                                     )}
                                                     {occupiedParkingSpotsMap && occupiedParkingSpotsMap[parkingSpot.id] == null && (
                                                         <Popup>
-                                                            {`This spot will not be available for the rest of the day.`}
+                                                            {`Will not be available for the rest of the day.`}
                                                         </Popup>
                                                     )}
                                                 </Polygon>
@@ -543,7 +551,12 @@ function ParkingDetails(props) {
                                 <Typography variant="h6">
                                     Address: {parking.street}, {parking.zipCode} {parking.city}
                                 </Typography>
-                                <Typography variant="h6">Open hours: {convertTime(parking.startTime, parking.timeZone)} -  {convertTime(parking.endTime, parking.timeZone)} </Typography>
+                                {isParking24h(parking) ? (
+                                    <Typography variant="h6">Open hours: 24/7</Typography>
+                                ) : (
+                                    <Typography variant="h6">Open hours: {convertTime(parking.startTime, parking.timeZone)} -  {convertTime(parking.endTime, parking.timeZone)} </Typography>
+                                )
+                                }
                                 <Typography>
                                     Dates and times are based on parking time zone {parkingTime.toLocaleString()} ({parking.timeZone}) compared to UTC.
                                 </Typography>
@@ -743,7 +756,7 @@ function ParkingDetails(props) {
                     </Grid>
                 </Grid>
             </Box>
-        </Container>
+        </Container >
     );
 }
 

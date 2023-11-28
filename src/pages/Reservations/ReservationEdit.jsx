@@ -54,12 +54,6 @@ export default function ReservationEdit(props) {
 
 
     const handleAnyChangeOfTime = (startDate, endDate, parking) => {
-        // check if there no resevrations in this time
-        // if (!isParking24h(parking)) {
-        //     if (startDate.toDate().getDate() !== dayjs(parkingTime).toDate().getDate()) {
-        //         endDate = startDate;
-        //     }
-        // }
         endDate = startDate.add(duration, 'minutes');
 
         if (!parking.timeZone) {
@@ -67,19 +61,8 @@ export default function ReservationEdit(props) {
         }
 
         setStartDate(startDate);
-        const start = getLocalISOTime(startDate, parking.timeZone);
 
         setEndDate(endDate);
-        const end = getLocalISOTime(endDate, parking.timeZone);
-
-        dispatch(checkParkingSpotAviability(reservation.parkingSpotDTO.id, reservation.id, start, end)).then((response) => {
-            if (response === false) {
-                toast.error('Parking spot is not available in this time');
-                setStartDate(dayjs(reservation.startDate));
-                setEndDate(dayjs(reservation.endDate));
-            }
-        });
-
     }
 
 
@@ -99,27 +82,39 @@ export default function ReservationEdit(props) {
             return;
         }
 
-        reservation.registrationNumber = registrationNumber;
+        const start = getLocalISOTime(startDate, parking.timeZone);
 
-        try {
-            setLoading(true);
-            dispatch(updateReservation(transformResevationDates(reservation, parking)))
-                .then(response => {
-                    setLoading(false);
-                    toast.success('reservation updated');
-                    navigate(-1);
-                }, error => {
-                    setLoading(false);
-                    console.log(error);
-                    toast.error(error.message);
+        const end = getLocalISOTime(endDate, parking.timeZone);
+
+        dispatch(checkParkingSpotAviability(reservation.parkingSpotDTO.id, reservation.id, start, end)).then((response) => {
+            if (response === false) {
+                toast.error('Parking spot is not available in this time');
+                setStartDate(dayjs(reservation.startDate));
+                setEndDate(dayjs(reservation.endDate));
+            } else {
+                reservation.registrationNumber = registrationNumber;
+
+                try {
+                    setLoading(true);
+                    dispatch(updateReservation(transformResevationDates(reservation, parking)))
+                        .then(response => {
+                            setLoading(false);
+                            toast.success('reservation updated');
+                            navigate(-1);
+                        }, error => {
+                            setLoading(false);
+                            console.log(error);
+                            toast.error(error.message);
+                        }
+                        );
                 }
-                );
-        }
-        catch (e) {
-            console.log(e);
-            setLoading(false);
-            toast.error('coflict!');
-        }
+                catch (e) {
+                    console.log(e);
+                    setLoading(false);
+                    toast.error('coflict!');
+                }
+            }
+        });
     };
 
     const handleExitClick = () => {
@@ -193,10 +188,12 @@ export default function ReservationEdit(props) {
                                 )}
                             </div>
                             <Typography margin='normal'>
+                                Change the booking start date, the booking duration will remain unchanged. Changing the reservation is possible if it is within the opening hours of the parking lot and there are no colluding reservations at that time.
+                            </Typography>
+                            <Typography margin='normal'>
                                 Dates and times are based on parking time zone ({reservation?.parkingSpotDTO?.parkingDTO?.timeZone}) compared to UTC.
                             </Typography>
                             <LocalizationProvider
-
                                 dateAdapter={AdapterDayjs}>
                                 <MobileDateTimePicker
 
