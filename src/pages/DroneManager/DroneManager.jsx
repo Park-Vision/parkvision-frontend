@@ -35,6 +35,11 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import DroneTimeline from "../../components/DroneTimeline";
 import CreateDronePopup from "../../components/CreateDronePopup";
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableRow from '@mui/material/TableRow';
 
 L.Icon.Default.mergeOptions({
     iconRetinaUrl:
@@ -63,7 +68,7 @@ function ParkingEditor(props) {
     const [availableDrones, setAvailableDrones] = useState([])
 
     const [selectedDroneId, setSelectedDroneId] = useState(0)
-    const [dronePosition, setDronePosition] = useState([0, 0])
+    const [dronePosition, setDronePosition] = useState([0, 0, 0])
     const [droneStage, setDroneStage] = useState(0)
 
     const [openDialog, setOpenDialog] = useState(false);
@@ -72,7 +77,7 @@ function ParkingEditor(props) {
         setMessages((messages) => [...messages, recievedMessage]);
 
         if (Object.hasOwn(recievedMessage, "lat")) {
-            setDronePosition([recievedMessage.lat, recievedMessage.lon])
+            setDronePosition([recievedMessage.lat, recievedMessage.lon, recievedMessage.alt])
         }
 
         if (Object.hasOwn(recievedMessage, "type")) {
@@ -108,7 +113,7 @@ function ParkingEditor(props) {
     useEffect(() => {
         initStomp()
         dispatch(getParking(parkingId)).then((response) => {
-            setDronePosition([response.latitude, response.longitude]);
+            setDronePosition([response.latitude, response.longitude, 0]);
         });
         refreshDrones()
         return () => disposeSocket()
@@ -186,7 +191,7 @@ function ParkingEditor(props) {
 
     const handleSelectDrone = (event) => {
         setSelectedDroneId(event.target.value);
-        setDronePosition([0, 0])
+        setDronePosition([0, 0, 0])
         setDroneStage(0)
 
         subscribeToDifferentSocket(event.target.value)
@@ -329,6 +334,20 @@ function ParkingEditor(props) {
                                     </Grid>
                                 </Grid>
                                 <DroneTimeline stageId={droneStage} />
+                                <TableContainer component={Paper}>
+                                    <Table size="small" aria-label="a dense table">
+                                        <TableBody>
+                                            <TableRow
+                                                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                            >
+                                                <TableCell component="th" scope="row">
+                                                    {"Altitude"}
+                                                </TableCell>
+                                                <TableCell align="right">{dronePosition[2]}</TableCell>
+                                            </TableRow>
+                                        </TableBody>
+                                    </Table>
+                                </TableContainer>
                             </CardContent>
                             <Grid container>
                                 <Button
