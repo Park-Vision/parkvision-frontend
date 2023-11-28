@@ -19,7 +19,6 @@ import decodeToken from '../utils/decodeToken';
 
 const pages = ['Home', 'Contact', 'About'];
 const links = ['/', '/contact', '/about'];
-const settings = ['Account', 'Cars', 'Reservations'];
 
 function ResponsiveAppBar() {
   const [anchorElNav, setAnchorElNav] = React.useState(null);

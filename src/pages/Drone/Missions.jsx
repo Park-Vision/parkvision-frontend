@@ -1,14 +1,13 @@
 import { useDispatch, useSelector } from "react-redux";
-import React, { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import React, { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { getDroneMissions } from "../../actions/droneMissionActions";
 import { Box, Container } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import convertDate from "../../utils/convertDate";
 import Home from "../Home/Home";
 
-export default function ManagerReservations(props) {
-    const { parkingId } = useParams();
+export default function ManagerReservations() {
     const authenticationReducer = useSelector((state) => state.authenticationReducer);
 
     const missions = useSelector((state) => state.droneMissionReducer.droneMissions);
@@ -19,7 +18,7 @@ export default function ManagerReservations(props) {
         if (authenticationReducer.decodedUser && authenticationReducer.decodedUser.role === "PARKING_MANAGER") {
             dispatch(getDroneMissions());
         }
-    }, []);
+    }, );
 
     if (!authenticationReducer.decodedUser && authenticationReducer.decodedUser.role === "PARKING_MANAGER") {
         navigate('/');

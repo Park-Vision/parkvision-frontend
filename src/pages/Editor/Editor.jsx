@@ -8,20 +8,17 @@ import { Paper } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import Container from "@mui/material/Container";
 import Box from "@mui/material/Box";
-import L, { point } from "leaflet";
+import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet-draw/dist/leaflet.draw.css";
 import { EditControl } from "react-leaflet-draw";
-import "../Editor.css"; // Create a CSS file for styling
+import "../Editor.css";
 import { useNavigate } from "react-router-dom";
-
 import { MapContainer, Polygon, Popup, TileLayer, FeatureGroup } from "react-leaflet";
-import { getParkingSpotsByParkingId, addParkingSpot, addParkingSpots, updateParkingSpot, getParkingSpot, getParkingSpots } from "../../actions/parkingSpotActions";
+import { getParkingSpotsByParkingId, addParkingSpot, updateParkingSpot, getParkingSpot } from "../../actions/parkingSpotActions";
 import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
-import {
-    GET_PARKING_SPOT, UPDATE_PARKING_SPOT,
-} from "../../actions/types";
+import { GET_PARKING_SPOT } from "../../actions/types";
 import convertTime from "../../utils/convertTime";
 import decodeToken from "../../utils/decodeToken";
 import { getUser } from "../../actions/userActions";
@@ -46,9 +43,7 @@ function ParkingEditor(props) {
     const parking = useSelector((state) => state.parkingReducer.parking);
     const parkingSpots = useSelector((state) => state.parkingSpotReducer.parkingSpots);
     const stagedParkingSpots = useSelector((state) => state.parkingSpotReducer.stagedParkingSpots);
-    const parkingSpot = useSelector((state) => state.parkingSpotReducer.parkingSpot);
     const [drag, setDrag] = React.useState(false);
-    const [spotsCopy, setSpotsCopy] = React.useState([]);
 
     const userjson = JSON.parse(localStorage.getItem("user"));
     const user = decodeToken(userjson?.token);
@@ -74,7 +69,7 @@ function ParkingEditor(props) {
             }
         }
         fetchData();
-    }, []);
+    }, );
 
 
     const toggleDrag = (value) => {
@@ -91,28 +86,6 @@ function ParkingEditor(props) {
                     }
                 });
             }
-        });
-    };
-
-
-    const clearLayerWithId = (id) => {
-        const map = mapRef.current;
-        map.eachLayer((layer) => {
-            if (layer instanceof L.FeatureGroup) {
-                layer.eachLayer((polyObject) => {
-                    if (polyObject.options.id === id) {
-                        polyObject.remove();
-                    }
-                });
-            }
-        });
-    };
-
-
-    const unsetParkingSpot = () => {
-        dispatch({
-            type: GET_PARKING_SPOT,
-            value: {},
         });
     };
 

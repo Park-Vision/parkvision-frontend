@@ -43,7 +43,7 @@ export default function Cars() {
         if (authenticationReducer.decodedUser && authenticationReducer.decodedUser.role === "USER") {
             dispatch(getUserCars())
         }
-    }, []);
+    });
 
     if (!authenticationReducer.decodedUser || authenticationReducer.decodedUser.role !== "USER") {
         navigate('/');

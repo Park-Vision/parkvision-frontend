@@ -51,32 +51,16 @@ export default function Home() {
                 });
         } else {
             dispatch(getParkings()).then((response) => {
-                    response.map((parking, index) => {
-                        dispatch(getParkingFreeSpotsNumber(parking.id, new Date().toISOString()))
-                        dispatch(getParkingSpotsNumber(parking.id))
-                    })
+                response.forEach((parking, index) => {
+                    dispatch(getParkingFreeSpotsNumber(parking.id, new Date().toISOString()));
+                    dispatch(getParkingSpotsNumber(parking.id));
+                });
                 }
             ).catch((error) => {
                 console.log(error);
             });
         }
-    }, []);
-
-
-
-
-
-
-    const onError = (error) => {
-        console.log('error', error);
-    }
-
-    const onMessageReceived = (msg) => {
-
-        const message = JSON.parse(msg.body);
-        console.log('message', message);
-    }
-    
+    }, );
 
     useEffect(() => {
         const user = decodeToken(JSON.parse(localStorage.getItem("user"))?.token);
@@ -91,16 +75,9 @@ export default function Home() {
         }
     }, [dispatch, parkings])
 
-    const handleChange = (event) => {
-    };
-
     const handleClick = (event) => {
         navigate(`/parking/${event}`);
     }
-    
-    const handleSubmit = (event) => {
-        console.log('search', event);
-    };
 
     const handleShowMap = () => {
         setShowMap(true);

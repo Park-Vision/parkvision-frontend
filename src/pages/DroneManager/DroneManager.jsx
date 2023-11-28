@@ -112,7 +112,7 @@ function ParkingEditor(props) {
         });
         refreshDrones()
         return () => disposeSocket()
-    }, []);
+    }, );
 
     const refreshDrones = () => {
         dispatch(getDronesByParkingId(parkingId)).then((response) => {
@@ -170,7 +170,7 @@ function ParkingEditor(props) {
             }
         }
         checkAuthorization();
-    }, []);
+    }, );
 
 
     const unsetParkingSpot = () => {

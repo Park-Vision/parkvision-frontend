@@ -1,5 +1,5 @@
 import 'leaflet/dist/leaflet.css'
-import { Marker, Popup, LayersControl, LayerGroup } from 'react-leaflet'
+import { Marker, Popup, LayersControl } from 'react-leaflet'
 import { droneIcon } from '../assets/icons/icons'
 
 
