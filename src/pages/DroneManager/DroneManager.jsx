@@ -18,6 +18,8 @@ import SockJS from 'sockjs-client';
 import { MapContainer, Polygon, Popup, TileLayer, FeatureGroup, LayersControl } from "react-leaflet";
 import { getParkingSpotsByParkingId } from "../../actions/parkingSpotActions";
 import Button from "@mui/material/Button";
+import IconButton from "@mui/material/IconButton";
+import AddIcon from '@mui/icons-material/Add';
 import CircularProgress from "@mui/material/CircularProgress";
 import {
     GET_PARKING_SPOT,
@@ -297,27 +299,34 @@ function ParkingEditor(props) {
                         <Paper className='reserve'>
                             <CardContent>
                                 <Typography variant='h4'>{parking.name}</Typography>
-                                <Grid container>
-                                    <FormControl fullWidth sx={{ m: "5%", width: "60%" }}>
-                                        <InputLabel id="demo-simple-select-label">Drone</InputLabel>
-                                        <Select
-                                            labelId="demo-simple-select-label"
-                                            id="demo-simple-select"
-                                            value={selectedDroneId}
-                                            label="Drone"
-                                            onChange={handleSelectDrone}
-                                        >
-                                            {availableDrones.map(drone => <MenuItem value={drone.id}>{drone.id} - {drone.name}</MenuItem>)}
-                                        </Select>
-                                    </FormControl>
-                                    <Button
-                                        sx={{ m: "5%", width: "20%" }}
-                                        variant='contained'
-                                        color="secondary"
-                                        onClick={handleOpenPopup}
-                                    >
-                                        +
-                                    </Button>
+                                <Grid container spacing={2}>
+                                    <Grid item
+                                        xs={10}>
+                                        <FormControl fullWidth sx={{ mt: 1 }}>
+                                            <InputLabel id="demo-simple-select-label">Drone</InputLabel>
+                                            <Select
+                                                labelId="demo-simple-select-label"
+                                                id="demo-simple-select"
+                                                value={selectedDroneId}
+                                                label="Drone"
+                                                onChange={handleSelectDrone}
+                                            >
+                                                {availableDrones.map(drone => <MenuItem value={drone.id}>{drone.id} - {drone.name}</MenuItem>)}
+                                            </Select>
+                                        </FormControl>
+                                    </Grid>
+                                    <Grid item xs={2} fullWidth>
+                                        <Box display="flex" justifyContent="center" alignItems="center" height="100%"> {/* Center the IconButton */}
+                                            <IconButton
+                                                size="large"
+                                                variant="outlined"
+                                                color="secondary"
+                                                onClick={handleOpenPopup}
+                                            >
+                                                <AddIcon />
+                                            </IconButton>
+                                        </Box>
+                                    </Grid>
                                 </Grid>
                                 <DroneTimeline stageId={droneStage} />
                             </CardContent>

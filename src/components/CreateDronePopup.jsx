@@ -34,6 +34,11 @@ function CreateDronePopup(props) {
     };
 
     const handleCreateDrone = (event) => {
+        if (name === "" || model === "" || serialNumber === "") {
+            toast.error('Please insert all required data.');
+            return;
+        }
+
         const newDrone = {
             name: name,
             model: model,
