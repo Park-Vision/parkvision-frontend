@@ -355,6 +355,11 @@ function ManagerParkingDetails() {
                                         }
                                     />
                                 </Grid>
+                                <Grid item xs={12} sm={12}>
+                                    <Typography>
+                                        If parking is open 24/7, set the start time and end time to 00:00
+                                    </Typography>
+                                </Grid>
                                 <Grid item xs={12} sm={6}>
                                     <LocalizationProvider dateAdapter={AdapterDayjs} >
                                         <MobileTimePicker
