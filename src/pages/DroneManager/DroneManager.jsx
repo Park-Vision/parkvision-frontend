@@ -35,6 +35,7 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import DroneTimeline from "../../components/DroneTimeline";
 import CreateDronePopup from "../../components/CreateDronePopup";
+import ManagerNavigation from "../../components/ManagerNavigation";
 
 L.Icon.Default.mergeOptions({
     iconRetinaUrl:
@@ -214,6 +215,7 @@ function ParkingEditor(props) {
             maxWidth='xl'
             style={{ height: "97%" }}
         >
+            <ManagerNavigation/>
             <Box sx={{ my: 4, height: "100%" }}>
                 <Grid
                     container

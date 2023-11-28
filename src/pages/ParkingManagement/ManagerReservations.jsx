@@ -10,6 +10,7 @@ import ModeEditIcon from '@mui/icons-material/ModeEdit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
 import { toast } from "react-toastify";
+import ManagerNavigation from "../../components/ManagerNavigation";
 export default function ManagerReservations(props) {
     const { parkingId } = useParams();
     const authenticationReducer = useSelector((state) => state.authenticationReducer);
@@ -88,6 +89,7 @@ export default function ManagerReservations(props) {
 
     return (
         <Container maxWidth="xl" style={{ height: "100%" }}>
+            <ManagerNavigation/>
             <Box style={{ height: "100%" }}>
                 <div style={{ height: "100%" }}>
                     <DataGrid

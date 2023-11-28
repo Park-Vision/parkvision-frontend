@@ -11,6 +11,7 @@ import { PieChart } from "@mui/x-charts";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import IconButton from '@mui/material/IconButton';
 import Box from '@mui/material/Box';
+import ManagerNavigation from "../../components/ManagerNavigation";
 Chart.register(ArcElement);
 Chart.register(CategoryScale);
 Chart.register(...registerables);
@@ -244,6 +245,7 @@ export default function ManagerDashboard(props) {
 
     return (
         <Container maxWidth="l">
+            <ManagerNavigation/>
             <Box sx={{ my: 4 }}>
                 <Card >
                     <IconButton onClick={() => navigate(-1)}>

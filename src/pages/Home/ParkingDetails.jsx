@@ -41,6 +41,8 @@ import getLocalISOTime from "../../utils/getLocalISOTime";
 import AdminProfile from "../Admin/AdminProfile";
 import AppBar from "@mui/material/AppBar";
 import Home from "./Home";
+import Toolbar from "@mui/material/Toolbar";
+import ManagerNavigation from "../../components/ManagerNavigation";
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
     iconRetinaUrl:
@@ -368,43 +370,25 @@ function ParkingDetails(props) {
         // dispatch(addReservation(newReservation))
     };
 
-    const handleGoToEditor = () => {
-        navigate(`/parking/${parkingId}/editor`);
-    };
-
-    const handleGoToReservations = () => {
-        navigate(`/parking/${parkingId}/reservations`);
-    };
-
-    const handleGoToDroneManager = () => {
-        navigate(`/parking/${parkingId}/drone`);
-    };
-
-
-    const handleGoToParkingDetails = () => {
-        navigate(`/parking/${parkingId}/details`);
-    };
-
-    const handleGoToMission = () => {
-        navigate(`/parking/${parkingId}/missions`);
-    };
-
-    const handleGoToDashboard = () => {
-        navigate(`/parking/${parkingId}/dashboard`);
-    };
-
     return (
         <Container
             maxWidth='xl'
             style={{ height: "97%" }}
         >
+            {user && user.parkingDTO &&
+            user.parkingDTO.id === parking.id
+            && authenticationReducer.isLoggedIn
+            && authenticationReducer.decodedUser.role === "PARKING_MANAGER" ? (
+                <ManagerNavigation/>
+            ) : (
+                <div></div>
+            )}
             <Box sx={{ my: 4, height: "100%" }}>
                 <Grid
                     container
                     spacing={2}
                     style={{ height: "100%" }}
                 >
-                    {/* Map Section */}
                     <Grid
                         item
                         xs={12}
@@ -549,65 +533,6 @@ function ParkingDetails(props) {
                                 </Typography>
                                 <Typography>{parking.currency}/h: {parking.costRate}</Typography>
                             </CardContent>
-                            <Grid container>
-                                {user && user.parkingDTO &&
-                                    user.parkingDTO.id === parking.id
-                                    && authenticationReducer.isLoggedIn
-                                    && authenticationReducer.decodedUser.role === "PARKING_MANAGER" ? (
-                                    <Grid container>
-                                        <Button
-                                            sx={{ m: 1 }}
-                                            variant='contained'
-                                            onClick={handleGoToDashboard}
-                                            fullWidth
-                                        >
-                                            Parking dashboard
-                                        </Button>
-                                        <Button
-                                            sx={{ m: 1 }}
-                                            variant='contained'
-                                            onClick={handleGoToEditor}
-                                            fullWidth
-                                        >
-                                            Parking editor
-                                        </Button>
-                                        <Button
-                                            sx={{ m: 1 }}
-                                            variant='contained'
-                                            onClick={handleGoToReservations}
-                                            fullWidth
-                                        >
-                                            Parking reservations
-                                        </Button>
-                                        <Button
-                                            sx={{ m: 1 }}
-                                            variant='contained'
-                                            onClick={handleGoToParkingDetails}
-                                            fullWidth
-                                        >
-                                            Change parking details
-                                        </Button>
-                                        <Button
-                                            sx={{ m: 1 }}
-                                            variant='contained'
-                                            onClick={handleGoToMission}
-                                            fullWidth
-                                        >
-                                            Drone mission
-                                        </Button>
-                                        <Button
-                                            sx={{ m: 1 }}
-                                            variant='contained'
-                                            onClick={handleGoToDroneManager}
-                                            fullWidth
-                                        >
-                                            Drone manager
-                                        </Button>
-                                    </Grid>
-                                ) : (
-                                    <div></div>
-                                )}
-                            </Grid>
                             {parkingTime && parking.timeZone && (
                                 <CardContent spacing={2}>
                                     <Typography variant='h6'>Select start date and time:</Typography>

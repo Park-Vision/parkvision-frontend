@@ -25,6 +25,7 @@ import { getUser } from "../../actions/userActions";
 import { toast } from "react-toastify";
 import 'leaflet-path-drag'
 import { areParkingSpotsColliding, getArea, isSpotAreaTooBig, isSpotAreaTooSmall } from "../../utils/parkingUtils";
+import ManagerNavigation from "../../components/ManagerNavigation";
 delete L.Icon.Default.prototype._getIconUrl;
 
 L.Icon.Default.mergeOptions({
@@ -447,6 +448,7 @@ function ParkingEditor(props) {
             maxWidth='xl'
             style={{ height: "97%" }}
         >
+            <ManagerNavigation/>
             <Box sx={{ my: 4, height: "100%" }}>
                 <Grid
                     container
