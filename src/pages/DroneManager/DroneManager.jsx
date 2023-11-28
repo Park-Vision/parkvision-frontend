@@ -62,7 +62,6 @@ function ParkingEditor(props) {
     const userjson = JSON.parse(localStorage.getItem("user"));
     const user = decodeToken(userjson?.token);
 
-    const [messages, setMessages] = useState([]);
     const [stompClient, setStompClient] = useState(null);
 
     // Drones assigned to this parking
@@ -75,8 +74,6 @@ function ParkingEditor(props) {
     const [openDialog, setOpenDialog] = useState(false);
 
     const processIncomingMessage = (recievedMessage) => {
-        setMessages((messages) => [...messages, recievedMessage]);
-
         if (Object.hasOwn(recievedMessage, "lat")) {
             setDronePosition([recievedMessage.lat, recievedMessage.lon, recievedMessage.alt])
         }
