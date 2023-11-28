@@ -39,9 +39,6 @@ import convertTime from "../../utils/convertTime";
 import convertDate from "../../utils/convertDate";
 import getLocalISOTime from "../../utils/getLocalISOTime";
 import AdminProfile from "../Admin/AdminProfile";
-import AppBar from "@mui/material/AppBar";
-import Home from "./Home";
-import Toolbar from "@mui/material/Toolbar";
 import ManagerNavigation from "../../components/ManagerNavigation";
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({

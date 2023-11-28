@@ -7,21 +7,18 @@ import IconButton from "@mui/material/IconButton";
 import {Button, Drawer, List, ListItem, Typography} from "@mui/material";
 import {useEffect, useState} from "react";
 import {useDispatch, useSelector} from "react-redux";
-import dayjs from "dayjs";
-import {getParking, getParkingFreeSpotsNumber, getParkingSpotsNumber} from "../actions/parkingActions";
-import {getParkingSpotsByParkingId} from "../actions/parkingSpotActions";
+import {getParking} from "../actions/parkingActions";
 
 const ManagerNavigation = (props) => {
     const { parkingId } = useParams();
     const [isDrawerOpen, setDrawerOpen] = useState(false);
     const parking = useSelector((state) => state.parkingReducer.parking);
-    const authenticationReducer = useSelector((state) => state.authenticationReducer);
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
     useEffect(() => {
         dispatch(getParking(parkingId));
-    }, []);
+    }, );
 
     const handleDrawerToggle = () => {
         setDrawerOpen(!isDrawerOpen);
