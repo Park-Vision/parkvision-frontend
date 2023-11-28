@@ -29,6 +29,7 @@ import ManagerParkingCreate from "./pages/ParkingManagement/ManagerParkingCreate
 import ManagerParkingDetails from "./pages/ParkingManagement/ManagerParkingDetails";
 import PasswordReset from "./pages/Login/PasswordReset";
 import AdminProfile from "./pages/Admin/AdminProfile";
+import ManagerDashboard from "./pages/ParkingManagement/ManagerDashboard";
 const ColorModeContext = React.createContext({ toggleColorMode: () => { } });
 
 axios.defaults.baseURL = process.env.REACT_APP_BACKEND_URL;
@@ -186,6 +187,10 @@ function App() {
                             <Route
                                 path={"/admin"}
                                 element={<AdminProfile />}
+                            />
+                            <Route
+                                path={"/parking/:parkingId/dashboard"}
+                                element={<ManagerDashboard />}
                             />
                             <Route path="*" element={<Navigate replace to="/" />} />
                         </Routes>

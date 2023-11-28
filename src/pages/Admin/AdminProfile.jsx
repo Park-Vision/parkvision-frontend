@@ -47,7 +47,7 @@ export default function AdminProfile() {
         }
     }, []);
 
-    if (!authenticationReducer.decodedUser && authenticationReducer.decodedUser.role !== "ADMIN") {
+    if (!authenticationReducer.decodedUser || authenticationReducer.decodedUser.role !== "ADMIN") {
         navigate('/');
         return <Home />;
     }
