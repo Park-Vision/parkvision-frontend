@@ -211,162 +211,164 @@ function ParkingEditor(props) {
     }
 
     return (
-        <Container
-            maxWidth='xl'
-            style={{ height: "97%" }}
-        >
+        <>
             <ManagerNavigation/>
-            <Box sx={{ my: 4, height: "100%" }}>
-                <Grid
-                    container
-                    spacing={2}
-                    style={{ height: "100%" }}
-                >
+            <Container
+                maxWidth='xl'
+                style={{ height: "97%" }}
+            >
+                <Box sx={{ my: 4, height: "100%" }}>
                     <Grid
-                        item
-                        xs={12}
-                        lg={8}
+                        container
+                        spacing={2}
+                        style={{ height: "100%" }}
                     >
-                        <div className='map-container'>
-                            {parking.latitude && parking.longitude ? (
-                                <MapContainer
-                                    style={{ width: "100%", height: "100%" }}
-                                    center={[parking.latitude, parking.longitude]}
-                                    zoom={20}
-                                    scrollWheelZoom={true}
-                                >
-                                    <FeatureGroup>
-                                        {parkingSpots.parkingSpots
-                                            .map((spot) => (
-                                                <Polygon
-                                                    key={spot.id}
-                                                    positions={spot.pointsDTO.map((point) => [
-                                                        point.latitude,
-                                                        point.longitude,
-                                                    ])}
-                                                    color={spot.active ? "blue" : "#474747"}
+                        <Grid
+                            item
+                            xs={12}
+                            lg={8}
+                        >
+                            <div className='map-container'>
+                                {parking.latitude && parking.longitude ? (
+                                    <MapContainer
+                                        style={{ width: "100%", height: "100%" }}
+                                        center={[parking.latitude, parking.longitude]}
+                                        zoom={20}
+                                        scrollWheelZoom={true}
+                                    >
+                                        <FeatureGroup>
+                                            {parkingSpots.parkingSpots
+                                                .map((spot) => (
+                                                    <Polygon
+                                                        key={spot.id}
+                                                        positions={spot.pointsDTO.map((point) => [
+                                                            point.latitude,
+                                                            point.longitude,
+                                                        ])}
+                                                        color={spot.active ? "blue" : "#474747"}
+                                                    >
+                                                        <Popup>
+                                                            <div style={{ minWidth: '200px', maxWidth: '250px', padding: '10px', textAlign: 'left' }}>
+                                                                <div style={{
+                                                                    marginBottom: '5px', textAlign: 'center',
+                                                                    fontSize: `${Math.min(20, 450 / parking.name.length)}px`, fontWeight: 'bold',
+                                                                    whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'
+                                                                }}>
+                                                                    Spot: {spot.id}
+                                                                </div>
+                                                                <div style={{ marginBottom: '5px' }}>
+                                                                    <span style={{ fontWeight: 'bold' }}>Spot number:</span> {spot.spotNumber}
+                                                                </div>
+                                                            </div>
+                                                        </Popup>
+                                                    </Polygon>
+                                                ))}
+                                        </FeatureGroup>
+                                        <LayersControl position="topright">
+                                            <LayersControl.BaseLayer checked name="OpenStreetMap">
+                                                <TileLayer
+                                                    maxNativeZoom={22}
+                                                    maxZoom={22}
+                                                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                                                    url='http://mt0.google.com/vt/lyrs=s&x={x}&y={y}&z={z}'
+                                                />
+                                            </LayersControl.BaseLayer>
+                                            <DroneMarker position={[dronePosition[0] / 10e6, dronePosition[1] / 10e6]} />
+                                        </LayersControl>
+
+
+                                    </MapContainer>
+                                ) : (
+                                    <Box
+                                        sx={{
+                                            display: "flex",
+                                            "align-content": "center",
+                                            "justify-content": "center",
+                                            "flex-direction": "row",
+                                            "flex-wrap": "wrap",
+                                        }}
+                                        style={{ width: "100%", height: "100%" }}
+                                    >
+                                        <CircularProgress />
+                                    </Box>
+                                )}
+                            </div>
+                        </Grid>
+                        <Grid
+                            item
+                            xs={12}
+                            lg={4}
+                        >
+                            <Paper className='reserve'>
+                                <CardContent>
+                                    <Typography variant='h4'>{parking.name}</Typography>
+                                    <Grid container spacing={2}>
+                                        <Grid item
+                                            xs={10}>
+                                            <FormControl fullWidth sx={{ mt: 1 }}>
+                                                <InputLabel id="demo-simple-select-label">Drone</InputLabel>
+                                                <Select
+                                                    labelId="demo-simple-select-label"
+                                                    id="demo-simple-select"
+                                                    value={selectedDroneId}
+                                                    label="Drone"
+                                                    onChange={handleSelectDrone}
                                                 >
-                                                    <Popup>
-                                                        <div style={{ minWidth: '200px', maxWidth: '250px', padding: '10px', textAlign: 'left' }}>
-                                                            <div style={{
-                                                                marginBottom: '5px', textAlign: 'center',
-                                                                fontSize: `${Math.min(20, 450 / parking.name.length)}px`, fontWeight: 'bold',
-                                                                whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'
-                                                            }}>
-                                                                Spot: {spot.id}
-                                                            </div>
-                                                            <div style={{ marginBottom: '5px' }}>
-                                                                <span style={{ fontWeight: 'bold' }}>Spot number:</span> {spot.spotNumber}
-                                                            </div>
-                                                        </div>
-                                                    </Popup>
-                                                </Polygon>
-                                            ))}
-                                    </FeatureGroup>
-                                    <LayersControl position="topright">
-                                        <LayersControl.BaseLayer checked name="OpenStreetMap">
-                                            <TileLayer
-                                                maxNativeZoom={22}
-                                                maxZoom={22}
-                                                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                                                url='http://mt0.google.com/vt/lyrs=s&x={x}&y={y}&z={z}'
-                                            />
-                                        </LayersControl.BaseLayer>
-                                        <DroneMarker position={[dronePosition[0] / 10e6, dronePosition[1] / 10e6]} />
-                                    </LayersControl>
-
-
-                                </MapContainer>
-                            ) : (
-                                <Box
-                                    sx={{
-                                        display: "flex",
-                                        "align-content": "center",
-                                        "justify-content": "center",
-                                        "flex-direction": "row",
-                                        "flex-wrap": "wrap",
-                                    }}
-                                    style={{ width: "100%", height: "100%" }}
-                                >
-                                    <CircularProgress />
-                                </Box>
-                            )}
-                        </div>
-                    </Grid>
-                    <Grid
-                        item
-                        xs={12}
-                        lg={4}
-                    >
-                        <Paper className='reserve'>
-                            <CardContent>
-                                <Typography variant='h4'>{parking.name}</Typography>
-                                <Grid container spacing={2}>
-                                    <Grid item
-                                        xs={10}>
-                                        <FormControl fullWidth sx={{ mt: 1 }}>
-                                            <InputLabel id="demo-simple-select-label">Drone</InputLabel>
-                                            <Select
-                                                labelId="demo-simple-select-label"
-                                                id="demo-simple-select"
-                                                value={selectedDroneId}
-                                                label="Drone"
-                                                onChange={handleSelectDrone}
-                                            >
-                                                {availableDrones.map(drone => <MenuItem value={drone.id}>{drone.id} - {drone.name}</MenuItem>)}
-                                            </Select>
-                                        </FormControl>
+                                                    {availableDrones.map(drone => <MenuItem value={drone.id}>{drone.id} - {drone.name}</MenuItem>)}
+                                                </Select>
+                                            </FormControl>
+                                        </Grid>
+                                        <Grid item xs={2} fullWidth>
+                                            <Box display="flex" justifyContent="center" alignItems="center" height="100%"> {/* Center the IconButton */}
+                                                <IconButton
+                                                    size="large"
+                                                    variant="outlined"
+                                                    color="secondary"
+                                                    onClick={handleOpenPopup}
+                                                >
+                                                    <AddIcon />
+                                                </IconButton>
+                                            </Box>
+                                        </Grid>
                                     </Grid>
-                                    <Grid item xs={2} fullWidth>
-                                        <Box display="flex" justifyContent="center" alignItems="center" height="100%"> {/* Center the IconButton */}
-                                            <IconButton
-                                                size="large"
-                                                variant="outlined"
-                                                color="secondary"
-                                                onClick={handleOpenPopup}
-                                            >
-                                                <AddIcon />
-                                            </IconButton>
-                                        </Box>
-                                    </Grid>
+                                    <DroneTimeline stageId={droneStage} />
+                                </CardContent>
+                                <Grid container>
+                                    <Button
+                                        sx={{ m: "5%", width: "40%" }}
+                                        variant='contained'
+                                        color="secondary"
+                                        onClick={handleStart}
+                                    >
+                                        Start Mission
+                                    </Button>
+                                    <Button
+                                        sx={{ m: "5%", width: "40%" }}
+                                        variant='contained'
+                                        color="error"
+                                        onClick={handleStop}
+                                    >
+                                        Emergency stop
+                                    </Button>
+                                    <Button
+                                        sx={{ m: 1 }}
+                                        variant='contained'
+                                        onClick={handleExitClick}
+                                        fullWidth
+                                    >
+                                        Exit drone manager
+                                    </Button>
                                 </Grid>
-                                <DroneTimeline stageId={droneStage} />
-                            </CardContent>
-                            <Grid container>
-                                <Button
-                                    sx={{ m: "5%", width: "40%" }}
-                                    variant='contained'
-                                    color="secondary"
-                                    onClick={handleStart}
-                                >
-                                    Start Mission
-                                </Button>
-                                <Button
-                                    sx={{ m: "5%", width: "40%" }}
-                                    variant='contained'
-                                    color="error"
-                                    onClick={handleStop}
-                                >
-                                    Emergency stop
-                                </Button>
-                                <Button
-                                    sx={{ m: 1 }}
-                                    variant='contained'
-                                    onClick={handleExitClick}
-                                    fullWidth
-                                >
-                                    Exit drone manager
-                                </Button>
-                            </Grid>
-                        </Paper>
+                            </Paper>
+                        </Grid>
                     </Grid>
-                </Grid>
-            </Box>
-            <CreateDronePopup open={openDialog}
-                setOpen={setOpenDialog}
-                refreshDrones={refreshDrones}
-                parkingId={parkingId} />
-        </Container>
+                </Box>
+                <CreateDronePopup open={openDialog}
+                    setOpen={setOpenDialog}
+                    refreshDrones={refreshDrones}
+                    parkingId={parkingId} />
+            </Container>
+        </>
     );
 }
 

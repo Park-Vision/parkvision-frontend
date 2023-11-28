@@ -88,18 +88,20 @@ export default function ManagerReservations(props) {
     }
 
     return (
-        <Container maxWidth="xl" style={{ height: "100%" }}>
+        <>
             <ManagerNavigation/>
-            <Box style={{ height: "100%" }}>
-                <div style={{ height: "100%" }}>
-                    <DataGrid
-                        rows={reservations}
-                        columns={columns}
-                        pageSize={5}
-                        sx={{ overflowX: 'scroll' }}
-                    />
-                </div>
-            </Box>
-        </Container>
+            <Container maxWidth="xl" style={{ height: "100%" }}>
+                <Box style={{ height: "100%" }}>
+                    <div style={{ height: "100%" }}>
+                        <DataGrid
+                            rows={reservations}
+                            columns={columns}
+                            pageSize={5}
+                            sx={{ overflowX: 'scroll' }}
+                        />
+                    </div>
+                </Box>
+            </Container>
+        </>
     )
 }

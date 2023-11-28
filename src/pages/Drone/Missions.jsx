@@ -64,17 +64,19 @@ export default function ManagerReservations() {
     ];
 
     return (
-        <Container maxWidth="xl" style={{ height: "100%" }}>
+        <>
             <ManagerNavigation/>
-            <Box style={{ height: "100%" }}>
-                <div style={{ height: "100%" }}>
-                    <DataGrid
-                        rows={missions}
-                        columns={columns}
-                        pageSize={5}
-                    />
-                </div>
-            </Box>
-        </Container>
+            <Container maxWidth="xl" style={{ height: "100%" }}>
+                <Box style={{ height: "100%" }}>
+                    <div style={{ height: "100%" }}>
+                        <DataGrid
+                            rows={missions}
+                            columns={columns}
+                            pageSize={5}
+                        />
+                    </div>
+                </Box>
+            </Container>
+        </>
     )
 }

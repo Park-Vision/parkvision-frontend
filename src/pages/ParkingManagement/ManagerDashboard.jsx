@@ -244,68 +244,70 @@ export default function ManagerDashboard(props) {
     };
 
     return (
-        <Container maxWidth="l">
+        <>
             <ManagerNavigation/>
-            <Box sx={{ my: 4 }}>
-                <Card >
-                    <IconButton onClick={() => navigate(-1)}>
-                        <ArrowBackIcon />
-                    </IconButton>
-                    <CardContent>
-                        <Typography variant="h6" component="div">
-                            Parking Spots Overview
-                        </Typography>
-                        <Typography variant="h6" component="div">
-                            Number of all spots: {numOfSpots}
-                        </Typography>
-                        <PieChart
-                            series={[
-                                {
-                                    data: dataSpots,
-                                    innerRadius: 40,
-                                    outerRadius: 80,
-                                },
-                            ]}
-                            height={300}
-                            slotProps={{
-                                legend: { hidden: false },
-                            }}
-                        />
-                    </CardContent>
-                </Card>
-                <Card>
-                    <CardContent>
-                        <Typography variant="h6" component="div">
-                            Average Reservation Amount
-                        </Typography>
-                        <Bar data={dataReservationAverage} options={optionsReservationAverage} />
-                    </CardContent>
-                </Card>
-                <Card>
-                    <CardContent>
-                        <Typography variant="h6" component="div">
-                            Average Reservation Duration
-                        </Typography>
-                        <Bar data={dataReservationTime} options={optionsReservationTime} />
-                    </CardContent>
-                </Card>
-                <Card>
-                    <CardContent>
-                        <Typography variant="h6" component="div">
-                            Number of Reservations
-                        </Typography>
-                        <Line data={dataMonthly} />
-                    </CardContent>
-                </Card>
-                <Card>
-                    <CardContent>
-                        <Typography variant="h6" component="div">
-                            Daily income in {getMonthName(new Date().getMonth())}
-                        </Typography>
-                        <Bar data={dataMonthlySum(reservations)} options={optionsMonthlySum} />
-                    </CardContent>
-                </Card>
-            </Box>
-        </Container>
+            <Container maxWidth="l">
+                <Box sx={{ my: 4 }}>
+                    <Card >
+                        <IconButton onClick={() => navigate(-1)}>
+                            <ArrowBackIcon />
+                        </IconButton>
+                        <CardContent>
+                            <Typography variant="h6" component="div">
+                                Parking Spots Overview
+                            </Typography>
+                            <Typography variant="h6" component="div">
+                                Number of all spots: {numOfSpots}
+                            </Typography>
+                            <PieChart
+                                series={[
+                                    {
+                                        data: dataSpots,
+                                        innerRadius: 40,
+                                        outerRadius: 80,
+                                    },
+                                ]}
+                                height={300}
+                                slotProps={{
+                                    legend: { hidden: false },
+                                }}
+                            />
+                        </CardContent>
+                    </Card>
+                    <Card>
+                        <CardContent>
+                            <Typography variant="h6" component="div">
+                                Average Reservation Amount
+                            </Typography>
+                            <Bar data={dataReservationAverage} options={optionsReservationAverage} />
+                        </CardContent>
+                    </Card>
+                    <Card>
+                        <CardContent>
+                            <Typography variant="h6" component="div">
+                                Average Reservation Duration
+                            </Typography>
+                            <Bar data={dataReservationTime} options={optionsReservationTime} />
+                        </CardContent>
+                    </Card>
+                    <Card>
+                        <CardContent>
+                            <Typography variant="h6" component="div">
+                                Number of Reservations
+                            </Typography>
+                            <Line data={dataMonthly} />
+                        </CardContent>
+                    </Card>
+                    <Card>
+                        <CardContent>
+                            <Typography variant="h6" component="div">
+                                Daily income in {getMonthName(new Date().getMonth())}
+                            </Typography>
+                            <Bar data={dataMonthlySum(reservations)} options={optionsMonthlySum} />
+                        </CardContent>
+                    </Card>
+                </Box>
+            </Container>
+        </>
     );
 }
