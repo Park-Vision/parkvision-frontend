@@ -50,6 +50,11 @@ L.Icon.Default.mergeOptions({
         "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.1/images/marker-shadow.png",
 });
 
+const BATTERY_CELL_COUNT = 3
+const MINIMUM_CELL_VOLTAGE = 3200
+const MILIVOLT_TO_PERCENT = 10
+const BATTERY_DISPLAY_PRECISION = 4
+
 function ParkingEditor(props) {
     const { parkingId } = useParams();
     const dispatch = useDispatch();
@@ -69,19 +74,39 @@ function ParkingEditor(props) {
     const [selectedDroneId, setSelectedDroneId] = useState(0)
     const [dronePosition, setDronePosition] = useState([0, 0, 0])
     const [droneStage, setDroneStage] = useState(0)
+    const [droneBatteryPercentage, setDroneBatteryPercentage] = useState(0)
+    const [droneSatellites, setDroneSatellites] = useState(0)
 
     const [openDialog, setOpenDialog] = useState(false);
 
-    const processIncomingMessage = (recievedMessage) => {
-        if (Object.hasOwn(recievedMessage, "lat")) {
-            setDronePosition([recievedMessage.lat, recievedMessage.lon, recievedMessage.alt])
-        }
+    const calculateBatteryPercentage = (voltage) => {
+        return ((voltage / BATTERY_CELL_COUNT - MINIMUM_CELL_VOLTAGE) / MILIVOLT_TO_PERCENT).toPrecision(BATTERY_DISPLAY_PRECISION)
+    }
 
+    const processIncomingMessage = (recievedMessage) => {
+        // Parkvision specific messages
         if (Object.hasOwn(recievedMessage, "type")) {
             switch (recievedMessage.type) {
                 case 'stage':
                     setDroneStage(recievedMessage.stage)
             }
+        }
+
+        // Generic mavlink messages
+        else if (Object.hasOwn(recievedMessage, "mavpackettype")) {
+            switch (recievedMessage.mavpackettype) {
+                case 'SYS_STATUS':
+                    setDroneBatteryPercentage(calculateBatteryPercentage(recievedMessage.voltage_battery))
+                    break
+                case 'GPS_RAW_INT':
+                    setDroneSatellites(recievedMessage.satellites_visible)
+                    break
+            }
+        }
+
+        // Albatros specific messages
+        else if (Object.hasOwn(recievedMessage, "lat")) {
+            setDronePosition([recievedMessage.lat, recievedMessage.lon, recievedMessage.alt])
         }
     }
 
@@ -337,10 +362,20 @@ function ParkingEditor(props) {
                                             <TableRow
                                                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                                             >
-                                                <TableCell component="th" scope="row">
-                                                    {"Altitude"}
-                                                </TableCell>
+                                                <TableCell component="th" scope="row">{"Altitude"}</TableCell>
                                                 <TableCell align="right">{dronePosition[2]}</TableCell>
+                                            </TableRow>
+                                            <TableRow
+                                                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                            >
+                                                <TableCell component="th" scope="row">{"Gps satellites visible"}</TableCell>
+                                                <TableCell align="right">{droneSatellites}</TableCell>
+                                            </TableRow>
+                                            <TableRow
+                                                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                            >
+                                                <TableCell component="th" scope="row">{"Battery percentage"}</TableCell>
+                                                <TableCell align="right">{droneBatteryPercentage} %</TableCell>
                                             </TableRow>
                                         </TableBody>
                                     </Table>
