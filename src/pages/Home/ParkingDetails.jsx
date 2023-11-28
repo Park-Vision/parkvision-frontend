@@ -540,7 +540,12 @@ function ParkingDetails(props) {
                                 <Typography variant="h6">
                                     Address: {parking.street}, {parking.zipCode} {parking.city}
                                 </Typography>
-                                <Typography variant="h6">Open hours: {convertTime(parking.startTime, parking.timeZone)} -  {convertTime(parking.endTime, parking.timeZone)} </Typography>
+                                {isParking24h(parking) ? (
+                                    <Typography variant="h6">Open hours: 24/7</Typography>
+                                ) : (
+                                    <Typography variant="h6">Open hours: {convertTime(parking.startTime, parking.timeZone)} -  {convertTime(parking.endTime, parking.timeZone)} </Typography>
+                                )
+                                }
                                 <Typography>
                                     Dates and times are based on parking time zone {parkingTime.toLocaleString()} ({parking.timeZone}) compared to UTC.
                                 </Typography>

@@ -188,10 +188,12 @@ export default function ReservationEdit(props) {
                                 )}
                             </div>
                             <Typography margin='normal'>
+                                Change the booking start date, the booking duration will remain unchanged. Changing the reservation is possible if it is within the opening hours of the parking lot and there are no colluding reservations at that time.
+                            </Typography>
+                            <Typography margin='normal'>
                                 Dates and times are based on parking time zone ({reservation?.parkingSpotDTO?.parkingDTO?.timeZone}) compared to UTC.
                             </Typography>
                             <LocalizationProvider
-
                                 dateAdapter={AdapterDayjs}>
                                 <MobileDateTimePicker
 
