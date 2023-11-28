@@ -53,7 +53,7 @@ L.Icon.Default.mergeOptions({
 const BATTERY_CELL_COUNT = 3
 const MINIMUM_CELL_VOLTAGE = 3200
 const MILIVOLT_TO_PERCENT = 10
-const BATTERY_DISPLAY_PRECISION = 4
+const DISPLAY_DECIMAL_DIGITS = 2
 
 function ParkingEditor(props) {
     const { parkingId } = useParams();
@@ -80,7 +80,7 @@ function ParkingEditor(props) {
     const [openDialog, setOpenDialog] = useState(false);
 
     const calculateBatteryPercentage = (voltage) => {
-        return ((voltage / BATTERY_CELL_COUNT - MINIMUM_CELL_VOLTAGE) / MILIVOLT_TO_PERCENT).toPrecision(BATTERY_DISPLAY_PRECISION)
+        return ((voltage / BATTERY_CELL_COUNT - MINIMUM_CELL_VOLTAGE) / MILIVOLT_TO_PERCENT).toFixed(DISPLAY_DECIMAL_DIGITS)
     }
 
     const processIncomingMessage = (recievedMessage) => {
@@ -106,7 +106,7 @@ function ParkingEditor(props) {
 
         // Albatros specific messages
         else if (Object.hasOwn(recievedMessage, "lat")) {
-            setDronePosition([recievedMessage.lat, recievedMessage.lon, recievedMessage.alt])
+            setDronePosition([recievedMessage.lat, recievedMessage.lon, recievedMessage.alt.toFixed(DISPLAY_DECIMAL_DIGITS)])
         }
     }
 
@@ -363,7 +363,7 @@ function ParkingEditor(props) {
                                                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                                             >
                                                 <TableCell component="th" scope="row">{"Altitude"}</TableCell>
-                                                <TableCell align="right">{dronePosition[2]}</TableCell>
+                                                <TableCell align="right">{dronePosition[2]} m</TableCell>
                                             </TableRow>
                                             <TableRow
                                                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
