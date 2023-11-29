@@ -14,7 +14,8 @@ import "leaflet-draw/dist/leaflet.draw.css";
 import { EditControl } from "react-leaflet-draw";
 import "../Editor.css"; // Create a CSS file for styling
 import { useNavigate } from "react-router-dom";
-
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import IconButton from "@mui/material/IconButton";
 import { MapContainer, Polygon, Popup, TileLayer, FeatureGroup } from "react-leaflet";
 import { getParkingSpotsByParkingId, addParkingSpot, addParkingSpots, updateParkingSpot, getParkingSpot, getParkingSpots } from "../../actions/parkingSpotActions";
 import Button from "@mui/material/Button";
@@ -28,6 +29,7 @@ import { getUser } from "../../actions/userActions";
 import { toast } from "react-toastify";
 import 'leaflet-path-drag'
 import { areParkingSpotsColliding, getArea, isSpotAreaTooBig, isSpotAreaTooSmall } from "../../utils/parkingUtils";
+import { GradientButton } from "../../components/GradientButton";
 delete L.Icon.Default.prototype._getIconUrl;
 
 L.Icon.Default.mergeOptions({
@@ -48,6 +50,9 @@ function ParkingEditor(props) {
     const stagedParkingSpots = useSelector((state) => state.parkingSpotReducer.stagedParkingSpots);
     const parkingSpot = useSelector((state) => state.parkingSpotReducer.parkingSpot);
     const [drag, setDrag] = React.useState(false);
+    const maximalDragDistance = process.env.REACT_APP_MAXIMAL_DRAG
+    const minimalArea = process.env.REACT_APP_MINIMAL_AREA
+    const maximalArea = process.env.REACT_APP_MAXIMAL_AREA
     const [spotsCopy, setSpotsCopy] = React.useState([]);
 
     const userjson = JSON.parse(localStorage.getItem("user"));
@@ -238,7 +243,7 @@ function ParkingEditor(props) {
                 let area = getArea(editedSpot);
                 toast.error("Parking spot area is too big!"
                     + " Area: " + area.toFixed(2) + " m2. "
-                    + "Maximal area: 12.5 m2"
+                    + "Maximal area:" + maximalArea + " m2"
                 );
             }
             if (isSpotAreaTooSmall(editedSpot)) {
@@ -246,7 +251,7 @@ function ParkingEditor(props) {
                 let area = getArea(editedSpot);
                 toast.error("Parking spot area is too small!"
                     + " Area: " + area.toFixed(2) + " m2. "
-                    + "Minimal area: 8 m2 "
+                    + "Minimal area: " + minimalArea + " m2 "
                 );
             }
             uniqueSpots.forEach((otherspot) => {
@@ -368,7 +373,7 @@ function ParkingEditor(props) {
             let area = getArea(newParkingSpot);
             toast.error("Parking spot area is too big!"
                 + " Area: " + area.toFixed(2) + " m2. "
-                + "Maximal area: 12.5 m2"
+                + "Maximal area: " + maximalArea + " m2"
             );
             clearLayerWithNoIds();
             return;
@@ -378,7 +383,7 @@ function ParkingEditor(props) {
             let area = getArea(newParkingSpot);
             toast.error("Parking spot area is too small!"
                 + " Area: " + area.toFixed(2) + " m2. "
-                + "Minimal area: 8 m2 "
+                + "Minimal area: " + minimalArea + " m2 "
             );
             clearLayerWithNoIds();
             return;
@@ -409,11 +414,11 @@ function ParkingEditor(props) {
 
     const mapPonitsToParkingSpot = (e, points, editedSpot) => {
         let toMuchDrag = false;
-        if (e.distance > 300.0) {
+        if (e.distance > maximalDragDistance) {
             toMuchDrag = true;
             toast.error("You can't drag parking spot that much! drag distance: " +
                 e.distance.toFixed(2) + " cm. " +
-                "Max distance: 300 cm");
+                "Max distance: " + maximalDragDistance + " cm");
         }
 
         const mappedPoints = points[0].map((coord) => {
@@ -475,6 +480,9 @@ function ParkingEditor(props) {
             style={{ height: "97%" }}
         >
             <Box sx={{ my: 4, height: "100%" }}>
+                <IconButton onClick={handleExitClick}>
+                    <ArrowBackIcon />
+                </IconButton>
                 <Grid
                     container
                     spacing={2}
@@ -483,7 +491,7 @@ function ParkingEditor(props) {
                     <Grid
                         item
                         xs={12}
-                        lg={8}
+                        lg={12}
                     >
                         <div className='map-container'>
                             {parking.latitude && parking.longitude ? (
@@ -494,7 +502,7 @@ function ParkingEditor(props) {
                                     scrollWheelZoom={true}
                                     ref={mapRef}
                                 >
-                                    <Button
+                                    <GradientButton
                                         size="small"
                                         variant="contained"
                                         color="primary"
@@ -504,7 +512,8 @@ function ParkingEditor(props) {
                                             top: "10px",
                                             right: "50px",
                                             zIndex: "801"
-                                        }}>{drag ? "Disable Drag" : "Enable Drag"}</Button>
+                                        }}>{drag ? "Disable Drag" : "Enable Drag"}
+                                    </GradientButton>
 
                                     <FeatureGroup>
                                         <EditControl
@@ -577,14 +586,14 @@ function ParkingEditor(props) {
                                                             <div style={{ marginBottom: '5px' }}>
                                                                 <span style={{ fontWeight: 'bold' }}>Spot ID:</span> {spot.id}
                                                             </div>
-                                                            <Button
+                                                            <GradientButton
                                                                 variant="contained"
                                                                 color="primary"
                                                                 onClick={() => handleEditClick(spot)}
                                                                 style={{ width: '100%' }}
                                                             >
                                                                 EDIT
-                                                            </Button>
+                                                            </GradientButton>
                                                         </div>
                                                     </Popup>
                                                 </Polygon>
@@ -644,36 +653,6 @@ function ParkingEditor(props) {
                                 </Box>
                             )}
                         </div>
-                    </Grid>
-                    <Grid
-                        item
-                        xs={12}
-                        lg={4}
-                    >
-                        <Paper className='reserve'>
-                            <CardContent>
-                                <Typography variant='h4'>{parking.name}</Typography>
-                                <Typography variant='p'>{parking.description}</Typography>
-                                <Typography variant="h6">
-                                    Address: {parking.street},{parking.zipCode} {parking.city}
-                                </Typography>
-                                <Typography variant="h6">Open hours: {convertTime(parking.startTime, parking.timeZone)} -  {convertTime(parking.endTime, parking.timeZone)} </Typography>
-                                <Typography>
-                                    Dates and times are based on parking time zone ({parking.timeZone}) compared to UTC.
-                                </Typography>
-                                <Typography>$/h: {parking.costRate}</Typography>
-                            </CardContent>
-                            <Grid container>
-                                <Button
-                                    sx={{ m: 1 }}
-                                    variant='contained'
-                                    onClick={handleExitClick}
-                                    fullWidth
-                                >
-                                    Exit editor
-                                </Button>
-                            </Grid>
-                        </Paper>
                     </Grid>
                 </Grid>
             </Box>

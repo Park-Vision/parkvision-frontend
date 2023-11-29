@@ -32,6 +32,7 @@ import { Form, useNavigate } from 'react-router-dom';
 import { validateEmail, validatePassword } from "../../utils/validation";
 import decodeToken from "../../utils/decodeToken";
 import { FormControl, OutlinedInput } from '@mui/material';
+import { GradientButton } from '../../components/GradientButton';
 
 
 export default function Login() {
@@ -176,19 +177,19 @@ export default function Login() {
                                         }
                                     />
                                 </FormControl>
-                                <Button type="submit" variant="contained" fullWidth sx={{ mt: 1 }} >
+                                <GradientButton type="submit" variant="contained" fullWidth sx={{ mt: 1 }} >
                                     Login
-                                </Button>
+                                </GradientButton>
                                 <Button fullWidth sx={{ mt: 1 }} onClick={handleOpenResetPassword}>
                                     Password reset
                                 </Button>
-                                <Button
+                                <GradientButton
                                     variant="contained"
                                     fullWidth
                                     sx={{ mt: 1 }}
                                     onClick={() => handleRegister()}>
                                     Register
-                                </Button>
+                                </GradientButton>
                             </form>
                         </CardContent>
                     </Card>
