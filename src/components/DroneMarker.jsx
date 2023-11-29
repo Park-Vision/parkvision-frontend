@@ -9,9 +9,8 @@ function DroneMarker(props) {
         <LayersControl.Overlay checked name="Drones">
             <Marker position={props.position} icon={droneIcon}>
                 <Popup>
-                    Drone 
                     <span>
-                        {props.position[0]} {props.position[1]}
+                        {props.position[0]}, {props.position[1]}
                     </span>
                 </Popup>
             </Marker>

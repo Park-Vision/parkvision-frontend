@@ -9,6 +9,7 @@ import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
+import { GradientButton } from "../../components/GradientButton";
 import { useDispatch } from "react-redux";
 import { logout, register } from "../../actions/authenticationActions";
 import { toast } from "react-toastify";
@@ -104,14 +105,13 @@ export default function Register() {
     }
 
     return (
-        <Container maxWidth="lg">
+        <Container maxWidth="sm">
             <Box sx={{
                 display: 'flex',
                 justifyContent: 'center', // Center horizontally
                 alignItems: 'center',     // Center vertically
                 height: '100vh',
                 width: '300',
-                // Set a minimum height for centering
             }}>
                 <Grid item  >
                     <Card>
@@ -208,9 +208,9 @@ export default function Register() {
                                             }
                                         />
                                     </FormControl>
-                                    <Button type="submit" variant="contained" fullWidth sx={{ mt: 1 }} >
+                                    <GradientButton type="submit" variant="contained" fullWidth sx={{ mt: 1 }} >
                                         Register
-                                    </Button>
+                                    </GradientButton>
                                     <Button fullWidth sx={{ mt: 1 }} onClick={() => handleLoginRedirection()}>
                                         Login
                                     </Button>

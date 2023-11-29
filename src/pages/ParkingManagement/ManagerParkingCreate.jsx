@@ -25,6 +25,7 @@ import { addParking } from '../../actions/parkingActions';
 import LocalParkingIcon from '@mui/icons-material/LocalParking';
 import decodeToken from '../../utils/decodeToken';
 import { toast } from 'react-toastify';
+import { GradientButton } from '../../components/GradientButton';
 
 const currencies = [
     {
@@ -321,6 +322,11 @@ function ManagerParkingCreate() {
                                         inputProps={{ min: 0, step: 0.01, max: 1000 }}
                                     />
                                 </Grid>
+                                <Grid item xs={12} sm={12}>
+                                    <Typography>
+                                        If parking is open 24/7, set the start time and end time to 00:00
+                                    </Typography>
+                                </Grid>
                                 <Grid item xs={12} sm={6}>
                                     <LocalizationProvider dateAdapter={AdapterDayjs} >
                                         <MobileTimePicker
@@ -448,9 +454,9 @@ function ManagerParkingCreate() {
                                     </TextField>
                                 </Grid>
                                 <Grid item xs={12}>
-                                    <Button type="submit" variant="contained" color="primary" fullWidth>
+                                    <GradientButton type="submit" variant="contained" color="primary" fullWidth>
                                         Submit
-                                    </Button>
+                                    </GradientButton>
                                 </Grid>
                             </Grid>
                         </form>

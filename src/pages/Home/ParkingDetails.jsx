@@ -39,7 +39,9 @@ import convertTime from "../../utils/convertTime";
 import convertDate from "../../utils/convertDate";
 import getLocalISOTime from "../../utils/getLocalISOTime";
 import AdminProfile from "../Admin/AdminProfile";
-import ManagerNavigation from "../../components/ManagerNavigation";
+import AppBar from "@mui/material/AppBar";
+import Home from "./Home";
+import { GradientButton } from "../../components/GradientButton";
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
     iconRetinaUrl:
@@ -147,6 +149,9 @@ function ParkingDetails(props) {
             return true;
         }
 
+        if (isParking24h(parking)) {
+            return false;
+        }
 
         let hour = value.hour();
         let minute = value.minute();
@@ -181,7 +186,7 @@ function ParkingDetails(props) {
         if (!parking) {
             return false;
         }
-        return convertTime(parking.startTime, parking.timeZone) === "00:00" && convertTime(parking.endTime, parking.timeZone) === "23:45";
+        return convertTime(parking.startTime, parking.timeZone) === "00:00" && convertTime(parking.endTime, parking.timeZone) === "00:00";
     };
 
 
@@ -213,6 +218,7 @@ function ParkingDetails(props) {
 
         if (startTime.toDate().getTime() >= endTime.toDate().getTime()) {
             endTime = startTime.add(15, "minute");
+            endDay = endTime;
         }
         setEndTime(endTime);
 
@@ -365,307 +371,393 @@ function ParkingDetails(props) {
         navigate("/reservation-details");
     };
 
+    const handleGoToEditor = () => {
+        navigate(`/parking/${parkingId}/editor`);
+    };
+
+    const handleGoToReservations = () => {
+        navigate(`/parking/${parkingId}/reservations`);
+    };
+
+    const handleGoToDroneManager = () => {
+        navigate(`/parking/${parkingId}/drone`);
+    };
+
+
+    const handleGoToParkingDetails = () => {
+        navigate(`/parking/${parkingId}/details`);
+    };
+
+    const handleGoToMission = () => {
+        navigate(`/parking/${parkingId}/missions`);
+    };
+
+    const handleGoToDashboard = () => {
+        navigate(`/parking/${parkingId}/dashboard`);
+    };
+
     return (
-        <>
-            {user && user.parkingDTO &&
-            user.parkingDTO.id === parking.id
-            && authenticationReducer.isLoggedIn
-            && authenticationReducer.decodedUser.role === "PARKING_MANAGER" ? (
-                <ManagerNavigation/>
-            ) : (
-                <div></div>
-            )}
-            <Container
-                maxWidth='xl'
-                style={{ height: "100%", display: "flex", flexDirection: "column" }}
-            >
-                <Box sx={{ my: 4, flex: "1"}}>
+        <Container
+            maxWidth='xl'
+            style={{ height: "97%" }}
+        >
+            <Box sx={{ my: 4, height: "100%" }}>
+                <Grid
+                    container
+                    spacing={2}
+                    style={{ height: "100%" }}
+                >
+                    {/* Map Section */}
                     <Grid
-                        container
-                        spacing={2}
-                        style={{ height: "90%" }}
+                        item
+                        xs={12}
+                        lg={8}
                     >
-                        <Grid
-                            item
-                            xs={12}
-                            lg={8}
-                        >
-                            <div className='map-container'>
-                                {parking.latitude && parking.longitude ? (
-                                    <MapContainer
-                                        style={{ width: "100%", height: "100%" }}
-                                        center={[parking.latitude, parking.longitude]}
-                                        zoom={19}
-                                        scrollWheelZoom={true}
-                                        whenCreated={(map) => (mapRef.current = map)}
-                                    >
-                                        <FeatureGroup>
-                                            <EditControl
-                                                position='topright'
-                                                draw={{
-                                                    rectangle: false,
-                                                    circle: false,
-                                                    circlemarker: false,
-                                                    marker: false,
-                                                    polyline: false,
-                                                    polygon: false,
-                                                }}
-                                                edit={{
-                                                    edit: false,
-                                                    remove: false,
-                                                    featureGroup: mapRef.current?.leafletElement,
-                                                }}
-                                            />
-                                            {parkingSpots.parkingSpots && parkingSpots.parkingSpots
-                                                .filter(
-                                                    (spot) => !freeParkingSpots.map((spot) => spot.id).includes(spot.id)
-                                                )
-                                                .map((parkingSpot) => (
-                                                    <Polygon
-                                                        key={parkingSpot.id}
-                                                        positions={parkingSpot.pointsDTO.map((point) => [
-                                                            point.latitude,
-                                                            point.longitude,
-                                                        ])}
-                                                        color={parkingSpot.active ? "red" : "#474747"}
-                                                        interactive>
-                                                        {occupiedParkingSpotsMap && occupiedParkingSpotsMap[parkingSpot.id] && (
-                                                            <Popup>
-                                                                {`This spot will be available from: ${convertDate(occupiedParkingSpotsMap[parkingSpot.id].earliestStart)}`} <br></br>
-                                                                {`This spot will be available to: ${convertDate(occupiedParkingSpotsMap[parkingSpot.id].earliestEnd)}`}
-                                                            </Popup>
-                                                        )}
-                                                        {occupiedParkingSpotsMap && occupiedParkingSpotsMap[parkingSpot.id] == null && (
-                                                            <Popup>
-                                                                {`This spot will not be available for the rest of the day.`}
-                                                            </Popup>
-                                                        )}
-                                                    </Polygon>
-                                                ))}
-                                            {freeParkingSpots.map((spot, index) => (
-                                                spot.id !== parkingSpots.parkingSpot.id && (
-                                                    <Polygon
-                                                        key={index}
-                                                        positions={spot.pointsDTO.map((point) => [
-                                                            point.latitude,
-                                                            point.longitude,
-                                                        ])}
-                                                        color="green"
-                                                        eventHandlers={{
-                                                            click: () => {
-                                                                handleClickOnFreeParkingSpot(spot);
-                                                            },
-                                                        }}
-                                                    />
-                                                )
-                                            ))}
-
-                                        </FeatureGroup>
-
-                                        <TileLayer
-                                            maxNativeZoom={23}
-                                            maxZoom={23}
-                                            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                                            url='http://mt0.google.com/vt/lyrs=s&x={x}&y={y}&z={z}'
+                        <div className='map-container'>
+                            {parking.latitude && parking.longitude ? (
+                                <MapContainer
+                                    style={{ width: "100%", height: "100%" }}
+                                    center={[parking.latitude, parking.longitude]}
+                                    zoom={19}
+                                    scrollWheelZoom={true}
+                                    whenCreated={(map) => (mapRef.current = map)}
+                                >
+                                    <FeatureGroup>
+                                        <EditControl
+                                            position='topright'
+                                            draw={{
+                                                rectangle: false,
+                                                circle: false,
+                                                circlemarker: false,
+                                                marker: false,
+                                                polyline: false,
+                                                polygon: false,
+                                            }}
+                                            edit={{
+                                                edit: false,
+                                                remove: false,
+                                                featureGroup: mapRef.current?.leafletElement,
+                                            }}
                                         />
-                                        {parkingSpot && parkingSpot.id && (
-                                            <Polygon
-                                                positions={parkingSpot.pointsDTO.map((point) => [
-                                                    point.latitude,
-                                                    point.longitude,
-                                                ])}
-                                                color='orange'
-                                                eventHandlers={{
-                                                    click: () => {
-                                                        handleClickOnSelectedSpot(parkingSpot);
-                                                    },
-                                                    mouseover: (e) => {
-                                                        e.target.openPopup();
-                                                    },
-                                                    mouseout: (e) => {
-                                                        e.target.closePopup();
-                                                    },
-                                                }}
-                                                interactive
-                                            >
-                                                <Popup>{`Selected spot number: ${parkingSpot.spotNumber}`} <br></br> Click to deselect</Popup>
-                                            </Polygon>
-                                        )}
-                                    </MapContainer>
-                                ) : (
-                                    <Box
-                                        sx={{
-                                            display: "flex",
-                                            alignContent: "center",
-                                            justifyContent: "center",
-                                            flexDirection: "row",
-                                            flexWrap: "wrap",
-                                        }}
-                                        style={{ width: "100%", height: "100%" }}
-                                    >
-                                        <CircularProgress />
-                                    </Box>
-                                )}
-                            </div>
-                        </Grid>
-                        <Grid
-                            item
-                            xs={12}
-                            lg={4}
-                        >
-                            <Paper className='reserve'>
-                                <CardContent>
-                                    <Typography variant='h4'>{parking.name}</Typography>
-                                    {numOfFreeSpotsList && numOfSpotsList && parking.id && (
-                                        <Typography variant='h5'>Available: {numOfFreeSpotsList[parking.id.toString()]}/{numOfSpotsList[parking.id.toString()]}</Typography>
+                                        {parkingSpots.parkingSpots && parkingSpots.parkingSpots
+                                            .filter(
+                                                (spot) => !freeParkingSpots.map((spot) => spot.id).includes(spot.id)
+                                            )
+                                            .map((parkingSpot) => (
+                                                <Polygon
+                                                    key={parkingSpot.id}
+                                                    positions={parkingSpot.pointsDTO.map((point) => [
+                                                        point.latitude,
+                                                        point.longitude,
+                                                    ])}
+                                                    color={parkingSpot.active ? "red" : "#474747"}
+                                                    interactive>
+                                                    {occupiedParkingSpotsMap && occupiedParkingSpotsMap[parkingSpot.id] && (
+                                                        <Popup>
+                                                            Available from: <br />
+                                                            {`${convertDate(occupiedParkingSpotsMap[parkingSpot.id].earliestStart)}`}
+                                                            {occupiedParkingSpotsMap[parkingSpot.id].earliestEnd && (
+                                                                <div>
+                                                                    Available to: <br />
+                                                                    {convertDate(occupiedParkingSpotsMap[parkingSpot.id].earliestEnd)}
+                                                                </div>
+                                                            )}
+                                                        </Popup>
+                                                    )}
+                                                    {occupiedParkingSpotsMap && occupiedParkingSpotsMap[parkingSpot.id] == null && (
+                                                        <Popup>
+                                                            {`Will not be available for the rest of the day.`}
+                                                        </Popup>
+                                                    )}
+                                                </Polygon>
+                                            ))}
+                                        {freeParkingSpots.map((spot, index) => (
+                                            spot.id !== parkingSpots.parkingSpot.id && (
+                                                <Polygon
+                                                    key={index}
+                                                    positions={spot.pointsDTO.map((point) => [
+                                                        point.latitude,
+                                                        point.longitude,
+                                                    ])}
+                                                    color="green"
+                                                    eventHandlers={{
+                                                        click: () => {
+                                                            handleClickOnFreeParkingSpot(spot);
+                                                        },
+                                                    }}
+                                                />
+                                            )
+                                        ))}
+
+                                    </FeatureGroup>
+
+                                    <TileLayer
+                                        maxNativeZoom={23}
+                                        maxZoom={23}
+                                        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                                        url='http://mt0.google.com/vt/lyrs=s&x={x}&y={y}&z={z}'
+                                    />
+                                    {parkingSpot && parkingSpot.id && (
+                                        <Polygon
+                                            positions={parkingSpot.pointsDTO.map((point) => [
+                                                point.latitude,
+                                                point.longitude,
+                                            ])}
+                                            color='orange'
+                                            eventHandlers={{
+                                                click: () => {
+                                                    handleClickOnSelectedSpot(parkingSpot);
+                                                },
+                                                mouseover: (e) => {
+                                                    e.target.openPopup();
+                                                },
+                                                mouseout: (e) => {
+                                                    e.target.closePopup();
+                                                },
+                                            }}
+                                            interactive
+                                        >
+                                            <Popup>{`Selected spot number: ${parkingSpot.spotNumber}`} <br></br> Click to deselect</Popup>
+                                        </Polygon>
                                     )}
-                                    <Typography variant='string'>{parking.description}</Typography>
-                                    <Typography variant="h6">
-                                        Address: {parking.street}, {parking.zipCode} {parking.city}
-                                    </Typography>
+                                </MapContainer>
+                            ) : (
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        alignContent: "center",
+                                        justifyContent: "center",
+                                        flexDirection: "row",
+                                        flexWrap: "wrap",
+                                    }}
+                                    style={{ width: "100%", height: "100%" }}
+                                >
+                                    <CircularProgress />
+                                </Box>
+                            )}
+                        </div>
+                    </Grid>
+                    <Grid
+                        item
+                        xs={12}
+                        lg={4}
+                    >
+                        <Paper className='reserve'>
+                            <CardContent>
+                                <Typography variant='h4' fontWeight='bold'>{parking.name}</Typography>
+                                {numOfFreeSpotsList && numOfSpotsList && parking.id && (
+                                    <Typography variant='h5'>Available: {numOfFreeSpotsList[parking.id.toString()]}/{numOfSpotsList[parking.id.toString()]}</Typography>
+                                )}
+                                <Typography variant="h6">
+                                    Address: {parking.street}, {parking.zipCode} {parking.city}
+                                </Typography>
+                                {isParking24h(parking) ? (
+                                    <Typography variant="h6">Open hours: 24/7</Typography>
+                                ) : (
                                     <Typography variant="h6">Open hours: {convertTime(parking.startTime, parking.timeZone)} -  {convertTime(parking.endTime, parking.timeZone)} </Typography>
-                                    <Typography>
-                                        Dates and times are based on parking time zone {parkingTime.toLocaleString()} ({parking.timeZone}) compared to UTC.
-                                    </Typography>
-                                    <Typography>{parking.currency}/h: {parking.costRate}</Typography>
-                                </CardContent>
-                                {parkingTime && parking.timeZone && (
-                                    <CardContent spacing={2}>
-                                        <Typography variant='h6'>Select start date and time:</Typography>
-
-                                        <Grid
-                                            container
-                                            spacing={3}
+                                )
+                                }
+                                <Typography variant='h6'>{parking.currency}/h: {parking.costRate}</Typography>
+                                <Typography variant='string'>{parking.description}</Typography>
+                                <Typography>
+                                    Dates and times are based on parking time zone {parkingTime.toLocaleString()} ({parking.timeZone}) compared to UTC.
+                                </Typography>
+                            </CardContent>
+                            <Grid container>
+                                {user && user.parkingDTO &&
+                                    user.parkingDTO.id === parking.id
+                                    && authenticationReducer.isLoggedIn
+                                    && authenticationReducer.decodedUser.role === "PARKING_MANAGER" ? (
+                                    <Grid container>
+                                        <GradientButton
+                                            sx={{ m: 1 }}
+                                            variant='contained'
+                                            onClick={handleGoToDashboard}
+                                            fullWidth
                                         >
-                                            <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                                <Grid
-                                                    item xs={12} sm={8} lg={9}
-                                                >
-                                                    <DateCalendar
-                                                        value={startDay}
-                                                        onChange={(newStartDay) => handleAnyChangeOfTime(newStartDay, startTime, endDay, endTime)}
-                                                        minDate={dayjs(parkingTime)}
-
-                                                    />
-                                                </Grid>
-                                                <Grid
-                                                    item xs={12} sm={4} lg={3}
-                                                >
-                                                    <DigitalClock
-                                                        ampm={false}
-                                                        timeStep={15}
-                                                        skipDisabled
-                                                        shouldDisableTime={(val, view) => shouldDisableTime(val, view, parkingTime)}
-                                                        value={startTime}
-                                                        onChange={(newStartTime) => { handleAnyChangeOfTime(startDay, newStartTime, endDay, endTime); }}
-                                                        minutesStep={15}
-                                                    />
-                                                </Grid>
-                                            </LocalizationProvider>
-                                        </Grid>
-                                        <Typography variant='h6'>Select end date and time:</Typography>
-                                        <Grid
-                                            container
-                                            spacing={3}
+                                            Parking dashboard
+                                        </GradientButton>
+                                        <GradientButton
+                                            sx={{ m: 1 }}
+                                            variant='contained'
+                                            onClick={handleGoToEditor}
+                                            fullWidth
                                         >
-                                            <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                                <Grid
-                                                    item xs={12} sm={8} lg={9}
-                                                >
-                                                    <DateCalendar
-                                                        value={endDay}
-                                                        onChange={(newValue) => { handleAnyChangeOfTime(startDay, startTime, newValue, endTime); }}
-                                                        minDate={startDay}
-                                                        disabled={!isParking24h(parking)}
-                                                    />
-                                                </Grid>
-                                                <Grid
-                                                    item xs={12} sm={4} lg={3}
-                                                >
-                                                    <DigitalClock
-                                                        ampm={false}
-                                                        timeStep={15}
-                                                        skipDisabled
-                                                        shouldDisableTime={(val, view) => shouldDisableTime(val, view, startTime.add(15, "minute"))}
-                                                        value={endTime}
-                                                        onChange={(newValue) => { handleAnyChangeOfTime(startDay, startTime, endDay, newValue); }}
-                                                    />
-                                                </Grid>
-                                            </LocalizationProvider>
-                                        </Grid>
-                                        <Grid container>
-                                            <TextField
-                                                sx={{ m: 1 }}
-                                                fullWidth
-                                                value={parkingSpot?.spotNumber || ""}
-                                                id='outlined-basic'
-                                                label='Parking spot'
-                                                variant='outlined'
-                                                placeholder="Click on a free parking spot on a map"
-                                                required={true}
-                                                InputProps={{
-                                                    readOnly: true,
-                                                }}
-                                            />
-                                        </Grid>
-                                        <Grid container>
-                                            <TextField
-                                                sx={{ m: 1 }}
-                                                fullWidth
-                                                label="Registration number"
-                                                variant="outlined"
-                                                type="text"
-                                                required={true}
-                                                value={registrationNumber ?? ''}
-                                                onChange={handleRegistrationTextFieldChange}
-                                            />
-                                        </Grid>
-                                        {authenticationReducer.decodedUser && cars.cars.length > 0 ? (
-                                            <Grid container>
-                                                <FormControl
-                                                    sx={{ m: 1 }}
-                                                    fullWidth
-                                                >
-                                                    <InputLabel id='demo-multiple-name-label'>Select your car</InputLabel>
-                                                    <Select
-                                                        labelId='demo-multiple-name-label'
-                                                        id='demo-multiple-name'
-                                                        value={selectedCar}
-                                                        onChange={changeCarSelection}
-                                                        label='Select your car'
-                                                    >
-                                                        {cars.cars.map((car, index) => (
-                                                            <MenuItem
-                                                                key={index}
-                                                                value={car}
-                                                            >
-                                                                {car.brand},{car.registrationNumber}
-                                                            </MenuItem>
-                                                        ))}
-                                                    </Select>
-                                                </FormControl>
+                                            Parking editor
+                                        </GradientButton>
+                                        <GradientButton
+                                            sx={{ m: 1 }}
+                                            variant='contained'
+                                            onClick={handleGoToReservations}
+                                            fullWidth
+                                        >
+                                            Parking reservations
+                                        </GradientButton>
+                                        <GradientButton
+                                            sx={{ m: 1 }}
+                                            variant='contained'
+                                            onClick={handleGoToParkingDetails}
+                                            fullWidth
+                                        >
+                                            Change parking details
+                                        </GradientButton>
+                                        <GradientButton
+                                            sx={{ m: 1 }}
+                                            variant='contained'
+                                            onClick={handleGoToMission}
+                                            fullWidth
+                                        >
+                                            Drone mission
+                                        </GradientButton>
+                                        <GradientButton
+                                            sx={{ m: 1 }}
+                                            variant='contained'
+                                            onClick={handleGoToDroneManager}
+                                            fullWidth
+                                        >
+                                            Drone manager
+                                        </GradientButton>
+                                    </Grid>
+                                ) : (
+                                    <div></div>
+                                )}
+                            </Grid>
+                            {parkingTime && parking.timeZone && (
+                                <CardContent spacing={2}>
+                                    <Typography variant='h6'>Select start date and time:</Typography>
+
+                                    <Grid
+                                        container
+                                        spacing={3}
+                                    >
+                                        <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                            <Grid
+                                                item xs={12} sm={8} lg={9}
+                                            >
+                                                <DateCalendar
+                                                    value={startDay}
+                                                    onChange={(newStartDay) => handleAnyChangeOfTime(newStartDay, startTime, endDay, endTime)}
+                                                    minDate={dayjs(parkingTime)}
+
+                                                />
                                             </Grid>
-                                        ) : (
-                                            <div></div>
-                                        )}
+                                            <Grid
+                                                item xs={12} sm={4} lg={3}
+                                            >
+                                                <DigitalClock
+                                                    ampm={false}
+                                                    timeStep={15}
+                                                    skipDisabled
+                                                    shouldDisableTime={(val, view) => shouldDisableTime(val, view, parkingTime)}
+                                                    value={startTime}
+                                                    onChange={(newStartTime) => { handleAnyChangeOfTime(startDay, newStartTime, endDay, endTime); }}
+                                                    minutesStep={15}
+                                                />
+                                            </Grid>
+                                        </LocalizationProvider>
+                                    </Grid>
+                                    <Typography variant='h6'>Select end date and time:</Typography>
+                                    <Grid
+                                        container
+                                        spacing={3}
+                                    >
+                                        <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                            <Grid
+                                                item xs={12} sm={8} lg={9}
+                                            >
+                                                <DateCalendar
+                                                    value={endDay}
+                                                    onChange={(newValue) => { handleAnyChangeOfTime(startDay, startTime, newValue, endTime); }}
+                                                    minDate={startDay}
+                                                    disabled={!isParking24h(parking)}
+                                                />
+                                            </Grid>
+                                            <Grid
+                                                item xs={12} sm={4} lg={3}
+                                            >
+                                                <DigitalClock
+                                                    ampm={false}
+                                                    timeStep={15}
+                                                    skipDisabled
+                                                    shouldDisableTime={(val, view) => shouldDisableTime(val, view, startTime.add(15, "minute"))}
+                                                    value={endTime}
+                                                    onChange={(newValue) => { handleAnyChangeOfTime(startDay, startTime, endDay, newValue); }}
+                                                />
+                                            </Grid>
+                                        </LocalizationProvider>
+                                    </Grid>
+                                    <Grid container>
+                                        <TextField
+                                            sx={{ m: 1 }}
+                                            fullWidth
+                                            value={parkingSpot?.spotNumber || ""}
+                                            id='outlined-basic'
+                                            label='Parking spot'
+                                            variant='outlined'
+                                            placeholder="Click on a free parking spot on a map"
+                                            required={true}
+                                            InputProps={{
+                                                readOnly: true,
+                                            }}
+                                        />
+                                    </Grid>
+                                    <Grid container>
+                                        <TextField
+                                            sx={{ m: 1 }}
+                                            fullWidth
+                                            label="Registration number"
+                                            variant="outlined"
+                                            type="text"
+                                            required={true}
+                                            value={registrationNumber ?? ''}
+                                            onChange={handleRegistrationTextFieldChange}
+                                        />
+                                    </Grid>
+                                    {authenticationReducer.decodedUser && cars.cars.length > 0 ? (
                                         <Grid container>
-                                            <Button
+                                            <FormControl
                                                 sx={{ m: 1 }}
-                                                variant='contained'
-                                                onClick={handleCreateReservation}
                                                 fullWidth
                                             >
-                                                Reserve
-                                            </Button>
+                                                <InputLabel id='demo-multiple-name-label'>Select your car</InputLabel>
+                                                <Select
+                                                    labelId='demo-multiple-name-label'
+                                                    id='demo-multiple-name'
+                                                    value={selectedCar}
+                                                    onChange={changeCarSelection}
+                                                    label='Select your car'
+                                                >
+                                                    {cars.cars.map((car, index) => (
+                                                        <MenuItem
+                                                            key={index}
+                                                            value={car}
+                                                        >
+                                                            {car.brand},{car.registrationNumber}
+                                                        </MenuItem>
+                                                    ))}
+                                                </Select>
+                                            </FormControl>
                                         </Grid>
-                                    </CardContent>
-                                )}
-                            </Paper>
-                        </Grid>
+                                    ) : (
+                                        <div></div>
+                                    )}
+                                    <Grid container>
+                                        <GradientButton
+                                            sx={{ m: 1 }}
+                                            variant='contained'
+                                            onClick={handleCreateReservation}
+                                            fullWidth
+                                        >
+                                            Reserve
+                                        </GradientButton>
+                                    </Grid>
+                                </CardContent>
+                            )}
+                        </Paper>
                     </Grid>
-                </Box>
-            </Container>`
-        </>
+                </Grid>
+            </Box>
+        </Container >
     );
 }
 

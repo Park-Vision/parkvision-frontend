@@ -8,24 +8,28 @@ import { Paper } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import Container from "@mui/material/Container";
 import Box from "@mui/material/Box";
-import L from "leaflet";
+import L, { point } from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet-draw/dist/leaflet.draw.css";
 import { EditControl } from "react-leaflet-draw";
-import "../Editor.css";
+import "../Editor.css"; // Create a CSS file for styling
 import { useNavigate } from "react-router-dom";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import IconButton from "@mui/material/IconButton";
 import { MapContainer, Polygon, Popup, TileLayer, FeatureGroup } from "react-leaflet";
-import { getParkingSpotsByParkingId, addParkingSpot, updateParkingSpot, getParkingSpot } from "../../actions/parkingSpotActions";
+import { getParkingSpotsByParkingId, addParkingSpot, addParkingSpots, updateParkingSpot, getParkingSpot, getParkingSpots } from "../../actions/parkingSpotActions";
 import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
-import { GET_PARKING_SPOT } from "../../actions/types";
+import {
+    GET_PARKING_SPOT, UPDATE_PARKING_SPOT,
+} from "../../actions/types";
 import convertTime from "../../utils/convertTime";
 import decodeToken from "../../utils/decodeToken";
 import { getUser } from "../../actions/userActions";
 import { toast } from "react-toastify";
 import 'leaflet-path-drag'
 import { areParkingSpotsColliding, getArea, isSpotAreaTooBig, isSpotAreaTooSmall } from "../../utils/parkingUtils";
-import ManagerNavigation from "../../components/ManagerNavigation";
+import { GradientButton } from "../../components/GradientButton";
 delete L.Icon.Default.prototype._getIconUrl;
 
 L.Icon.Default.mergeOptions({
@@ -44,7 +48,12 @@ function ParkingEditor(props) {
     const parking = useSelector((state) => state.parkingReducer.parking);
     const parkingSpots = useSelector((state) => state.parkingSpotReducer.parkingSpots);
     const stagedParkingSpots = useSelector((state) => state.parkingSpotReducer.stagedParkingSpots);
+    const parkingSpot = useSelector((state) => state.parkingSpotReducer.parkingSpot);
     const [drag, setDrag] = React.useState(false);
+    const maximalDragDistance = process.env.REACT_APP_MAXIMAL_DRAG
+    const minimalArea = process.env.REACT_APP_MINIMAL_AREA
+    const maximalArea = process.env.REACT_APP_MAXIMAL_AREA
+    const [spotsCopy, setSpotsCopy] = React.useState([]);
 
     const userjson = JSON.parse(localStorage.getItem("user"));
     const user = decodeToken(userjson?.token);
@@ -70,7 +79,7 @@ function ParkingEditor(props) {
             }
         }
         fetchData();
-    }, );
+    }, []);
 
 
     const toggleDrag = (value) => {
@@ -87,6 +96,28 @@ function ParkingEditor(props) {
                     }
                 });
             }
+        });
+    };
+
+
+    const clearLayerWithId = (id) => {
+        const map = mapRef.current;
+        map.eachLayer((layer) => {
+            if (layer instanceof L.FeatureGroup) {
+                layer.eachLayer((polyObject) => {
+                    if (polyObject.options.id === id) {
+                        polyObject.remove();
+                    }
+                });
+            }
+        });
+    };
+
+
+    const unsetParkingSpot = () => {
+        dispatch({
+            type: GET_PARKING_SPOT,
+            value: {},
         });
     };
 
@@ -212,7 +243,7 @@ function ParkingEditor(props) {
                 let area = getArea(editedSpot);
                 toast.error("Parking spot area is too big!"
                     + " Area: " + area.toFixed(2) + " m2. "
-                    + "Maximal area: 12.5 m2"
+                    + "Maximal area:" + maximalArea + " m2"
                 );
             }
             if (isSpotAreaTooSmall(editedSpot)) {
@@ -220,7 +251,7 @@ function ParkingEditor(props) {
                 let area = getArea(editedSpot);
                 toast.error("Parking spot area is too small!"
                     + " Area: " + area.toFixed(2) + " m2. "
-                    + "Minimal area: 8 m2 "
+                    + "Minimal area: " + minimalArea + " m2 "
                 );
             }
             uniqueSpots.forEach((otherspot) => {
@@ -342,7 +373,7 @@ function ParkingEditor(props) {
             let area = getArea(newParkingSpot);
             toast.error("Parking spot area is too big!"
                 + " Area: " + area.toFixed(2) + " m2. "
-                + "Maximal area: 12.5 m2"
+                + "Maximal area: " + maximalArea + " m2"
             );
             clearLayerWithNoIds();
             return;
@@ -352,7 +383,7 @@ function ParkingEditor(props) {
             let area = getArea(newParkingSpot);
             toast.error("Parking spot area is too small!"
                 + " Area: " + area.toFixed(2) + " m2. "
-                + "Minimal area: 8 m2 "
+                + "Minimal area: " + minimalArea + " m2 "
             );
             clearLayerWithNoIds();
             return;
@@ -383,11 +414,11 @@ function ParkingEditor(props) {
 
     const mapPonitsToParkingSpot = (e, points, editedSpot) => {
         let toMuchDrag = false;
-        if (e.distance > 300.0) {
+        if (e.distance > maximalDragDistance) {
             toMuchDrag = true;
             toast.error("You can't drag parking spot that much! drag distance: " +
                 e.distance.toFixed(2) + " cm. " +
-                "Max distance: 300 cm");
+                "Max distance: " + maximalDragDistance + " cm");
         }
 
         const mappedPoints = points[0].map((coord) => {
@@ -444,148 +475,104 @@ function ParkingEditor(props) {
 
 
     return (
-        <>
-            <ManagerNavigation/>
-            <Container
-                maxWidth='xl'
-                style={{ height: "97%" }}
-            >
-                <Box sx={{ my: 4, height: "100%" }}>
+        <Container
+            maxWidth='xl'
+            style={{ height: "97%" }}
+        >
+            <Box sx={{ my: 4, height: "100%" }}>
+                <IconButton onClick={handleExitClick}>
+                    <ArrowBackIcon />
+                </IconButton>
+                <Grid
+                    container
+                    spacing={2}
+                    style={{ height: "100%" }}
+                >
                     <Grid
-                        container
-                        spacing={2}
-                        style={{ height: "100%" }}
+                        item
+                        xs={12}
+                        lg={12}
                     >
-                        <Grid
-                            item
-                            xs={12}
-                            lg={8}
-                        >
-                            <div className='map-container'>
-                                {parking.latitude && parking.longitude ? (
-                                    <MapContainer
-                                        style={{ width: "100%", height: "100%" }}
-                                        center={[parking.latitude, parking.longitude]}
-                                        zoom={20}
-                                        scrollWheelZoom={true}
-                                        ref={mapRef}
-                                    >
-                                        <Button
-                                            size="small"
-                                            variant="contained"
-                                            color="primary"
-                                            onClick={toggleDrag.bind(this, !drag)}
-                                            style={{
-                                                position: "absolute",
-                                                top: "10px",
-                                                right: "50px",
-                                                zIndex: "801"
-                                            }}>{drag ? "Disable Drag" : "Enable Drag"}</Button>
+                        <div className='map-container'>
+                            {parking.latitude && parking.longitude ? (
+                                <MapContainer
+                                    style={{ width: "100%", height: "100%" }}
+                                    center={[parking.latitude, parking.longitude]}
+                                    zoom={20}
+                                    scrollWheelZoom={true}
+                                    ref={mapRef}
+                                >
+                                    <GradientButton
+                                        size="small"
+                                        variant="contained"
+                                        color="primary"
+                                        onClick={toggleDrag.bind(this, !drag)}
+                                        style={{
+                                            position: "absolute",
+                                            top: "10px",
+                                            right: "50px",
+                                            zIndex: "801"
+                                        }}>{drag ? "Disable Drag" : "Enable Drag"}
+                                    </GradientButton>
 
-                                        <FeatureGroup>
-                                            <EditControl
-                                                position='topright'
-                                                draw={{
-                                                    rectangle: false,
-                                                    circle: false,
-                                                    circlemarker: false,
-                                                    marker: false,
-                                                    polyline: false,
-                                                    polygon: {
-                                                        allowIntersection: false,
-                                                        drawError: {
-                                                            color: "#e1e100",
-                                                            message: "<strong>Oh snap!<strong> you can't draw that!",
-                                                        },
-                                                        shapeOptions: {
-                                                            color: "#97009c",
-                                                            borderColor: "#97009c",
-                                                        },
-
+                                    <FeatureGroup>
+                                        <EditControl
+                                            position='topright'
+                                            draw={{
+                                                rectangle: false,
+                                                circle: false,
+                                                circlemarker: false,
+                                                marker: false,
+                                                polyline: false,
+                                                polygon: {
+                                                    allowIntersection: false,
+                                                    drawError: {
+                                                        color: "#e1e100",
+                                                        message: "<strong>Oh snap!<strong> you can't draw that!",
                                                     },
-                                                }}
-                                                edit={{
-                                                    edit: true,
-                                                    remove: false,
-                                                    featureGroup: editableLayers
-                                                }}
-                                                onCreated={_onCreated}
-                                                onEdited={_onEdited}
+                                                    shapeOptions: {
+                                                        color: "#97009c",
+                                                        borderColor: "#97009c",
+                                                    },
 
-                                            />
-                                            {parkingSpots
-                                                .map((spot) => (
-                                                    <Polygon
-                                                        id={spot.id}
-                                                        key={Math.random()}
-                                                        positions={spot.pointsDTO.map((point) => [
-                                                            point.latitude,
-                                                            point.longitude,
-                                                            point.id
-                                                        ])}
-                                                        color={spot.active ? "blue" : "#474747"}
-                                                        ref={polygonRef}
-                                                        draggable={drag}
-                                                        interactive
-                                                        eventHandlers={{
-                                                            dragend: (e) => {
-                                                                const eventJson = (e.target.toGeoJSON())
-                                                                let list = eventJson.geometry.coordinates[0]
-                                                                let index = 0;
-                                                                for (let i = 0; index < eventJson.geometry.coordinates[0].length - 1; i = (i + 1) % 4) {
-                                                                    list[index].push(spot.pointsDTO[i].id);
-                                                                    index = index + 1;
-                                                                }
-                                                                mapPonitsToParkingSpot(e, eventJson.geometry.coordinates, spot);
-                                                            },
-
-                                                        }}
-                                                    >
-                                                        <Popup>
-                                                            <div style={{ minWidth: '200px', maxWidth: '250px', padding: '10px', textAlign: 'left' }}>
-                                                                <div style={{
-                                                                    marginBottom: '5px', textAlign: 'center',
-                                                                    fontSize: `${Math.min(20, 450 / parking.name.length)}px`, fontWeight: 'bold',
-                                                                    whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'
-                                                                }}>
-                                                                    Spot: {spot.spotNumber}
-                                                                </div>
-                                                                <div style={{ marginBottom: '5px' }}>
-                                                                    <span style={{ fontWeight: 'bold' }}>Spot ID:</span> {spot.id}
-                                                                </div>
-                                                                <Button
-                                                                    variant="contained"
-                                                                    color="primary"
-                                                                    onClick={() => handleEditClick(spot)}
-                                                                    style={{ width: '100%' }}
-                                                                >
-                                                                    EDIT
-                                                                </Button>
-                                                            </div>
-                                                        </Popup>
-                                                    </Polygon>
-                                                ))}
-                                        </FeatureGroup>
-
-                                        <TileLayer
-                                            maxNativeZoom={22}
-                                            maxZoom={22}
-                                            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                                            url='http://mt0.google.com/vt/lyrs=s&x={x}&y={y}&z={z}'
+                                                },
+                                            }}
+                                            edit={{
+                                                edit: true,
+                                                remove: false,
+                                                featureGroup: editableLayers
+                                            }}
+                                            onCreated={_onCreated}
+                                            onEdited={_onEdited}
 
                                         />
-                                        {stagedParkingSpots
+                                        {parkingSpots
                                             .map((spot) => (
                                                 <Polygon
                                                     id={spot.id}
-                                                    key={spot.id}
+                                                    key={Math.random()}
                                                     positions={spot.pointsDTO.map((point) => [
                                                         point.latitude,
                                                         point.longitude,
                                                         point.id
                                                     ])}
-                                                    color={"#474747"}
+                                                    color={spot.active ? "blue" : "#474747"}
+                                                    ref={polygonRef}
+                                                    draggable={drag}
                                                     interactive
+                                                    eventHandlers={{
+                                                        dragend: (e) => {
+                                                            const eventJson = (e.target.toGeoJSON())
+                                                            let list = eventJson.geometry.coordinates[0]
+                                                            let index = 0;
+                                                            for (let i = 0; index < eventJson.geometry.coordinates[0].length - 1; i = (i + 1) % 4) {
+                                                                list[index].push(spot.pointsDTO[i].id);
+                                                                index = index + 1;
+                                                            }
+                                                            mapPonitsToParkingSpot(e, eventJson.geometry.coordinates, spot);
+                                                        },
+
+                                                    }}
                                                 >
                                                     <Popup>
                                                         <div style={{ minWidth: '200px', maxWidth: '250px', padding: '10px', textAlign: 'left' }}>
@@ -597,64 +584,79 @@ function ParkingEditor(props) {
                                                                 Spot: {spot.spotNumber}
                                                             </div>
                                                             <div style={{ marginBottom: '5px' }}>
-                                                                Save parking staged spots to edit them.
+                                                                <span style={{ fontWeight: 'bold' }}>Spot ID:</span> {spot.id}
                                                             </div>
+                                                            <GradientButton
+                                                                variant="contained"
+                                                                color="primary"
+                                                                onClick={() => handleEditClick(spot)}
+                                                                style={{ width: '100%' }}
+                                                            >
+                                                                EDIT
+                                                            </GradientButton>
                                                         </div>
                                                     </Popup>
                                                 </Polygon>
                                             ))}
+                                    </FeatureGroup>
 
-                                    </MapContainer>
-                                ) : (
-                                    <Box
-                                        sx={{
-                                            display: "flex",
-                                            "align-content": "center",
-                                            "justify-content": "center",
-                                            "flex-direction": "row",
-                                            "flex-wrap": "wrap",
-                                        }}
-                                        style={{ width: "100%", height: "100%" }}
-                                    >
-                                        <CircularProgress />
-                                    </Box>
-                                )}
-                            </div>
-                        </Grid>
-                        <Grid
-                            item
-                            xs={12}
-                            lg={4}
-                        >
-                            <Paper className='reserve'>
-                                <CardContent>
-                                    <Typography variant='h4'>{parking.name}</Typography>
-                                    <Typography variant='p'>{parking.description}</Typography>
-                                    <Typography variant="h6">
-                                        Address: {parking.street},{parking.zipCode} {parking.city}
-                                    </Typography>
-                                    <Typography variant="h6">Open hours: {convertTime(parking.startTime, parking.timeZone)} -  {convertTime(parking.endTime, parking.timeZone)} </Typography>
-                                    <Typography>
-                                        Dates and times are based on parking time zone ({parking.timeZone}) compared to UTC.
-                                    </Typography>
-                                    <Typography>$/h: {parking.costRate}</Typography>
-                                </CardContent>
-                                <Grid container>
-                                    <Button
-                                        sx={{ m: 1 }}
-                                        variant='contained'
-                                        onClick={handleExitClick}
-                                        fullWidth
-                                    >
-                                        Exit editor
-                                    </Button>
-                                </Grid>
-                            </Paper>
-                        </Grid>
+                                    <TileLayer
+                                        maxNativeZoom={22}
+                                        maxZoom={22}
+                                        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                                        url='http://mt0.google.com/vt/lyrs=s&x={x}&y={y}&z={z}'
+
+                                    />
+                                    {stagedParkingSpots
+                                        .map((spot) => (
+                                            <Polygon
+                                                id={spot.id}
+                                                key={spot.id}
+                                                positions={spot.pointsDTO.map((point) => [
+                                                    point.latitude,
+                                                    point.longitude,
+                                                    point.id
+                                                ])}
+                                                color={"#474747"}
+                                                interactive
+                                            >
+                                                <Popup>
+                                                    <div style={{ minWidth: '200px', maxWidth: '250px', padding: '10px', textAlign: 'left' }}>
+                                                        <div style={{
+                                                            marginBottom: '5px', textAlign: 'center',
+                                                            fontSize: `${Math.min(20, 450 / parking.name.length)}px`, fontWeight: 'bold',
+                                                            whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'
+                                                        }}>
+                                                            Spot: {spot.spotNumber}
+                                                        </div>
+                                                        <div style={{ marginBottom: '5px' }}>
+                                                            Save parking staged spots to edit them.
+                                                        </div>
+                                                    </div>
+                                                </Popup>
+                                            </Polygon>
+                                        ))}
+
+                                </MapContainer>
+                            ) : (
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        "align-content": "center",
+                                        "justify-content": "center",
+                                        "flex-direction": "row",
+                                        "flex-wrap": "wrap",
+                                    }}
+                                    style={{ width: "100%", height: "100%" }}
+                                >
+                                    <CircularProgress />
+                                </Box>
+                            )}
+                        </div>
                     </Grid>
-                </Box>
-            </Container>
-        </>
+                </Grid>
+            </Box>
+        </Container>
     );
 }
 
