@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { addCar, deleteCar, updateCar, getUserCars } from '../../actions/carActions';
+import { addCar, deleteCar, updateCar, getUserCars } from '../../redux/actions/carActions';
 import {
     Box,
     Container,

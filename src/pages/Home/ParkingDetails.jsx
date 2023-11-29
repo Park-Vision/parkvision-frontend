@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getParking, getParkingSpotsNumber, getParkingFreeSpotsNumber } from "../../actions/parkingActions";
+import { getParking, getParkingSpotsNumber, getParkingFreeSpotsNumber } from "../../redux/actions/parkingActions";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
 import { useParams } from "react-router-dom";
@@ -20,18 +20,18 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
 import { useNavigate } from "react-router-dom";
 import { MapContainer, Polygon, Popup, TileLayer, FeatureGroup } from "react-leaflet";
-import { getFreeParkingSpotsByParkingId, getOccupiedParkingSpotsMapByParkingId, getParkingSpotsByParkingId } from "../../actions/parkingSpotActions";
+import { getFreeParkingSpotsByParkingId, getOccupiedParkingSpotsMapByParkingId, getParkingSpotsByParkingId } from "../../redux/actions/parkingSpotActions";
 import CircularProgress from "@mui/material/CircularProgress";
 import TextField from "@mui/material/TextField";
 import MenuItem from "@mui/material/MenuItem";
-import { getUser } from "../../actions/userActions";
-import { getUserCars } from "../../actions/carActions";
+import { getUser } from "../../redux/actions/userActions";
+import { getUserCars } from "../../redux/actions/carActions";
 import { validateRegistraionNumber } from "../../utils/validation";
 import {
     GET_RESERVATION,
     GET_PARKING_SPOT,
     GET_FREE_PARKING_SPOTS_BY_PARKING_ID,
-} from "../../actions/types";
+} from "../../redux/actions/types";
 import { toast } from "react-toastify";
 import convertTime from "../../utils/convertTime";
 import convertDate from "../../utils/convertDate";

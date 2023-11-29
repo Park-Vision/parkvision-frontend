@@ -1,6 +1,6 @@
 import { toast } from 'react-toastify';
 import axios from 'axios';
-import AuthenticationService from "../services/AuthenticationService";
+import AuthenticationService from "../redux/services/AuthenticationService";
 
 let retryCounter = 0;
 const maxRetries = 1;

@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from "react-redux";
 import React, { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { deleteReservation, getReservationsByParking } from "../../actions/reservationActions";
+import { deleteReservation, getReservationsByParking } from "../../redux/actions/reservationActions";
 import { Box, Container } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import convertDate from "../../utils/convertDate";

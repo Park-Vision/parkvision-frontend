@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import Home from "../Home/Home";
-import { getUser } from "../../actions/userActions";
+import { getUser } from "../../redux/actions/userActions";
 import decodeToken from "../../utils/decodeToken";
 import { useEffect } from "react";
 

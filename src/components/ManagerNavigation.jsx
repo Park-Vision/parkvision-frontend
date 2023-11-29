@@ -7,7 +7,7 @@ import IconButton from "@mui/material/IconButton";
 import {Button, Drawer, List, ListItem, Typography} from "@mui/material";
 import {useEffect, useState} from "react";
 import {useDispatch, useSelector} from "react-redux";
-import {getParking} from "../actions/parkingActions";
+import {getParking} from "../redux/actions/parkingActions";
 
 const ManagerNavigation = (props) => {
     const { parkingId } = useParams();

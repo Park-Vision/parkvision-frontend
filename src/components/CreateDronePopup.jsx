@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import FormControl from '@mui/material/FormControl';
 import Button from "@mui/material/Button";
-import { addDrone } from "../actions/droneActions";
+import { addDrone } from "../redux/actions/droneActions";
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';

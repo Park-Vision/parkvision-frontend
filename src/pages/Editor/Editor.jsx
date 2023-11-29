@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getParking } from "../../actions/parkingActions";
+import { getParking } from "../../redux/actions/parkingActions";
 import { useParams } from "react-router-dom";
 import Grid from "@mui/material/Grid";
 import Container from "@mui/material/Container";
@@ -14,11 +14,11 @@ import { useNavigate } from "react-router-dom";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import IconButton from "@mui/material/IconButton";
 import { MapContainer, Polygon, Popup, TileLayer, FeatureGroup } from "react-leaflet";
-import { getParkingSpotsByParkingId, addParkingSpot, updateParkingSpot, getParkingSpot } from "../../actions/parkingSpotActions";
+import { getParkingSpotsByParkingId, addParkingSpot, updateParkingSpot, getParkingSpot } from "../../redux/actions/parkingSpotActions";
 import CircularProgress from "@mui/material/CircularProgress";
-import { GET_PARKING_SPOT } from "../../actions/types";
+import { GET_PARKING_SPOT } from "../../redux/actions/types";
 import decodeToken from "../../utils/decodeToken";
-import { getUser } from "../../actions/userActions";
+import { getUser } from "../../redux/actions/userActions";
 import { toast } from "react-toastify";
 import 'leaflet-path-drag'
 import { areParkingSpotsColliding, getArea, isSpotAreaTooBig, isSpotAreaTooSmall } from "../../utils/parkingUtils";
