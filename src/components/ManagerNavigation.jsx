@@ -24,6 +24,10 @@ const ManagerNavigation = (props) => {
         setDrawerOpen(!isDrawerOpen);
     };
 
+    const handleGoToParking = () => {
+        navigate(`/parking/${parkingId}`);
+    };
+
     const handleGoToEditor = () => {
         navigate(`/parking/${parkingId}/editor`);
     };
@@ -92,6 +96,11 @@ const ManagerNavigation = (props) => {
                         >
                             {parking.name}
                         </Typography>
+                    </ListItem>
+                    <ListItem onClick={handleGoToParking}>
+                        <Button>
+                            Parking
+                        </Button>
                     </ListItem>
                     <ListItem onClick={handleGoToDashboard}>
                         <Button>
