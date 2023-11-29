@@ -8,12 +8,13 @@ import { toast } from "react-toastify";
 import { useState, useRef, useEffect } from 'react';
 import L from "leaflet";
 import { getParkingSpot, updateParkingSpot, deleteParkingSpotSoft } from '../../actions/parkingSpotActions';
-import Radio from '@mui/material/Radio';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from '@mui/material/FormControl';
-import FormLabel from '@mui/material/FormLabel';
 import decodeToken from '../../utils/decodeToken';
 import { getUser } from '../../actions/userActions';
+import { GradientButton } from '../../components/GradientButton';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import IconButton from '@mui/material/IconButton';
 delete L.Icon.Default.prototype._getIconUrl;
 
 L.Icon.Default.mergeOptions({
@@ -187,11 +188,9 @@ export default function ParkingSpotDetails(props) {
                 {parkingSpotReducer.parkingSpot.id && (
                     <Paper>
                         <CardContent>
-                            <Grid container>
-                                <Button sx={{ m: 1 }} variant='contained' onClick={handleExitClick} fullWidth>
-                                    Go to editor
-                                </Button>
-                            </Grid>
+                            <IconButton onClick={handleExitClick}>
+                                <ArrowBackIcon />
+                            </IconButton>
                             <div style={{ height: '500px' }}>
                                 {parkingSpotReducer.parkingSpot.id && (
                                     <MapContainer
@@ -286,9 +285,9 @@ export default function ParkingSpotDetails(props) {
                                     }
                                         label="Active" />
                                 </FormControl>
-                                <Button sx={{ m: 1 }} variant='contained' onClick={handleEditInfo} fullWidth>
-                                    Edit
-                                </Button>
+                                <GradientButton sx={{ m: 1 }} variant='contained' onClick={handleEditInfo} fullWidth>
+                                    Confirm
+                                </GradientButton>
                                 <Button sx={{ m: 1 }}
                                     variant="contained"
                                     onClick={handleDelete}

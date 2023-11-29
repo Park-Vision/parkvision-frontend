@@ -30,6 +30,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import { toast } from "react-toastify";
+import { GradientButton } from "../../components/GradientButton";
 
 export default function UserReservations() {
     const authenticationReducer = useSelector((state) => state.authenticationReducer);
@@ -113,23 +114,21 @@ export default function UserReservations() {
                 </Typography>
                 <div style={{ margin: '20px' }}>
                     <Grid container spacing={2} justifyContent="center">
-                        <Button
+                        <GradientButton
                             variant="contained"
-                            color="primary"
                             onClick={handleShowPending}
                             style={{ marginRight: '10px' }}
                             disabled={!showArchived}
                         >
                             Pending
-                        </Button>
-                        <Button
+                        </GradientButton>
+                        <GradientButton
                             variant="contained"
-                            color="primary"
                             onClick={handleShowArchived}
                             disabled={showArchived}
                         >
                             Archived
-                        </Button>
+                        </GradientButton>
                     </Grid>
                 </div>
             </Box>

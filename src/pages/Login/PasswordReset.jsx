@@ -11,20 +11,23 @@ import {
     Box,
     Container,
     Typography,
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogActions,
     Button,
-    TextField
+    TextField,
+    FormControl,
+    OutlinedInput,
+    InputLabel,
+    InputAdornment,
+    IconButton,
 } from '@mui/material';
-
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { useDispatch, useSelector } from "react-redux";
 import { resetPassword, setPasswordFromReset } from '../../actions/userActions';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { validateEmail, validatePassword } from "../../utils/validation";
+import { GradientButton } from '../../components/GradientButton';
 
 
 export default function PasswordReset() {
@@ -37,6 +40,16 @@ export default function PasswordReset() {
     const token = queryParams.get('token');
     const timestamp = queryParams.get('timestamp');
     const hourRule = process.env.REACT_APP_RESET_PASSWORD_HOUR_RULE;
+
+    const [showPassword, setShowPassword] = React.useState(false);
+
+    const handleClickShowPassword = () => setShowPassword((show) => !show);
+
+    const handleMouseDownPassword = (event) => {
+        event.preventDefault();
+    }
+
+
 
     useEffect(() => {
         if (token === null || timestamp === null) {
@@ -112,29 +125,59 @@ export default function PasswordReset() {
                             </Typography>
                             <Typography variant="body2" color="text.secondary">
                                 <form onSubmit={handlePasswordReset} >
-                                    <TextField
-                                        label="Password"
-                                        variant="outlined"
+                                    <FormControl fullWidth variant="outlined" margin="normal">
+                                        <InputLabel htmlFor="password">Password</InputLabel>
+                                        <OutlinedInput
+                                            label="Password"
+                                            id="password"
+                                            type={showPassword ? 'text' : 'password'}
+                                            required={true}
+                                            onChange={handlePassword}
+                                            value={password}
+                                            endAdornment={
+                                                <InputAdornment position="end">
+                                                    <IconButton
+                                                        aria-label="toggle password visibility"
+                                                        onClick={handleClickShowPassword}
+                                                        onMouseDown={handleMouseDownPassword}
+                                                        edge="end"
+                                                    >
+                                                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                                                    </IconButton>
+                                                </InputAdornment>
+                                            }
+                                        />
+                                    </FormControl>
+                                    <FormControl fullWidth variant="outlined" margin="normal">
+                                        <InputLabel htmlFor="password-repeat">Repeat password</InputLabel>
+                                        <OutlinedInput
+                                            label="Repeat password"
+                                            id="password-repeat"
+                                            type={showPassword ? 'text' : 'password'}
+                                            required={true}
+                                            onChange={handlePasswordRepeat}
+                                            value={passwordRepeat}
+                                            endAdornment={
+                                                <InputAdornment position="end">
+                                                    <IconButton
+                                                        aria-label="toggle password visibility"
+                                                        onClick={handleClickShowPassword}
+                                                        onMouseDown={handleMouseDownPassword}
+                                                        edge="end"
+                                                    >
+                                                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                                                    </IconButton>
+                                                </InputAdornment>
+                                            }
+                                        />
+                                    </FormControl>
+                                    <GradientButton
+                                        type="submit"
+                                        variant="contained"
                                         fullWidth
-                                        margin="normal"
-                                        type="password"
-                                        required={true}
-                                        onChange={handlePassword}
-                                        value={password}
-                                    />
-                                    <TextField
-                                        label="Repeat password"
-                                        variant="outlined"
-                                        fullWidth
-                                        margin="normal"
-                                        type="password"
-                                        required={true}
-                                        onChange={handlePasswordRepeat}
-                                        value={passwordRepeat}
-                                    />
-                                    <Button type="submit" variant="contained" fullWidth margin="normal" >
+                                        sx={{ mt: 1 }}>
                                         Password reset
-                                    </Button>
+                                    </GradientButton>
                                 </form>
                             </Typography>
                         </CardContent>

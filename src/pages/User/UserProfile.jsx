@@ -23,6 +23,7 @@ import { validateName, validatePassword } from "../../utils/validation";
 import { logout } from "../../actions/authenticationActions";
 import IconButton from "@mui/material/IconButton";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { GradientButton } from "../../components/GradientButton";
 
 
 export default function UserProfile() {
@@ -184,19 +185,19 @@ export default function UserProfile() {
                 </Grid>
                 <Grid container justifyContent="center" spacing={2}>
                     <Grid item>
-                        <Button variant="contained" margin="normal" onClick={() => handleOpenDialog("profile")}>
+                        <GradientButton variant="contained" margin="normal" onClick={() => handleOpenDialog("profile")}>
                             EDIT PROFILE
-                        </Button>
+                        </GradientButton>
                     </Grid>
                     <Grid item>
-                        <Button variant="contained" margin="normal" onClick={() => handleOpenDialog("password")}>
+                        <GradientButton variant="contained" margin="normal" onClick={() => handleOpenDialog("password")}>
                             CHANGE PASSWORD
-                        </Button>
+                        </GradientButton>
                     </Grid>
                     <Grid item>
-                        <Button variant="contained" margin="normal" onClick={() => handleOpenDialog("delete")}>
+                        <GradientButton variant="contained" margin="normal" onClick={() => handleOpenDialog("delete")}>
                             DELETE ACCOUNT
-                        </Button>
+                        </GradientButton>
                     </Grid>
                 </Grid>
 

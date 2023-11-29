@@ -35,6 +35,11 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import DroneTimeline from "../../components/DroneTimeline";
 import CreateDronePopup from "../../components/CreateDronePopup";
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableRow from '@mui/material/TableRow';
 
 L.Icon.Default.mergeOptions({
     iconRetinaUrl:
@@ -44,6 +49,11 @@ L.Icon.Default.mergeOptions({
     shadowUrl:
         "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.1/images/marker-shadow.png",
 });
+
+const BATTERY_CELL_COUNT = 3
+const MINIMUM_CELL_VOLTAGE = 3200
+const MILIVOLT_TO_PERCENT = 10
+const DISPLAY_DECIMAL_DIGITS = 2
 
 function ParkingEditor(props) {
     const { parkingId } = useParams();
@@ -56,30 +66,47 @@ function ParkingEditor(props) {
     const userjson = JSON.parse(localStorage.getItem("user"));
     const user = decodeToken(userjson?.token);
 
-    const [messages, setMessages] = useState([]);
     const [stompClient, setStompClient] = useState(null);
 
     // Drones assigned to this parking
     const [availableDrones, setAvailableDrones] = useState([])
 
     const [selectedDroneId, setSelectedDroneId] = useState(0)
-    const [dronePosition, setDronePosition] = useState([0, 0])
+    const [dronePosition, setDronePosition] = useState([0, 0, 0])
     const [droneStage, setDroneStage] = useState(0)
+    const [droneBatteryPercentage, setDroneBatteryPercentage] = useState(0)
+    const [droneSatellites, setDroneSatellites] = useState(0)
 
     const [openDialog, setOpenDialog] = useState(false);
 
+    const calculateBatteryPercentage = (voltage) => {
+        return ((voltage / BATTERY_CELL_COUNT - MINIMUM_CELL_VOLTAGE) / MILIVOLT_TO_PERCENT).toFixed(DISPLAY_DECIMAL_DIGITS)
+    }
+
     const processIncomingMessage = (recievedMessage) => {
-        setMessages((messages) => [...messages, recievedMessage]);
-
-        if (Object.hasOwn(recievedMessage, "lat")) {
-            setDronePosition([recievedMessage.lat, recievedMessage.lon])
-        }
-
+        // Parkvision specific messages
         if (Object.hasOwn(recievedMessage, "type")) {
             switch (recievedMessage.type) {
                 case 'stage':
                     setDroneStage(recievedMessage.stage)
             }
+        }
+
+        // Generic mavlink messages
+        else if (Object.hasOwn(recievedMessage, "mavpackettype")) {
+            switch (recievedMessage.mavpackettype) {
+                case 'SYS_STATUS':
+                    setDroneBatteryPercentage(calculateBatteryPercentage(recievedMessage.voltage_battery))
+                    break
+                case 'GPS_RAW_INT':
+                    setDroneSatellites(recievedMessage.satellites_visible)
+                    break
+            }
+        }
+
+        // Albatros specific messages
+        else if (Object.hasOwn(recievedMessage, "lat")) {
+            setDronePosition([recievedMessage.lat, recievedMessage.lon, recievedMessage.alt.toFixed(DISPLAY_DECIMAL_DIGITS)])
         }
     }
 
@@ -108,7 +135,7 @@ function ParkingEditor(props) {
     useEffect(() => {
         initStomp()
         dispatch(getParking(parkingId)).then((response) => {
-            setDronePosition([response.latitude, response.longitude]);
+            setDronePosition([response.latitude, response.longitude, 0]);
         });
         refreshDrones()
         return () => disposeSocket()
@@ -186,7 +213,7 @@ function ParkingEditor(props) {
 
     const handleSelectDrone = (event) => {
         setSelectedDroneId(event.target.value);
-        setDronePosition([0, 0])
+        setDronePosition([0, 0, 0])
         setDroneStage(0)
 
         subscribeToDifferentSocket(event.target.value)
@@ -298,15 +325,15 @@ function ParkingEditor(props) {
                     >
                         <Paper className='reserve'>
                             <CardContent>
-                                <Typography variant='h4'>{parking.name}</Typography>
+                                <Typography variant='h4' fontWeight='bold'>{parking.name}</Typography>
                                 <Grid container spacing={2}>
                                     <Grid item
                                         xs={10}>
                                         <FormControl fullWidth sx={{ mt: 1 }}>
-                                            <InputLabel id="demo-simple-select-label">Drone</InputLabel>
+                                            <InputLabel id="drone-select-label">Drone</InputLabel>
                                             <Select
-                                                labelId="demo-simple-select-label"
-                                                id="demo-simple-select"
+                                                labelId="drone-select-label"
+                                                id="drone-select"
                                                 value={selectedDroneId}
                                                 label="Drone"
                                                 onChange={handleSelectDrone}
@@ -329,6 +356,30 @@ function ParkingEditor(props) {
                                     </Grid>
                                 </Grid>
                                 <DroneTimeline stageId={droneStage} />
+                                <TableContainer component={Paper}>
+                                    <Table size="small" aria-label="a dense table">
+                                        <TableBody>
+                                            <TableRow
+                                                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                            >
+                                                <TableCell component="th" scope="row">{"Altitude"}</TableCell>
+                                                <TableCell align="right">{dronePosition[2]} m</TableCell>
+                                            </TableRow>
+                                            <TableRow
+                                                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                            >
+                                                <TableCell component="th" scope="row">{"Gps satellites visible"}</TableCell>
+                                                <TableCell align="right">{droneSatellites}</TableCell>
+                                            </TableRow>
+                                            <TableRow
+                                                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                            >
+                                                <TableCell component="th" scope="row">{"Battery percentage"}</TableCell>
+                                                <TableCell align="right">{droneBatteryPercentage} %</TableCell>
+                                            </TableRow>
+                                        </TableBody>
+                                    </Table>
+                                </TableContainer>
                             </CardContent>
                             <Grid container>
                                 <Button
