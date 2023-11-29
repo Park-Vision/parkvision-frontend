@@ -40,6 +40,7 @@ import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableRow from '@mui/material/TableRow';
+import ManagerNavigation from "../../components/ManagerNavigation";
 
 L.Icon.Default.mergeOptions({
     iconRetinaUrl:
@@ -237,6 +238,8 @@ function ParkingEditor(props) {
     }
 
     return (
+        <>
+        <ManagerNavigation/>
         <Container
             maxWidth='xl'
             style={{ height: "97%" }}
@@ -416,6 +419,7 @@ function ParkingEditor(props) {
                 refreshDrones={refreshDrones}
                 parkingId={parkingId} />
         </Container>
+        </>
     );
 }
 

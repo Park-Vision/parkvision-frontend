@@ -19,7 +19,7 @@ export default function ManagerReservations() {
         if (authenticationReducer.decodedUser && authenticationReducer.decodedUser.role === "PARKING_MANAGER") {
             dispatch(getDroneMissions());
         }
-    }, );
+    }, []);
 
     if (!authenticationReducer.decodedUser && authenticationReducer.decodedUser.role === "PARKING_MANAGER") {
         navigate('/');

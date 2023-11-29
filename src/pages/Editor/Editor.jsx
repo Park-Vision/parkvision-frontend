@@ -1,35 +1,29 @@
 import React, { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getParking } from "../../actions/parkingActions";
-import CardContent from "@mui/material/CardContent";
-import Typography from "@mui/material/Typography";
 import { useParams } from "react-router-dom";
-import { Paper } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import Container from "@mui/material/Container";
 import Box from "@mui/material/Box";
-import L, { point } from "leaflet";
+import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet-draw/dist/leaflet.draw.css";
 import { EditControl } from "react-leaflet-draw";
-import "../Editor.css"; // Create a CSS file for styling
+import "../Editor.css";
 import { useNavigate } from "react-router-dom";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import IconButton from "@mui/material/IconButton";
 import { MapContainer, Polygon, Popup, TileLayer, FeatureGroup } from "react-leaflet";
-import { getParkingSpotsByParkingId, addParkingSpot, addParkingSpots, updateParkingSpot, getParkingSpot, getParkingSpots } from "../../actions/parkingSpotActions";
-import Button from "@mui/material/Button";
+import { getParkingSpotsByParkingId, addParkingSpot, updateParkingSpot, getParkingSpot } from "../../actions/parkingSpotActions";
 import CircularProgress from "@mui/material/CircularProgress";
-import {
-    GET_PARKING_SPOT, UPDATE_PARKING_SPOT,
-} from "../../actions/types";
-import convertTime from "../../utils/convertTime";
+import { GET_PARKING_SPOT } from "../../actions/types";
 import decodeToken from "../../utils/decodeToken";
 import { getUser } from "../../actions/userActions";
 import { toast } from "react-toastify";
 import 'leaflet-path-drag'
 import { areParkingSpotsColliding, getArea, isSpotAreaTooBig, isSpotAreaTooSmall } from "../../utils/parkingUtils";
 import { GradientButton } from "../../components/GradientButton";
+import ManagerNavigation from "../../components/ManagerNavigation";
 delete L.Icon.Default.prototype._getIconUrl;
 
 L.Icon.Default.mergeOptions({
@@ -48,12 +42,10 @@ function ParkingEditor(props) {
     const parking = useSelector((state) => state.parkingReducer.parking);
     const parkingSpots = useSelector((state) => state.parkingSpotReducer.parkingSpots);
     const stagedParkingSpots = useSelector((state) => state.parkingSpotReducer.stagedParkingSpots);
-    const parkingSpot = useSelector((state) => state.parkingSpotReducer.parkingSpot);
     const [drag, setDrag] = React.useState(false);
     const maximalDragDistance = process.env.REACT_APP_MAXIMAL_DRAG
     const minimalArea = process.env.REACT_APP_MINIMAL_AREA
     const maximalArea = process.env.REACT_APP_MAXIMAL_AREA
-    const [spotsCopy, setSpotsCopy] = React.useState([]);
 
     const userjson = JSON.parse(localStorage.getItem("user"));
     const user = decodeToken(userjson?.token);
@@ -96,28 +88,6 @@ function ParkingEditor(props) {
                     }
                 });
             }
-        });
-    };
-
-
-    const clearLayerWithId = (id) => {
-        const map = mapRef.current;
-        map.eachLayer((layer) => {
-            if (layer instanceof L.FeatureGroup) {
-                layer.eachLayer((polyObject) => {
-                    if (polyObject.options.id === id) {
-                        polyObject.remove();
-                    }
-                });
-            }
-        });
-    };
-
-
-    const unsetParkingSpot = () => {
-        dispatch({
-            type: GET_PARKING_SPOT,
-            value: {},
         });
     };
 
@@ -475,6 +445,8 @@ function ParkingEditor(props) {
 
 
     return (
+        <>
+        <ManagerNavigation/>
         <Container
             maxWidth='xl'
             style={{ height: "97%" }}
@@ -657,6 +629,7 @@ function ParkingEditor(props) {
                 </Grid>
             </Box>
         </Container>
+        </>
     );
 }
 
