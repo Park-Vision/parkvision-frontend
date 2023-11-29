@@ -3,15 +3,15 @@ import { Container, Box, Typography, Paper, CardContent, TextField, Button, Circ
 import { useDispatch, useSelector } from "react-redux";
 import { MapContainer, TileLayer, FeatureGroup, Polygon, Popup } from 'react-leaflet';
 import { EditControl } from "react-leaflet-draw";
-import { addReservation } from '../../actions/reservationActions';
+import { addReservation } from '../../redux/actions/reservationActions';
 import { toast } from "react-toastify";
 import { useState, useRef, useEffect } from 'react';
 import L from "leaflet";
-import { getParkingSpot, updateParkingSpot, deleteParkingSpotSoft } from '../../actions/parkingSpotActions';
+import { getParkingSpot, updateParkingSpot, deleteParkingSpotSoft } from '../../redux/actions/parkingSpotActions';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from '@mui/material/FormControl';
 import decodeToken from '../../utils/decodeToken';
-import { getUser } from '../../actions/userActions';
+import { getUser } from '../../redux/actions/userActions';
 import { GradientButton } from '../../components/GradientButton';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import IconButton from '@mui/material/IconButton';

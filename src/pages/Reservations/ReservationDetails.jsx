@@ -14,12 +14,12 @@ import {
 } from '@mui/material';
 import { useDispatch, useSelector } from "react-redux";
 import { MapContainer, TileLayer, FeatureGroup, Polygon, Popup } from 'react-leaflet';
-import { addReservation } from '../../actions/reservationActions';
+import { addReservation } from '../../redux/actions/reservationActions';
 import { toast } from "react-toastify";
 import { useState, useEffect } from 'react';
 import CreditCardIcon from '@mui/icons-material/CreditCard';
-import { addPayment } from "../../actions/paymentActions";
-import { addStripeCharge } from "../../actions/stripeChargeActions";
+import { addPayment } from "../../redux/actions/paymentActions";
+import { addStripeCharge } from "../../redux/actions/stripeChargeActions";
 import getLocalISOTime from '../../utils/getLocalISOTime';
 import { GradientButton } from '../../components/GradientButton';
 

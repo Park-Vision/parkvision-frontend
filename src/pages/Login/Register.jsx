@@ -11,7 +11,7 @@ import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import { GradientButton } from "../../components/GradientButton";
 import { useDispatch } from "react-redux";
-import { logout, register } from "../../actions/authenticationActions";
+import { logout, register } from "../../redux/actions/authenticationActions";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { validatePassword, validateEmail, validateName } from "../../utils/validation";

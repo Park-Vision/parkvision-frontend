@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
-import { getReservationsByParking } from '../../actions/reservationActions';
+import { getReservationsByParking } from '../../redux/actions/reservationActions';
 import Home from '../Home/Home';
-import { getParking, getParkingFreeSpotsNumber, getParkingSpotsNumber } from '../../actions/parkingActions';
+import { getParking, getParkingFreeSpotsNumber, getParkingSpotsNumber } from '../../redux/actions/parkingActions';
 import { Bar, Line } from 'react-chartjs-2';
 import { ArcElement, CategoryScale, Chart, registerables } from 'chart.js'
 import { Card, CardContent, Container, Typography } from "@mui/material";
