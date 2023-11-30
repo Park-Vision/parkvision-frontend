@@ -1,8 +1,8 @@
 import { useDispatch, useSelector } from "react-redux";
 import React, { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { deleteReservation, getReservationsByParking } from "../../redux/actions/reservationActions";
-import { Box, Container } from "@mui/material";
+import { deleteReservation, getReservations, getReservationsByParking } from "../../actions/reservationActions";
+import { Box, Button, Container } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import convertDate from "../../utils/convertDate";
 import Home from "../Home/Home";
@@ -10,7 +10,6 @@ import ModeEditIcon from '@mui/icons-material/ModeEdit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
 import { toast } from "react-toastify";
-import ManagerNavigation from "../../components/ManagerNavigation";
 export default function ManagerReservations(props) {
     const { parkingId } = useParams();
     const authenticationReducer = useSelector((state) => state.authenticationReducer);
@@ -23,7 +22,7 @@ export default function ManagerReservations(props) {
         if (authenticationReducer.decodedUser && authenticationReducer.decodedUser.role === "PARKING_MANAGER") {
             dispatch(getReservationsByParking(parkingId));
         }
-    }, );
+    }, []);
 
     if (!authenticationReducer.decodedUser && authenticationReducer.decodedUser.role !== "PARKING_MANAGER") {
         navigate('/');
@@ -88,20 +87,17 @@ export default function ManagerReservations(props) {
     }
 
     return (
-        <>
-            <ManagerNavigation/>
-            <Container maxWidth="xl" style={{ height: "100%" }}>
-                <Box style={{ height: "100%" }}>
-                    <div style={{ height: "100%" }}>
-                        <DataGrid
-                            rows={reservations}
-                            columns={columns}
-                            pageSize={5}
-                            sx={{ overflowX: 'scroll' }}
-                        />
-                    </div>
-                </Box>
-            </Container>
-        </>
+        <Container maxWidth="xl" style={{ height: "100%" }}>
+            <Box style={{ height: "100%" }}>
+                <div style={{ height: "100%" }}>
+                    <DataGrid
+                        rows={reservations}
+                        columns={columns}
+                        pageSize={5}
+                        sx={{ overflowX: 'scroll' }}
+                    />
+                </div>
+            </Box>
+        </Container>
     )
 }
