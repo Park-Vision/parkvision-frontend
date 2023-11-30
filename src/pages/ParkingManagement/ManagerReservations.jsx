@@ -23,7 +23,7 @@ export default function ManagerReservations(props) {
         if (authenticationReducer.decodedUser && authenticationReducer.decodedUser.role === "PARKING_MANAGER") {
             dispatch(getReservationsByParking(parkingId));
         }
-    }, );
+    }, []);
 
     if (!authenticationReducer.decodedUser && authenticationReducer.decodedUser.role !== "PARKING_MANAGER") {
         navigate('/');
@@ -89,7 +89,6 @@ export default function ManagerReservations(props) {
 
     return (
         <>
-            <ManagerNavigation/>
             <Container maxWidth="xl" style={{ height: "100%" }}>
                 <Box style={{ height: "100%" }}>
                     <div style={{ height: "100%" }}>

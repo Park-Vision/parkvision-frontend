@@ -17,6 +17,8 @@ import { logout } from "../redux/actions/authenticationActions";
 import { useNavigate } from 'react-router-dom';
 import decodeToken from '../utils/decodeToken';
 import { getUser } from '../redux/actions/userActions';
+import { getParking } from '../redux/actions/parkingActions';
+import ManagerNavigation from './ManagerNavigation';
 
 const pages = ['Home', 'Contact', 'About'];
 const links = ['/', '/contact', '/about'];
@@ -98,10 +100,12 @@ function ResponsiveAppBar() {
   React.useEffect(() => {
     if (user) {
       dispatch(getUser(user.userId)).then((response) => {
-        console.log(response)
+
         setinitials(getInitials(response));
-      }
-      );
+        if (response.role === "PARKING_MANAGER" && response.parkingDTO) {
+          dispatch(getParking(response.parkingDTO.id));
+        }
+      });
     }
   }, [currentUser]);
 
@@ -231,6 +235,11 @@ function ResponsiveAppBar() {
               </Button>
             )}
           </Box>
+          {user && user.role === 'PARKING_MANAGER' && (
+            <Box sx={{ flexGrow: 0 }}>
+              <ManagerNavigation />
+            </Box>
+          )}
 
           {currentUser && (
             <Box sx={{ flexGrow: 0 }}>

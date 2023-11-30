@@ -123,99 +123,101 @@ export default function Login() {
     }
 
     return (
-        <Container maxWidth="sm">
-            <Box sx={{
+        <Box sx={{ display: 'flex', height: '100%', flexDirection: 'column' }}>
+            <Container maxWidth="sm" sx={{
+                flexGrow: 1, p: 3,
                 display: 'flex',
                 justifyContent: 'center',
                 alignItems: 'center',
-                height: '100vh',
             }}>
-                <Grid item  >
-                    <Card>
-                        <CardMedia
-                            component="img"
-                            height="300"
-                            image={pvlogo}
-                            alt="random"
-                        />
-                        <CardContent>
-                            <Typography gutterBottom variant="h5" component="div">
-                                Login
-                            </Typography>
-                            <form onSubmit={handleLogin}>
-                                <FormControl fullWidth variant="outlined" margin="normal">
-                                    <InputLabel htmlFor="email">E-mail</InputLabel>
-                                    <OutlinedInput
-                                        label="E-mail"
-                                        id="email"
-                                        variant="outlined"
-                                        required={true}
-                                        onChange={handleEmail}
-                                        value={email}
-                                    />
-                                </FormControl>
-                                <FormControl fullWidth variant="outlined" margin="normal">
-                                    <InputLabel htmlFor="password">Password</InputLabel>
-                                    <OutlinedInput
-                                        label="Password"
-                                        id="password"
-                                        type={showPassword ? 'text' : 'password'}
-                                        required={true}
-                                        onChange={handlePassword}
-                                        value={password}
-                                        endAdornment={
-                                            <InputAdornment position="end">
-                                                <IconButton
-                                                    aria-label="toggle password visibility"
-                                                    onClick={handleClickShowPassword}
-                                                    onMouseDown={handleMouseDownPassword}
-                                                    edge="end"
-                                                >
-                                                    {showPassword ? <VisibilityOff /> : <Visibility />}
-                                                </IconButton>
-                                            </InputAdornment>
-                                        }
-                                    />
-                                </FormControl>
-                                <GradientButton type="submit" variant="contained" fullWidth sx={{ mt: 1 }} >
+                <Box >
+                    <Grid item  >
+                        <Card elevation={3} square={false}>
+                            <CardMedia
+                                component="img"
+                                height="300"
+                                image={pvlogo}
+                                alt="random"
+                            />
+                            <CardContent>
+                                <Typography gutterBottom variant="h5" component="div">
                                     Login
-                                </GradientButton>
-                                <Button fullWidth sx={{ mt: 1 }} onClick={handleOpenResetPassword}>
-                                    Password reset
-                                </Button>
-                                <GradientButton
-                                    variant="contained"
-                                    fullWidth
-                                    sx={{ mt: 1 }}
-                                    onClick={() => handleRegister()}>
-                                    Register
-                                </GradientButton>
-                            </form>
-                        </CardContent>
-                    </Card>
-                </Grid>
-            </Box>
-            <Dialog open={openResetPasswordDialog}>
-                <DialogTitle>Password reset</DialogTitle>
-                <DialogContent>
-                    <Typography>
-                        Please enter your email address.<br></br> We will send you a link to reset your password.
-                    </Typography>
-                    <TextField
-                        autoFocus
-                        margin="normal"
-                        id="email"
-                        label="Email Address"
-                        type="email"
-                        fullWidth
-                        onChange={handleEmailReset}
-                    />
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleCloseResetPassword}>Cancel</Button>
-                    <Button onClick={handleSendPasswordReset}>Send</Button>
-                </DialogActions>
-            </Dialog>
-        </Container>
+                                </Typography>
+                                <form onSubmit={handleLogin}>
+                                    <FormControl fullWidth variant="outlined" margin="normal">
+                                        <InputLabel htmlFor="email">E-mail</InputLabel>
+                                        <OutlinedInput
+                                            label="E-mail"
+                                            id="email"
+                                            variant="outlined"
+                                            required={true}
+                                            onChange={handleEmail}
+                                            value={email}
+                                        />
+                                    </FormControl>
+                                    <FormControl fullWidth variant="outlined" margin="normal">
+                                        <InputLabel htmlFor="password">Password</InputLabel>
+                                        <OutlinedInput
+                                            label="Password"
+                                            id="password"
+                                            type={showPassword ? 'text' : 'password'}
+                                            required={true}
+                                            onChange={handlePassword}
+                                            value={password}
+                                            endAdornment={
+                                                <InputAdornment position="end">
+                                                    <IconButton
+                                                        aria-label="toggle password visibility"
+                                                        onClick={handleClickShowPassword}
+                                                        onMouseDown={handleMouseDownPassword}
+                                                        edge="end"
+                                                    >
+                                                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                                                    </IconButton>
+                                                </InputAdornment>
+                                            }
+                                        />
+                                    </FormControl>
+                                    <GradientButton type="submit" variant="contained" fullWidth sx={{ mt: 1 }} >
+                                        Login
+                                    </GradientButton>
+                                    <Button fullWidth sx={{ mt: 1 }} onClick={handleOpenResetPassword}>
+                                        Password reset
+                                    </Button>
+                                    <GradientButton
+                                        variant="contained"
+                                        fullWidth
+                                        sx={{ mt: 1 }}
+                                        onClick={() => handleRegister()}>
+                                        Register
+                                    </GradientButton>
+                                </form>
+                            </CardContent>
+                        </Card>
+                    </Grid>
+                </Box>
+                <Dialog open={openResetPasswordDialog}>
+                    <DialogTitle>Password reset</DialogTitle>
+                    <DialogContent>
+                        <Typography>
+                            Please enter your email address.<br></br> We will send you a link to reset your password.
+                        </Typography>
+                        <TextField
+                            autoFocus
+                            margin="normal"
+                            id="email"
+                            label="Email Address"
+                            type="email"
+                            fullWidth
+                            onChange={handleEmailReset}
+                        />
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleCloseResetPassword}>Cancel</Button>
+                        <Button onClick={handleSendPasswordReset}>Send</Button>
+                    </DialogActions>
+                </Dialog>
+            </Container>
+        </Box>
     );
 }

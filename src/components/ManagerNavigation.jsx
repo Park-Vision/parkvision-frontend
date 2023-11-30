@@ -2,82 +2,57 @@ import * as React from 'react';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import MenuIcon from '@mui/icons-material/Menu';
-import {useNavigate, useParams} from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import IconButton from "@mui/material/IconButton";
-import {Button, Drawer, List, ListItem, Typography} from "@mui/material";
-import {useEffect, useState} from "react";
-import {useDispatch, useSelector} from "react-redux";
-import {getParking} from "../redux/actions/parkingActions";
+import { Button, Drawer, List, ListItem, Typography } from "@mui/material";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { getParking } from "../redux/actions/parkingActions";
 
 const ManagerNavigation = (props) => {
-    const { parkingId } = useParams();
     const [isDrawerOpen, setDrawerOpen] = useState(false);
     const parking = useSelector((state) => state.parkingReducer.parking);
     const navigate = useNavigate();
-    const dispatch = useDispatch();
 
-    useEffect(() => {
-        dispatch(getParking(parkingId));
-    }, );
 
     const handleDrawerToggle = () => {
         setDrawerOpen(!isDrawerOpen);
     };
 
     const handleGoToParking = () => {
-        navigate(`/parking/${parkingId}`);
+        navigate(`/parking/${parking.id}`);
     };
 
     const handleGoToEditor = () => {
-        navigate(`/parking/${parkingId}/editor`);
+        navigate(`/parking/${parking.id}/editor`);
     };
 
     const handleGoToReservations = () => {
-        navigate(`/parking/${parkingId}/reservations`);
+        navigate(`/parking/${parking.id}/reservations`);
     };
 
     const handleGoToDroneManager = () => {
-        navigate(`/parking/${parkingId}/drone`);
+        navigate(`/parking/${parking.id}/drone`);
     };
 
     const handleGoToParkingDetails = () => {
-        navigate(`/parking/${parkingId}/details`);
+        navigate(`/parking/${parking.id}/details`);
     };
 
     const handleGoToMission = () => {
-        navigate(`/parking/${parkingId}/missions`);
+        navigate(`/parking/${parking.id}/missions`);
     };
 
     const handleGoToDashboard = () => {
-        navigate(`/parking/${parkingId}/dashboard`);
+        navigate(`/parking/${parking.id}/dashboard`);
     };
 
     return (
         <>
-            <AppBar position="relative" color="default">
-                <Toolbar>
-                    <IconButton edge="start" color="inherit" onClick={handleDrawerToggle}>
-                        <MenuIcon />
-                    </IconButton>
-                    <Typography
-                        variant="h6"
-                        noWrap
-                        component="a"
-                        href=""
-                        sx={{
-                            mr: 2,
-                            display: { xs: 'flex', md: 'flex' },
-                            fontFamily: 'monospace',
-                            fontWeight: 700,
-                            color: 'inherit',
-                            textDecoration: 'none',
-                        }}
-                    >
-                        {parking.name}
-                    </Typography>
-                </Toolbar>
-            </AppBar>
-            <Drawer anchor="left" open={isDrawerOpen} onClose={handleDrawerToggle}>
+            <IconButton edge="start" color="inherit" onClick={handleDrawerToggle} sx={{ m: 1 }}>
+                <MenuIcon />
+            </IconButton>
+            <Drawer anchor="right" open={isDrawerOpen} onClose={handleDrawerToggle}>
                 <List>
                     <ListItem>
                         <Typography

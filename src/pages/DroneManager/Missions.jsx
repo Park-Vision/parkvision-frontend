@@ -65,7 +65,6 @@ export default function ManagerReservations() {
 
     return (
         <>
-            <ManagerNavigation/>
             <Container maxWidth="xl" style={{ height: "100%" }}>
                 <Box style={{ height: "100%" }}>
                     <div style={{ height: "100%" }}>

@@ -11,7 +11,7 @@ import Box from "@mui/material/Box";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet-draw/dist/leaflet.draw.css";
-import "../Editor.css"; // Create a CSS file for styling
+import "../Editor/Editor.css"; // Create a CSS file for styling
 import { useNavigate } from "react-router-dom";
 import Stomp, { setInterval } from 'stompjs';
 import SockJS from 'sockjs-client';

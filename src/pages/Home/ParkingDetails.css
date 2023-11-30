@@ -1,22 +1,22 @@
-.map-container {
+/* .map-container {
     height: 100%;
-}
+} */
 
 /* Set the height for mobile screens to 40% of the viewport height */
-@media (max-width: 1199px) {
+/* @media (max-width: 1199px) {
     .map-container {
         height: 40vh;
     }
-}
+} */
 
-@media (min-width: 901px) {
+/* @media (min-width: 901px) {
     .reserve {
         overflow-x: hidden;
         overflow-y: auto;
         height: calc(100vh - 120px);
     }
-}
+} */
 
-.reserve{
+/* .reserve{
 
-}
+} */
