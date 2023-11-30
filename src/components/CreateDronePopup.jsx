@@ -1,12 +1,11 @@
-import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import React, { useState } from "react";
+import { useDispatch } from "react-redux";
 import FormControl from '@mui/material/FormControl';
 import Button from "@mui/material/Button";
-import { addDrone, commandDrone, getDronesByParkingId } from "../actions/droneActions";
+import { addDrone } from "../redux/actions/droneActions";
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import TextField from '@mui/material/TextField';
 import { toast } from "react-toastify";

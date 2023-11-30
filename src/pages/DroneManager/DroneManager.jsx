@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getParking } from "../../actions/parkingActions";
+import { getParking } from "../../redux/actions/parkingActions";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
 import { useParams } from "react-router-dom";
@@ -16,17 +16,17 @@ import { useNavigate } from "react-router-dom";
 import Stomp, { setInterval } from 'stompjs';
 import SockJS from 'sockjs-client';
 import { MapContainer, Polygon, Popup, TileLayer, FeatureGroup, LayersControl } from "react-leaflet";
-import { getParkingSpotsByParkingId } from "../../actions/parkingSpotActions";
+import { getParkingSpotsByParkingId } from "../../redux/actions/parkingSpotActions";
 import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
 import AddIcon from '@mui/icons-material/Add';
 import CircularProgress from "@mui/material/CircularProgress";
 import {
     GET_PARKING_SPOT,
-} from "../../actions/types";
+} from "../../redux/actions/types";
 import decodeToken from "../../utils/decodeToken";
-import { getUser } from "../../actions/userActions";
-import { commandDrone, getDronesByParkingId } from "../../actions/droneActions";
+import { getUser } from "../../redux/actions/userActions";
+import { commandDrone, getDronesByParkingId } from "../../redux/actions/droneActions";
 import { toast } from "react-toastify";
 import DroneMarker from "../../components/DroneMarker"
 import InputLabel from '@mui/material/InputLabel';
@@ -40,6 +40,7 @@ import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableRow from '@mui/material/TableRow';
+import ManagerNavigation from "../../components/ManagerNavigation";
 
 L.Icon.Default.mergeOptions({
     iconRetinaUrl:
@@ -237,6 +238,8 @@ function ParkingEditor(props) {
     }
 
     return (
+        <>
+        <ManagerNavigation/>
         <Container
             maxWidth='xl'
             style={{ height: "97%" }}
@@ -416,6 +419,7 @@ function ParkingEditor(props) {
                 refreshDrones={refreshDrones}
                 parkingId={parkingId} />
         </Container>
+        </>
     );
 }
 

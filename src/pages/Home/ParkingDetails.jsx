@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getParking, getParkingSpotsNumber, getParkingFreeSpotsNumber } from "../../actions/parkingActions";
+import { getParking, getParkingSpotsNumber, getParkingFreeSpotsNumber } from "../../redux/actions/parkingActions";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
 import { useParams } from "react-router-dom";
@@ -19,29 +19,26 @@ import { DigitalClock } from "@mui/x-date-pickers/DigitalClock";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
 import { useNavigate } from "react-router-dom";
-
 import { MapContainer, Polygon, Popup, TileLayer, FeatureGroup } from "react-leaflet";
-import { getFreeParkingSpotsByParkingId, getOccupiedParkingSpotsMapByParkingId, getParkingSpotsByParkingId } from "../../actions/parkingSpotActions";
-import Button from "@mui/material/Button";
+import { getFreeParkingSpotsByParkingId, getOccupiedParkingSpotsMapByParkingId, getParkingSpotsByParkingId } from "../../redux/actions/parkingSpotActions";
 import CircularProgress from "@mui/material/CircularProgress";
 import TextField from "@mui/material/TextField";
 import MenuItem from "@mui/material/MenuItem";
-import { getUser } from "../../actions/userActions";
-import { getUserCars } from "../../actions/carActions";
+import { getUser } from "../../redux/actions/userActions";
+import { getUserCars } from "../../redux/actions/carActions";
 import { validateRegistraionNumber } from "../../utils/validation";
 import {
     GET_RESERVATION,
     GET_PARKING_SPOT,
     GET_FREE_PARKING_SPOTS_BY_PARKING_ID,
-} from "../../actions/types";
+} from "../../redux/actions/types";
 import { toast } from "react-toastify";
 import convertTime from "../../utils/convertTime";
 import convertDate from "../../utils/convertDate";
 import getLocalISOTime from "../../utils/getLocalISOTime";
 import AdminProfile from "../Admin/AdminProfile";
-import AppBar from "@mui/material/AppBar";
-import Home from "./Home";
 import { GradientButton } from "../../components/GradientButton";
+import ManagerNavigation from "../../components/ManagerNavigation";
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
     iconRetinaUrl:
@@ -54,7 +51,7 @@ L.Icon.Default.mergeOptions({
 
 
 
-function ParkingDetails(props) {
+export default function ParkingDetails(props) {
     const { parkingId } = useParams();
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -371,32 +368,16 @@ function ParkingDetails(props) {
         navigate("/reservation-details");
     };
 
-    const handleGoToEditor = () => {
-        navigate(`/parking/${parkingId}/editor`);
-    };
-
-    const handleGoToReservations = () => {
-        navigate(`/parking/${parkingId}/reservations`);
-    };
-
-    const handleGoToDroneManager = () => {
-        navigate(`/parking/${parkingId}/drone`);
-    };
-
-
-    const handleGoToParkingDetails = () => {
-        navigate(`/parking/${parkingId}/details`);
-    };
-
-    const handleGoToMission = () => {
-        navigate(`/parking/${parkingId}/missions`);
-    };
-
-    const handleGoToDashboard = () => {
-        navigate(`/parking/${parkingId}/dashboard`);
-    };
-
     return (
+        <>
+            {user && user.parkingDTO &&
+            user.parkingDTO.id === parking.id
+            && authenticationReducer.isLoggedIn
+            && authenticationReducer.decodedUser.role === "PARKING_MANAGER" ? (
+                <ManagerNavigation/>
+            ) : (
+                <div></div>
+            )}
         <Container
             maxWidth='xl'
             style={{ height: "97%" }}
@@ -563,65 +544,6 @@ function ParkingDetails(props) {
                                     Dates and times are based on parking time zone {parkingTime.toLocaleString()} ({parking.timeZone}) compared to UTC.
                                 </Typography>
                             </CardContent>
-                            <Grid container>
-                                {user && user.parkingDTO &&
-                                    user.parkingDTO.id === parking.id
-                                    && authenticationReducer.isLoggedIn
-                                    && authenticationReducer.decodedUser.role === "PARKING_MANAGER" ? (
-                                    <Grid container>
-                                        <GradientButton
-                                            sx={{ m: 1 }}
-                                            variant='contained'
-                                            onClick={handleGoToDashboard}
-                                            fullWidth
-                                        >
-                                            Parking dashboard
-                                        </GradientButton>
-                                        <GradientButton
-                                            sx={{ m: 1 }}
-                                            variant='contained'
-                                            onClick={handleGoToEditor}
-                                            fullWidth
-                                        >
-                                            Parking editor
-                                        </GradientButton>
-                                        <GradientButton
-                                            sx={{ m: 1 }}
-                                            variant='contained'
-                                            onClick={handleGoToReservations}
-                                            fullWidth
-                                        >
-                                            Parking reservations
-                                        </GradientButton>
-                                        <GradientButton
-                                            sx={{ m: 1 }}
-                                            variant='contained'
-                                            onClick={handleGoToParkingDetails}
-                                            fullWidth
-                                        >
-                                            Change parking details
-                                        </GradientButton>
-                                        <GradientButton
-                                            sx={{ m: 1 }}
-                                            variant='contained'
-                                            onClick={handleGoToMission}
-                                            fullWidth
-                                        >
-                                            Drone mission
-                                        </GradientButton>
-                                        <GradientButton
-                                            sx={{ m: 1 }}
-                                            variant='contained'
-                                            onClick={handleGoToDroneManager}
-                                            fullWidth
-                                        >
-                                            Drone manager
-                                        </GradientButton>
-                                    </Grid>
-                                ) : (
-                                    <div></div>
-                                )}
-                            </Grid>
                             {parkingTime && parking.timeZone && (
                                 <CardContent spacing={2}>
                                     <Typography variant='h6'>Select start date and time:</Typography>
@@ -758,8 +680,8 @@ function ParkingDetails(props) {
                 </Grid>
             </Box>
         </Container >
+        </>
     );
 }
 
-export default ParkingDetails;
 

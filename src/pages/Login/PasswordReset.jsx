@@ -22,7 +22,7 @@ import {
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { useDispatch, useSelector } from "react-redux";
-import { resetPassword, setPasswordFromReset } from '../../actions/userActions';
+import { resetPassword, setPasswordFromReset } from '../../redux/actions/userActions';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';

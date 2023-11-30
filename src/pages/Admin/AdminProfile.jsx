@@ -2,7 +2,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import React, { useEffect, useState } from "react";
 import Home from "../Home/Home";
-import { assignParking, deleteUser, getManagers } from "../../actions/userActions";
+import { assignParking, deleteUser, getManagers } from "../../redux/actions/userActions";
 import IconButton from "@mui/material/IconButton";
 import DeleteIcon from "@mui/icons-material/Delete";
 import {
@@ -20,8 +20,8 @@ import { DataGrid } from "@mui/x-data-grid";
 import { toast } from "react-toastify";
 import Grid from "@mui/material/Grid";
 import { validateEmail, validateName } from "../../utils/validation";
-import { registerManager } from "../../actions/authenticationActions";
-import { getParkings } from "../../actions/parkingActions";
+import { registerManager } from "../../redux/actions/authenticationActions";
+import { getParkings } from "../../redux/actions/parkingActions";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import MenuItem from "@mui/material/MenuItem";
 import { GradientButton } from "../../components/GradientButton";
@@ -46,7 +46,7 @@ export default function AdminProfile() {
             dispatch(getManagers());
             dispatch(getParkings());
         }
-    }, []);
+    }, );
 
     if (!authenticationReducer.decodedUser || authenticationReducer.decodedUser.role !== "ADMIN") {
         navigate('/');
