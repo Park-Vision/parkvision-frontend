@@ -1,4 +1,4 @@
-import { REGISTER_SUCCESS, REGISTER_FAIL, LOGIN_FAIL, LOGIN_SUCCESS, LOGOUT } from "./types";
+import { REGISTER_SUCCESS, REGISTER_USER, REGISTER_FAIL, LOGIN_FAIL, LOGIN_SUCCESS, LOGOUT } from "./types";
 
 import AuthenticationService from "../services/AuthenticationService";
 

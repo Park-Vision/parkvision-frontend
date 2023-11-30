@@ -46,7 +46,7 @@ export default function AdminProfile() {
             dispatch(getManagers());
             dispatch(getParkings());
         }
-    }, );
+    }, []);
 
     if (!authenticationReducer.decodedUser || authenticationReducer.decodedUser.role !== "ADMIN") {
         navigate('/');

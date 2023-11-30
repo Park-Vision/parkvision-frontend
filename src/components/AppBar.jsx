@@ -20,6 +20,7 @@ import { getUser } from '../actions/userActions';
 
 const pages = ['Home', 'Contact', 'About'];
 const links = ['/', '/contact', '/about'];
+const settings = ['Account', 'Cars', 'Reservations'];
 
 function ResponsiveAppBar() {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
