@@ -13,13 +13,14 @@ import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import { Link } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
-import { logout } from "../redux/actions/authenticationActions";
+import { logout } from "../actions/authenticationActions";
 import { useNavigate } from 'react-router-dom';
 import decodeToken from '../utils/decodeToken';
-import { getUser } from '../redux/actions/userActions';
+import { getUser } from '../actions/userActions';
 
 const pages = ['Home', 'Contact', 'About'];
 const links = ['/', '/contact', '/about'];
+const settings = ['Account', 'Cars', 'Reservations'];
 
 function ResponsiveAppBar() {
   const [anchorElNav, setAnchorElNav] = React.useState(null);

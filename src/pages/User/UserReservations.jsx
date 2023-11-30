@@ -2,7 +2,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import Home from "../Home/Home";
 import React, { useEffect, useState } from "react";
-import { deleteReservation, getUserReservations } from "../../redux/actions/reservationActions";
+import { deleteReservation, getUserReservations } from "../../actions/reservationActions";
 import {
     Box,
     Container,
@@ -23,7 +23,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import decodeToken from "../../utils/decodeToken";
 import convertDate from "../../utils/convertDate";
 import IconButton from '@mui/material/IconButton';
-import { GET_PARKING_SPOT } from "../../redux/actions/types";
+import { GET_PARKING_SPOT } from "../../actions/types";
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';

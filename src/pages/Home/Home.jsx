@@ -13,12 +13,12 @@ import ListIcon from '@mui/icons-material/List';
 import LocalParkingIcon from '@mui/icons-material/LocalParking';
 import L from 'leaflet';
 import { useDispatch, useSelector } from "react-redux";
-import { getParkingFreeSpotsNumber, getParkingSpotsNumber, getParkings } from "../../redux/actions/parkingActions";
+import { getParkingFreeSpotsNumber, getParkingSpotsNumber, getParkings } from "../../actions/parkingActions";
 import convertTime from '../../utils/convertTime';
 import { useNavigate } from "react-router-dom";
 import { MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet';
 import { renderToString } from "react-dom/server";
-import { getUser } from "../../redux/actions/userActions";
+import { getUser } from "../../actions/userActions";
 import decodeToken from '../../utils/decodeToken';
 import { GradientButton } from '../../components/GradientButton';
 

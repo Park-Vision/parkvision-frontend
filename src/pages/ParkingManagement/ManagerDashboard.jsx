@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
-import { getReservationsByParking } from '../../redux/actions/reservationActions';
+import { getReservationsByParking } from '../../actions/reservationActions';
 import Home from '../Home/Home';
-import { getParking, getParkingFreeSpotsNumber, getParkingSpotsNumber } from '../../redux/actions/parkingActions';
+import { getParking, getParkingFreeSpotsNumber, getParkingSpotsNumber } from '../../actions/parkingActions';
 import { Bar, Line } from 'react-chartjs-2';
 import { ArcElement, CategoryScale, Chart, registerables } from 'chart.js'
 import { Card, CardContent, Container, Typography } from "@mui/material";
@@ -11,7 +11,6 @@ import { PieChart } from "@mui/x-charts";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import IconButton from '@mui/material/IconButton';
 import Box from '@mui/material/Box';
-import ManagerNavigation from "../../components/ManagerNavigation";
 Chart.register(ArcElement);
 Chart.register(CategoryScale);
 Chart.register(...registerables);
@@ -244,70 +243,67 @@ export default function ManagerDashboard(props) {
     };
 
     return (
-        <>
-            <ManagerNavigation/>
-            <Container maxWidth="l">
-                <Box sx={{ my: 4 }}>
-                    <Card >
-                        <IconButton onClick={() => navigate(-1)}>
-                            <ArrowBackIcon />
-                        </IconButton>
-                        <CardContent>
-                            <Typography variant="h6" component="div">
-                                Parking Spots Overview
-                            </Typography>
-                            <Typography variant="h6" component="div">
-                                Number of all spots: {numOfSpots}
-                            </Typography>
-                            <PieChart
-                                series={[
-                                    {
-                                        data: dataSpots,
-                                        innerRadius: 40,
-                                        outerRadius: 80,
-                                    },
-                                ]}
-                                height={300}
-                                slotProps={{
-                                    legend: { hidden: false },
-                                }}
-                            />
-                        </CardContent>
-                    </Card>
-                    <Card>
-                        <CardContent>
-                            <Typography variant="h6" component="div">
-                                Average Reservation Amount
-                            </Typography>
-                            <Bar data={dataReservationAverage} options={optionsReservationAverage} />
-                        </CardContent>
-                    </Card>
-                    <Card>
-                        <CardContent>
-                            <Typography variant="h6" component="div">
-                                Average Reservation Duration
-                            </Typography>
-                            <Bar data={dataReservationTime} options={optionsReservationTime} />
-                        </CardContent>
-                    </Card>
-                    <Card>
-                        <CardContent>
-                            <Typography variant="h6" component="div">
-                                Number of Reservations
-                            </Typography>
-                            <Line data={dataMonthly} />
-                        </CardContent>
-                    </Card>
-                    <Card>
-                        <CardContent>
-                            <Typography variant="h6" component="div">
-                                Daily income in {getMonthName(new Date().getMonth())}
-                            </Typography>
-                            <Bar data={dataMonthlySum(reservations)} options={optionsMonthlySum} />
-                        </CardContent>
-                    </Card>
-                </Box>
-            </Container>
-        </>
+        <Container maxWidth="l">
+            <Box sx={{ my: 4 }}>
+                <Card >
+                    <IconButton onClick={() => navigate(-1)}>
+                        <ArrowBackIcon />
+                    </IconButton>
+                    <CardContent>
+                        <Typography variant="h6" component="div">
+                            Parking Spots Overview
+                        </Typography>
+                        <Typography variant="h6" component="div">
+                            Number of all spots: {numOfSpots}
+                        </Typography>
+                        <PieChart
+                            series={[
+                                {
+                                    data: dataSpots,
+                                    innerRadius: 40,
+                                    outerRadius: 80,
+                                },
+                            ]}
+                            height={300}
+                            slotProps={{
+                                legend: { hidden: false },
+                            }}
+                        />
+                    </CardContent>
+                </Card>
+                <Card>
+                    <CardContent>
+                        <Typography variant="h6" component="div">
+                            Average Reservation Amount
+                        </Typography>
+                        <Bar data={dataReservationAverage} options={optionsReservationAverage} />
+                    </CardContent>
+                </Card>
+                <Card>
+                    <CardContent>
+                        <Typography variant="h6" component="div">
+                            Average Reservation Duration
+                        </Typography>
+                        <Bar data={dataReservationTime} options={optionsReservationTime} />
+                    </CardContent>
+                </Card>
+                <Card>
+                    <CardContent>
+                        <Typography variant="h6" component="div">
+                            Number of Reservations
+                        </Typography>
+                        <Line data={dataMonthly} />
+                    </CardContent>
+                </Card>
+                <Card>
+                    <CardContent>
+                        <Typography variant="h6" component="div">
+                            Daily income in {getMonthName(new Date().getMonth())}
+                        </Typography>
+                        <Bar data={dataMonthlySum(reservations)} options={optionsMonthlySum} />
+                    </CardContent>
+                </Card>
+            </Box>
+        </Container>
     );
 }

@@ -1,14 +1,14 @@
 import { useDispatch, useSelector } from "react-redux";
-import React, { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { getDroneMissions } from "../../redux/actions/droneMissionActions";
+import React, { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { getDroneMissions } from "../../actions/droneMissionActions";
 import { Box, Container } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import convertDate from "../../utils/convertDate";
 import Home from "../Home/Home";
-import ManagerNavigation from "../../components/ManagerNavigation";
 
-export default function ManagerReservations() {
+export default function ManagerReservations(props) {
+    const { parkingId } = useParams();
     const authenticationReducer = useSelector((state) => state.authenticationReducer);
 
     const missions = useSelector((state) => state.droneMissionReducer.droneMissions);
@@ -64,19 +64,16 @@ export default function ManagerReservations() {
     ];
 
     return (
-        <>
-            <ManagerNavigation/>
-            <Container maxWidth="xl" style={{ height: "100%" }}>
-                <Box style={{ height: "100%" }}>
-                    <div style={{ height: "100%" }}>
-                        <DataGrid
-                            rows={missions}
-                            columns={columns}
-                            pageSize={5}
-                        />
-                    </div>
-                </Box>
-            </Container>
-        </>
+        <Container maxWidth="xl" style={{ height: "100%" }}>
+            <Box style={{ height: "100%" }}>
+                <div style={{ height: "100%" }}>
+                    <DataGrid
+                        rows={missions}
+                        columns={columns}
+                        pageSize={5}
+                    />
+                </div>
+            </Box>
+        </Container>
     )
 }
