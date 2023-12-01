@@ -1,14 +1,13 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
-import { getReservationsByParking } from '../../actions/reservationActions';
+import { getReservationsByParking } from '../../redux/actions/reservationActions';
 import Home from '../Home/Home';
-import { getParking, getParkingFreeSpotsNumber, getParkingSpotsNumber } from '../../actions/parkingActions';
+import { getParking, getParkingFreeSpotsNumber, getParkingSpotsNumber } from '../../redux/actions/parkingActions';
 import { Bar, Line } from 'react-chartjs-2';
 import { ArcElement, CategoryScale, Chart, registerables } from 'chart.js'
 import { Card, CardContent, Container, Typography } from "@mui/material";
 import { PieChart } from "@mui/x-charts";
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import IconButton from '@mui/material/IconButton';
 import Box from '@mui/material/Box';
 Chart.register(ArcElement);
@@ -246,9 +245,6 @@ export default function ManagerDashboard(props) {
         <Container maxWidth="l">
             <Box sx={{ my: 4 }}>
                 <Card >
-                    <IconButton onClick={() => navigate(-1)}>
-                        <ArrowBackIcon />
-                    </IconButton>
                     <CardContent>
                         <Typography variant="h6" component="div">
                             Parking Spots Overview

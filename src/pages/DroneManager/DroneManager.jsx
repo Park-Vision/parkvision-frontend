@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getParking } from "../../actions/parkingActions";
+import { getParking } from "../../redux/actions/parkingActions";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
 import { useParams } from "react-router-dom";
@@ -11,22 +11,22 @@ import Box from "@mui/material/Box";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet-draw/dist/leaflet.draw.css";
-import "../Editor.css"; // Create a CSS file for styling
+import "../Editor/Editor.css"; // Create a CSS file for styling
 import { useNavigate } from "react-router-dom";
 import Stomp, { setInterval } from 'stompjs';
 import SockJS from 'sockjs-client';
 import { MapContainer, Polygon, Popup, TileLayer, FeatureGroup, LayersControl } from "react-leaflet";
-import { getParkingSpotsByParkingId } from "../../actions/parkingSpotActions";
+import { getParkingSpotsByParkingId } from "../../redux/actions/parkingSpotActions";
 import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
 import AddIcon from '@mui/icons-material/Add';
 import CircularProgress from "@mui/material/CircularProgress";
 import {
     GET_PARKING_SPOT,
-} from "../../actions/types";
+} from "../../redux/actions/types";
 import decodeToken from "../../utils/decodeToken";
-import { getUser } from "../../actions/userActions";
-import { commandDrone, getDronesByParkingId } from "../../actions/droneActions";
+import { getUser } from "../../redux/actions/userActions";
+import { commandDrone, getDronesByParkingId } from "../../redux/actions/droneActions";
 import { toast } from "react-toastify";
 import DroneMarker from "../../components/DroneMarker"
 import InputLabel from '@mui/material/InputLabel';
@@ -207,10 +207,6 @@ function ParkingEditor(props) {
         });
     };
 
-    const handleExitClick = () => {
-        navigate(`/parking/${parking.id}`);
-    };
-
     const handleSelectDrone = (event) => {
         setSelectedDroneId(event.target.value);
         setDronePosition([0, 0, 0])
@@ -239,13 +235,14 @@ function ParkingEditor(props) {
     return (
         <Container
             maxWidth='xl'
-            style={{ height: "97%" }}
+            component="main" sx={{
+                p: 3,
+            }}
         >
-            <Box sx={{ my: 4, height: "100%" }}>
+            <Box >
                 <Grid
                     container
                     spacing={2}
-                    style={{ height: "100%" }}
                 >
                     <Grid
                         item
@@ -397,14 +394,6 @@ function ParkingEditor(props) {
                                     onClick={handleStop}
                                 >
                                     Emergency stop
-                                </Button>
-                                <Button
-                                    sx={{ m: 1 }}
-                                    variant='contained'
-                                    onClick={handleExitClick}
-                                    fullWidth
-                                >
-                                    Exit drone manager
                                 </Button>
                             </Grid>
                         </Paper>

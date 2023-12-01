@@ -13,14 +13,15 @@ import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import { Link } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
-import { logout } from "../actions/authenticationActions";
+import { logout } from "../redux/actions/authenticationActions";
 import { useNavigate } from 'react-router-dom';
 import decodeToken from '../utils/decodeToken';
-import { getUser } from '../actions/userActions';
+import { getUser } from '../redux/actions/userActions';
+import { getParking } from '../redux/actions/parkingActions';
+import ManagerNavigation from './ManagerNavigation';
 
 const pages = ['Home', 'Contact', 'About'];
 const links = ['/', '/contact', '/about'];
-const settings = ['Account', 'Cars', 'Reservations'];
 
 function ResponsiveAppBar() {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
@@ -28,11 +29,9 @@ function ResponsiveAppBar() {
   const dispatch = useDispatch()
   const isLoggedIn = useSelector((state) => state.authenticationReducer.isLoggedIn);
   const currentUser = useSelector((state) => state.authenticationReducer.decodedUser);
-  const userInfo = useSelector((state) => state.userReducer.user);
   const [initials, setinitials] = React.useState('');
   const userjson = JSON.parse(localStorage.getItem("user"));
   const user = decodeToken(userjson?.token);
-
   const navigate = useNavigate()
 
   const handleOpenNavMenu = (event) => {
@@ -98,10 +97,12 @@ function ResponsiveAppBar() {
   React.useEffect(() => {
     if (user) {
       dispatch(getUser(user.userId)).then((response) => {
-        console.log(response)
+
         setinitials(getInitials(response));
-      }
-      );
+        if (response.role === "PARKING_MANAGER" && response.parkingDTO) {
+          dispatch(getParking(response.parkingDTO.id));
+        }
+      });
     }
   }, [currentUser]);
 
@@ -118,7 +119,6 @@ function ResponsiveAppBar() {
             variant="h6"
             noWrap
             component="a"
-            href=""
             sx={{
               mr: 2,
               display: { xs: 'none', md: 'flex' },
@@ -189,7 +189,6 @@ function ResponsiveAppBar() {
             variant="h5"
             noWrap
             component="a"
-            href=""
             sx={{
               mr: 2,
               display: { xs: 'flex', md: 'none' },
@@ -231,6 +230,12 @@ function ResponsiveAppBar() {
               </Button>
             )}
           </Box>
+
+          {user && user.role === 'PARKING_MANAGER' && (
+            <Box sx={{ flexGrow: 0 }}>
+              <ManagerNavigation />
+            </Box>
+          )}
 
           {currentUser && (
             <Box sx={{ flexGrow: 0 }}>

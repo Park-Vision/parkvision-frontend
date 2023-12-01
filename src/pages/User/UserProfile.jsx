@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import Home from "../Home/Home";
-import { updatePassword, updateName, getUser, disableUser } from "../../actions/userActions";
+import { updatePassword, updateName, getUser, disableUser } from "../../redux/actions/userActions";
 import {
     Box,
     Button,
@@ -20,7 +20,7 @@ import {
 import Grid from "@mui/material/Grid";
 import { toast } from "react-toastify";
 import { validateName, validatePassword } from "../../utils/validation";
-import { logout } from "../../actions/authenticationActions";
+import { logout } from "../../redux/actions/authenticationActions";
 import IconButton from "@mui/material/IconButton";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { GradientButton } from "../../components/GradientButton";
