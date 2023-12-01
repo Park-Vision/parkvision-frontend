@@ -199,9 +199,9 @@ export default function ParkingEditor(props) {
 
         const allUpdatedSpots = [...transformedSpots, ...allSpots];
         const uniqueSpots = allUpdatedSpots.filter((spot, index, self) =>
-                index === self.findIndex((s) => (
-                    s.id === spot.id
-                ))
+            index === self.findIndex((s) => (
+                s.id === spot.id
+            ))
         );
 
         let isColliding = false;
@@ -449,9 +449,6 @@ export default function ParkingEditor(props) {
             style={{ height: '80vh' }}
         >
             <Box sx={{ my: 4, height: "100%" }}>
-                <IconButton onClick={handleExitClick}>
-                    <ArrowBackIcon />
-                </IconButton>
                 <Grid
                     container
                     spacing={2}

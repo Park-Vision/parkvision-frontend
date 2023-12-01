@@ -207,10 +207,6 @@ function ParkingEditor(props) {
         });
     };
 
-    const handleExitClick = () => {
-        navigate(`/parking/${parking.id}`);
-    };
-
     const handleSelectDrone = (event) => {
         setSelectedDroneId(event.target.value);
         setDronePosition([0, 0, 0])
@@ -239,13 +235,14 @@ function ParkingEditor(props) {
     return (
         <Container
             maxWidth='xl'
-            style={{ height: "97%" }}
+            component="main" sx={{
+                p: 3,
+            }}
         >
-            <Box sx={{ my: 4, height: "100%" }}>
+            <Box >
                 <Grid
                     container
                     spacing={2}
-                    style={{ height: "100%" }}
                 >
                     <Grid
                         item
@@ -397,14 +394,6 @@ function ParkingEditor(props) {
                                     onClick={handleStop}
                                 >
                                     Emergency stop
-                                </Button>
-                                <Button
-                                    sx={{ m: 1 }}
-                                    variant='contained'
-                                    onClick={handleExitClick}
-                                    fullWidth
-                                >
-                                    Exit drone manager
                                 </Button>
                             </Grid>
                         </Paper>

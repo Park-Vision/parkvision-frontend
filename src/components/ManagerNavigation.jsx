@@ -2,6 +2,7 @@ import * as React from 'react';
 import MenuIcon from '@mui/icons-material/Menu';
 import { useNavigate } from 'react-router-dom';
 import IconButton from "@mui/material/IconButton";
+import MoreIcon from '@mui/icons-material/More';
 import { Button, Drawer, List, ListItem, Typography } from "@mui/material";
 import { useState } from "react";
 import { useSelector } from "react-redux";
@@ -17,36 +18,44 @@ const ManagerNavigation = () => {
 
     const handleGoToParking = () => {
         navigate(`/parking/${parking.id}`);
+        handleDrawerToggle();
     };
 
     const handleGoToEditor = () => {
         navigate(`/parking/${parking.id}/editor`);
+        handleDrawerToggle();
     };
 
     const handleGoToReservations = () => {
         navigate(`/parking/${parking.id}/reservations`);
+        handleDrawerToggle();
     };
 
     const handleGoToDroneManager = () => {
         navigate(`/parking/${parking.id}/drone`);
+        handleDrawerToggle();
     };
 
     const handleGoToParkingDetails = () => {
         navigate(`/parking/${parking.id}/details`);
+        handleDrawerToggle();
     };
 
     const handleGoToMission = () => {
         navigate(`/parking/${parking.id}/missions`);
+        handleDrawerToggle();
+
     };
 
     const handleGoToDashboard = () => {
         navigate(`/parking/${parking.id}/dashboard`);
+        handleDrawerToggle();
     };
 
     return (
         <>
             <IconButton edge="start" color="inherit" onClick={handleDrawerToggle} sx={{ m: 1 }}>
-                <MenuIcon />
+                <MoreIcon />
             </IconButton>
             <Drawer anchor="right" open={isDrawerOpen} onClose={handleDrawerToggle}>
                 <List>

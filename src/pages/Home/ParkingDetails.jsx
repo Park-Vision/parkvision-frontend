@@ -37,6 +37,8 @@ import convertDate from "../../utils/convertDate";
 import getLocalISOTime from "../../utils/getLocalISOTime";
 import AdminProfile from "../Admin/AdminProfile";
 import { GradientButton } from "../../components/GradientButton";
+import 'dayjs/locale/en-gb';
+
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
     iconRetinaUrl:
@@ -541,7 +543,8 @@ export default function ParkingDetails(props) {
                                             container
                                             spacing={3}
                                         >
-                                            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                            <LocalizationProvider dateAdapter={AdapterDayjs}
+                                                adapterLocale="en-gb">
                                                 <Grid
                                                     item xs={12} sm={8} lg={9}
                                                 >
@@ -549,6 +552,7 @@ export default function ParkingDetails(props) {
                                                         value={startDay}
                                                         onChange={(newStartDay) => handleAnyChangeOfTime(newStartDay, startTime, endDay, endTime)}
                                                         minDate={dayjs(parkingTime)}
+                                                        showDaysOutsideCurrentMonth={true}
 
                                                     />
                                                 </Grid>
@@ -572,7 +576,8 @@ export default function ParkingDetails(props) {
                                             container
                                             spacing={3}
                                         >
-                                            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                            <LocalizationProvider dateAdapter={AdapterDayjs}
+                                                adapterLocale="en-gb">
                                                 <Grid
                                                     item xs={12} sm={8} lg={9}
                                                 >
@@ -581,6 +586,8 @@ export default function ParkingDetails(props) {
                                                         onChange={(newValue) => { handleAnyChangeOfTime(startDay, startTime, newValue, endTime); }}
                                                         minDate={startDay}
                                                         disabled={!isParking24h(parking)}
+                                                        showDaysOutsideCurrentMonth={true}
+
                                                     />
                                                 </Grid>
                                                 <Grid
