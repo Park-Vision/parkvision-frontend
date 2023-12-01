@@ -4,7 +4,6 @@ import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import TextField from '@mui/material/TextField';
-import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
@@ -22,8 +21,6 @@ import { getUser } from "../../redux/actions/userActions";
 import decodeToken from '../../utils/decodeToken';
 import { GradientButton } from '../../components/GradientButton';
 
-
-
 export default function Home() {
     const parkings = useSelector(state => state.parkingReducer.parkings)
     useSelector(state => state.parkingReducer.parking = {})
@@ -34,11 +31,8 @@ export default function Home() {
     const [filter, setFilter] = useState("");
     const [listOfParkings, setListOfParkings] = useState([]);
     let navigate = useNavigate();
-
-
-
-
-
+    const [center, setCenter] = useState([0.0000000, 0.0000000]);
+    const [zoom, setZoom] = useState(2);
 
     useEffect(() => {
         const user = decodeToken(JSON.parse(localStorage.getItem("user"))?.token);
@@ -52,18 +46,33 @@ export default function Home() {
                 });
         } else {
             dispatch(getParkings()).then((response) => {
-                response.map((parking, index) => {
-                    dispatch(getParkingFreeSpotsNumber(parking.id, new Date().toISOString()))
-                    dispatch(getParkingSpotsNumber(parking.id))
-                })
+                    response.forEach((parking) => {
+                        dispatch(getParkingFreeSpotsNumber(parking.id, new Date().toISOString()))
+                        dispatch(getParkingSpotsNumber(parking.id))
+                    });
             }
             ).catch((error) => {
                 console.log(error);
             });
         }
+        getLocation();
     }, []);
 
-
+    const getLocation = () => {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    setCenter([position.coords.latitude, position.coords.longitude]);
+                    setZoom(10);
+                },
+                (error) => {
+                    console.error('Error getting location:', error);
+                }
+            );
+        } else {
+            console.error('Geolocation is not supported by your browser');
+        }
+    };
 
     const isParking24h = (parking) => {
         if (!parking) {
@@ -71,18 +80,6 @@ export default function Home() {
         }
         return convertTime(parking.startTime, parking.timeZone) === "00:00" && convertTime(parking.endTime, parking.timeZone) === "00:00";
     };
-
-
-    const onError = (error) => {
-        console.log('error', error);
-    }
-
-    const onMessageReceived = (msg) => {
-
-        const message = JSON.parse(msg.body);
-        console.log('message', message);
-    }
-
 
     useEffect(() => {
         const user = decodeToken(JSON.parse(localStorage.getItem("user"))?.token);
@@ -97,17 +94,9 @@ export default function Home() {
         }
     }, [dispatch, parkings])
 
-    const handleChange = (event) => {
-    };
-
     const handleClick = (event) => {
         navigate(`/parking/${event}`);
     }
-
-    const handleSubmit = (event) => {
-        console.log('search', event);
-    };
-
     const handleShowMap = () => {
         setShowMap(true);
     };
@@ -174,7 +163,7 @@ export default function Home() {
                     </Grid>
                 </div>
                 {showMap ? (
-                    <div>
+                    <div style={{ height: '75vh' }}>
                         <Grid xs={12} sm={12} md={12}>
                             <Card
                                 sx={{
@@ -183,14 +172,16 @@ export default function Home() {
                                     flexDirection: 'column',
                                 }}
                             >
-                                <div style={{ height: '600px' }}>
+                                <div style={{ height: '75vh' }}>
                                     <MapContainer
                                         style={{ width: '100%', height: '100%' }}
-                                        zoom={12}
-                                        center={[51.1000000, 17.0333300]}
+                                        zoom={zoom}
+                                        center={center}
                                         scrollWheelZoom={true}
                                         dragging={true}
                                     >
+                                        <ChangeView center={center}
+                                                    zoom={zoom} ></ChangeView>
                                         <TileLayer
                                             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                                             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -298,8 +289,8 @@ export default function Home() {
                                                 {parking.latitude && parking.longitude && (
                                                     <MapContainer
                                                         style={{ width: '100%', height: '100%', borderRadius: '4px', margin: 0, padding: 0 }}
-                                                        center={[parking.latitude, parking.longitude]}
-                                                        zoom={18}
+                                                        center={center}
+                                                        zoom={12}
                                                         scrollWheelZoom={false}
                                                         zoomControl={false}
                                                         dragging={false}
