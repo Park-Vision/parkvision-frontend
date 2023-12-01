@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
-// use @mui/material
 import Grid from '@mui/material/Grid';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
@@ -23,12 +22,12 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import IconButton from '@mui/material/IconButton';
 import InputAdornment from '@mui/material/InputAdornment';
 import InputLabel from '@mui/material/InputLabel';
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { login } from "../../redux/actions/authenticationActions";
 import { resetPassword } from '../../redux/actions/userActions';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { Form, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { validateEmail, validatePassword } from "../../utils/validation";
 import decodeToken from "../../utils/decodeToken";
 import { FormControl, OutlinedInput } from '@mui/material';
@@ -110,10 +109,6 @@ export default function Login() {
     const handleOpenResetPassword = () => {
         setResetPasswordDialog(true);
         setEmailReset("");
-    }
-
-    const navigateToHome = () => {
-        navigate('/')
     }
 
     const handleSendPasswordReset = () => {

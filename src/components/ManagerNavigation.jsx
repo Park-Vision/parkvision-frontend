@@ -1,19 +1,15 @@
 import * as React from 'react';
-import AppBar from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
 import MenuIcon from '@mui/icons-material/Menu';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import IconButton from "@mui/material/IconButton";
 import { Button, Drawer, List, ListItem, Typography } from "@mui/material";
-import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { getParking } from "../redux/actions/parkingActions";
+import { useState } from "react";
+import { useSelector } from "react-redux";
 
-const ManagerNavigation = (props) => {
+const ManagerNavigation = () => {
     const [isDrawerOpen, setDrawerOpen] = useState(false);
     const parking = useSelector((state) => state.parkingReducer.parking);
     const navigate = useNavigate();
-
 
     const handleDrawerToggle = () => {
         setDrawerOpen(!isDrawerOpen);

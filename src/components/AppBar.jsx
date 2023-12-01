@@ -22,7 +22,6 @@ import ManagerNavigation from './ManagerNavigation';
 
 const pages = ['Home', 'Contact', 'About'];
 const links = ['/', '/contact', '/about'];
-const settings = ['Account', 'Cars', 'Reservations'];
 
 function ResponsiveAppBar() {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
@@ -30,11 +29,9 @@ function ResponsiveAppBar() {
   const dispatch = useDispatch()
   const isLoggedIn = useSelector((state) => state.authenticationReducer.isLoggedIn);
   const currentUser = useSelector((state) => state.authenticationReducer.decodedUser);
-  const userInfo = useSelector((state) => state.userReducer.user);
   const [initials, setinitials] = React.useState('');
   const userjson = JSON.parse(localStorage.getItem("user"));
   const user = decodeToken(userjson?.token);
-
   const navigate = useNavigate()
 
   const handleOpenNavMenu = (event) => {

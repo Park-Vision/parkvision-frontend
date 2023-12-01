@@ -12,7 +12,6 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet-draw/dist/leaflet.draw.css";
 import { EditControl } from "react-leaflet-draw";
-import "./ParkingDetails.css"; // Create a CSS file for styling
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DateCalendar } from "@mui/x-date-pickers/DateCalendar";
 import { DigitalClock } from "@mui/x-date-pickers/DigitalClock";
@@ -38,7 +37,6 @@ import convertDate from "../../utils/convertDate";
 import getLocalISOTime from "../../utils/getLocalISOTime";
 import AdminProfile from "../Admin/AdminProfile";
 import { GradientButton } from "../../components/GradientButton";
-import ManagerNavigation from "../../components/ManagerNavigation";
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
     iconRetinaUrl:
@@ -71,7 +69,6 @@ export default function ParkingDetails(props) {
     const [registrationNumber, setRegistrationNumber] = React.useState();
     const [selectedCar, setSelectedCar] = React.useState("none");
     const authenticationReducer = useSelector((state) => state.authenticationReducer);
-    const user = useSelector((state) => state.userReducer.user);
     const occupiedParkingSpotsMap = useSelector(state => state.parkingSpotReducer.occupiedParkingSpots);
     const numOfSpotsList = useSelector(state => state.parkingReducer.numOfSpotsInParkings);
     const numOfFreeSpotsList = useSelector(state => state.parkingReducer.numOfFreeSpotsInParkings);
@@ -384,7 +381,7 @@ export default function ParkingDetails(props) {
                         <Grid
                             item
                             xs={12}
-                            lg={8}
+                            lg={7}
                         >
                             <div className='map-container'>
                                 {parking.latitude && parking.longitude ? (
@@ -513,7 +510,7 @@ export default function ParkingDetails(props) {
                         <Grid
                             item
                             xs={12}
-                            lg={4}
+                            lg={5}
                         >
                             <Paper className='reserve' >
                                 <CardContent>

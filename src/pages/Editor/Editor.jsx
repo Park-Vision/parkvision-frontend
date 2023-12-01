@@ -23,7 +23,6 @@ import { toast } from "react-toastify";
 import 'leaflet-path-drag'
 import { areParkingSpotsColliding, getArea, isSpotAreaTooBig, isSpotAreaTooSmall } from "../../utils/parkingUtils";
 import { GradientButton } from "../../components/GradientButton";
-import ManagerNavigation from "../../components/ManagerNavigation";
 delete L.Icon.Default.prototype._getIconUrl;
 
 L.Icon.Default.mergeOptions({

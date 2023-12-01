@@ -6,7 +6,6 @@ import { Box, Container } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import convertDate from "../../utils/convertDate";
 import Home from "../Home/Home";
-import ManagerNavigation from "../../components/ManagerNavigation";
 
 export default function ManagerReservations() {
     const authenticationReducer = useSelector((state) => state.authenticationReducer);

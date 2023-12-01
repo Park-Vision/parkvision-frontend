@@ -7,7 +7,6 @@ import CardMedia from "@mui/material/CardMedia";
 import pvlogo from "../../assets/pv_transparent.png";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
-import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import { GradientButton } from "../../components/GradientButton";
 import { useDispatch } from "react-redux";

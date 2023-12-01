@@ -1,7 +1,5 @@
-// generate PasswordReset page with PasswordReset, password and submit button
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 
-// use @mui/material
 import Grid from '@mui/material/Grid';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
@@ -11,8 +9,6 @@ import {
     Box,
     Container,
     Typography,
-    Button,
-    TextField,
     FormControl,
     OutlinedInput,
     InputLabel,
@@ -21,12 +17,12 @@ import {
 } from '@mui/material';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
-import { useDispatch, useSelector } from "react-redux";
-import { resetPassword, setPasswordFromReset } from '../../redux/actions/userActions';
+import { useDispatch } from "react-redux";
+import { setPasswordFromReset } from '../../redux/actions/userActions';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { useNavigate, useParams, useLocation } from 'react-router-dom';
-import { validateEmail, validatePassword } from "../../utils/validation";
+import { useNavigate, useLocation } from 'react-router-dom';
+import { validatePassword } from "../../utils/validation";
 import { GradientButton } from '../../components/GradientButton';
 
 
@@ -97,10 +93,6 @@ export default function PasswordReset() {
             }
             );
         }
-    }
-
-    const handleGoToLogin = () => {
-        navigate("/login");
     }
 
     return (
