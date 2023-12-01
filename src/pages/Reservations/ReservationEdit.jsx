@@ -37,8 +37,8 @@ export default function ReservationEdit(props) {
 
     useEffect(() => {
         dispatch(getReservation(reservationId)).then((response) => {
-            setStartDate(dayjs(response.startDate));
-            setEndDate(dayjs(response.endDate));
+            setStartDate(dayjs(convertDate(response.startDate)));
+            setEndDate(dayjs(convertDate(response.endDate)));
             setDuration(dayjs(response.endDate).diff(dayjs(response.startDate), 'minutes'));
             dispatch(getParkingSpot(response.parkingSpotDTO.id));
             setRegistrationNumber(response.registrationNumber);
@@ -197,15 +197,13 @@ export default function ReservationEdit(props) {
                             <LocalizationProvider
                                 dateAdapter={AdapterDayjs}>
                                 <MobileDateTimePicker
-
                                     label="Start date"
                                     value={startDate}
                                     slotProps={{ textField: { fullWidth: true, margin: 'normal' } }}
                                     ampm={false}
                                     minutesStep={15}
-                                    disablePast={true}
                                     onChange={(value) => handleAnyChangeOfTime(value, endDate, reservation.parkingSpotDTO?.parkingDTO)}
-                                    minDateTime={dayjs(reservation.startDate)}
+                                    minDateTime={dayjs(convertDate(reservation.startDate))}
                                 />
                             </LocalizationProvider>
                             <LocalizationProvider

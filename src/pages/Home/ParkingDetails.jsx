@@ -33,7 +33,7 @@ import {
 } from "../../redux/actions/types";
 import { toast } from "react-toastify";
 import convertTime from "../../utils/convertTime";
-import convertDate from "../../utils/convertDate";
+import { convertDateToLocaleString } from "../../utils/convertDate";
 import getLocalISOTime from "../../utils/getLocalISOTime";
 import AdminProfile from "../Admin/AdminProfile";
 import { GradientButton } from "../../components/GradientButton";
@@ -427,11 +427,11 @@ export default function ParkingDetails(props) {
                                                         {occupiedParkingSpotsMap && occupiedParkingSpotsMap[parkingSpot.id] && (
                                                             <Popup>
                                                                 Available from: <br />
-                                                                {`${convertDate(occupiedParkingSpotsMap[parkingSpot.id].earliestStart)}`}
+                                                                {`${convertDateToLocaleString(occupiedParkingSpotsMap[parkingSpot.id].earliestStart)}`}
                                                                 {occupiedParkingSpotsMap[parkingSpot.id].earliestEnd && (
                                                                     <div>
                                                                         Available to: <br />
-                                                                        {convertDate(occupiedParkingSpotsMap[parkingSpot.id].earliestEnd)}
+                                                                        {convertDateToLocaleString(occupiedParkingSpotsMap[parkingSpot.id].earliestEnd)}
                                                                     </div>
                                                                 )}
                                                             </Popup>
