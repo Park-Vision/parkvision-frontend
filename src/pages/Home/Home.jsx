@@ -20,6 +20,7 @@ import { renderToString } from "react-dom/server";
 import { getUser } from "../../redux/actions/userActions";
 import decodeToken from '../../utils/decodeToken';
 import { GradientButton } from '../../components/GradientButton';
+import {CardHeader} from "@mui/material";
 
 export default function Home() {
     const parkings = useSelector(state => state.parkingReducer.parkings)
@@ -264,11 +265,11 @@ export default function Home() {
                                         sx={{
                                             height: '100%',
                                             display: 'flex',
-                                            flexDirection: 'row',
+                                            flexDirection: { xs: 'column', sm: 'column', md: 'row' },
                                         }}
                                         onClick={() => handleClick(parking.id)}
                                     >
-                                        <Grid item xs={6} sm={6} md={6} style={{ padding: '20px', paddingRight: 0 }}>
+                                        <Grid item xs={12} sm={12} md={6} style={{ padding: '20px', paddingRight: 0 }}>
                                             <CardContent sx={{ flexGrow: 1 }}>
                                                 <Typography gutterBottom variant="h5" fontWeight='bold'>
                                                     {parking.name}
@@ -284,7 +285,7 @@ export default function Home() {
                                                 <Typography variant='h6'>{parking.currency}/h: {parking.costRate}</Typography>
                                             </CardContent>
                                         </Grid>
-                                        <Grid item xs={6} sm={6} md={6} style={{ margin: 10, padding: 10 }}>
+                                        <Grid item xs={12} sm={12} md={6} style={{ margin: 10, padding: 10 }}>
                                             <div style={{ height: '300px', margin: 0, padding: 0 }}>
                                                 {parking.latitude && parking.longitude && (
                                                     <MapContainer
