@@ -16,6 +16,9 @@ export default function ManagerReservations() {
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
+    const parking = useSelector((state) => state.parkingReducer.parking);
+
+
     useEffect(() => {
         if (authenticationReducer.decodedUser && authenticationReducer.decodedUser.role === "PARKING_MANAGER") {
             dispatch(getDroneMissions());
@@ -34,7 +37,7 @@ export default function ManagerReservations() {
                 color="primary"
                 size="small"
                 onClick={() => {
-                    
+                    navigate(`/parking/${parking.id}/missions/${params.row.id}`);
                 }}
             >
                 Results

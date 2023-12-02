@@ -3,7 +3,7 @@ import Home from "./pages/Home/Home";
 import Login from "./pages/Login/Login";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import AppBar from "./components/AppBar";
-import {BrowserRouter, Route, Routes, Navigate} from "react-router-dom";
+import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
 import Reservations from "./pages/Reservations/Reservations";
 import About from "./pages/General/About/About";
 import Contact from "./pages/General/Contact/Contact";
@@ -11,7 +11,8 @@ import Cars from "./pages/Car/Cars";
 import ParkingDetails from "./pages/Home/ParkingDetails";
 import Toolbar from "@mui/material/Toolbar";
 import Register from "./pages/Login/Register";
-import Missions from "./pages/DroneManager/Missions";
+import Missions from "./pages/Drone/Missions";
+import MissionResultComparison from "./pages/Drone/MissionResult"
 import ReservationDetails from "./pages/Reservations/ReservationDetails";
 import ReservationEdit from "./pages/Reservations/ReservationEdit";
 import ManagerProfile from "./pages/ParkingManagement/ManagerProfile";
@@ -21,7 +22,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import UserReservations from "./pages/User/UserReservations";
 import ParkingSpotDetails from "./pages/ParkingSpot/ParkingSpotDetails";
 import ParkingEditor from "./pages/Editor/Editor"
-import DroneManager from "./pages/DroneManager/DroneManager"
+import DroneManager from "./pages/Drone/DroneManager"
 import axios from "axios";
 import useErrorHandler from "./utils/ErrorHandler";
 import ManagerReservations from "./pages/ParkingManagement/ManagerReservations";
@@ -145,23 +146,23 @@ function App() {
                                 path={"/profile/reservations"}
                                 element={<UserReservations />}
                             />
-                            <Route 
-                                path={'/parking/:parkingId/editor'} 
-                                element={<ParkingEditor/>}
+                            <Route
+                                path={'/parking/:parkingId/editor'}
+                                element={<ParkingEditor />}
                             />
                             <Route
                                 path={"/parking/:parkingId/details"}
                                 element={<ManagerParkingDetails />}
                             />
-                            <Route 
-                                path={'/parking/:parkingId/drone'} 
-                                element={<DroneManager/>}
+                            <Route
+                                path={'/parking/:parkingId/drone'}
+                                element={<DroneManager />}
                             />
-                            <Route 
-                                path={"/parkingspot/:parkingSpotId"} 
+                            <Route
+                                path={"/parkingspot/:parkingSpotId"}
                                 element={<ParkingSpotDetails />}
                             />
-                            <Route 
+                            <Route
                                 path={"/reservation-details"}
                                 element={<ReservationDetails />}
                             />
@@ -172,7 +173,11 @@ function App() {
                             <Route
                                 path={"/parking/:parkingId/missions"}
                                 element={<Missions />}
-                             />
+                            />
+                            <Route
+                                path={"/parking/:parkingId/missions/:missionId"}
+                                element={<MissionResultComparison />}
+                            />
                             <Route
                                 path={"/parking/create"}
                                 element={<ManagerParkingCreate />}
