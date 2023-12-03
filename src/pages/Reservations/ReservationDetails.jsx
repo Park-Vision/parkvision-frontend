@@ -133,7 +133,7 @@ export default function ReservationDetails(props) {
                                 dispatch(addStripeCharge(newCharge))
                                     .then((chargeResponse) => {
                                         setLoading(false);
-                                        if (chargeResponse.reservation !== null) {
+                                        if (chargeResponse.success) {
                                             toast.success('Reservation created');
                                         } else {
                                             toast.error('Payment declined. Please try again.');

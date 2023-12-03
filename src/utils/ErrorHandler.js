@@ -21,6 +21,7 @@ async function useErrorHandler(error) {
                 return axios(error.config);
             } catch (refreshError) {
                 console.error('Token refresh failed:', refreshError);
+                localStorage.removeItem("user");
                 window.location.href = '/login'; // Redirect to login page
             }
         } else {
