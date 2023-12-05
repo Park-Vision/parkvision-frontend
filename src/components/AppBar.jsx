@@ -106,6 +106,69 @@ function ResponsiveAppBar() {
     }
   }, [currentUser]);
 
+  const getMenuItems = () => {
+    const menuItems = pages.map((page, index) => (
+      <MenuItem key={page} onClick={() => handleClick(links[index])}>
+        <Link style={{ textDecoration: 'none' }}>
+          <Typography textAlign="center">{page}</Typography>
+        </Link>
+      </MenuItem>
+    ));
+
+    if (!isLoggedIn) {
+      menuItems.push(
+        <MenuItem key={'login'} onClick={handleLogin}>
+          <Link style={{ textDecoration: 'none' }}>Login</Link>
+        </MenuItem>
+      );
+    } else {
+      menuItems.push(
+        <MenuItem key={'logout'} onClick={handleLogout}>
+          <Link style={{ textDecoration: 'none' }}>Logout</Link>
+        </MenuItem>
+      );
+    }
+    return menuItems;
+  };
+
+
+  const getProfileMenuItems = () => {
+    const menuItems = [];
+    if (user && (user.role === 'USER' || user.role === 'PARKING_MANAGER')) {
+      menuItems.push(
+        <MenuItem key={'reservations'} onClick={handleReservations}>
+          <Typography textAlign="center">Reservations</Typography>
+        </MenuItem>
+      );
+      menuItems.push(
+        <MenuItem key={'profile'} onClick={handleProfile}>
+          <Typography textAlign="center">Profile</Typography>
+        </MenuItem>
+      );
+    }
+    if (user && user.role === 'USER') {
+      menuItems.push(
+        <MenuItem key={'cars'} onClick={handleCars}>
+          <Typography textAlign="center">Cars</Typography>
+        </MenuItem>
+      );
+    }
+    if (user && user.role === 'ADMIN') {
+      menuItems.push(
+        <MenuItem key={'admin'} onClick={handleAdmin}>
+          <Typography textAlign="center">Admin</Typography>
+        </MenuItem>
+      );
+    }
+    menuItems.push(
+      <MenuItem key={'logout'} onClick={handleLogout}>
+        <Typography textAlign="center">Logout</Typography>
+      </MenuItem>
+    );
+    return menuItems;
+  }
+
+
 
   return (
     <AppBar position="fixed"
@@ -161,29 +224,7 @@ function ResponsiveAppBar() {
                 display: { xs: 'block', md: 'none' },
               }}
             >
-              {pages.map((page, index) => (
-                <MenuItem key={page} onClick={() => handleClick(links[index])} data-cy={page}>
-                  <Link style={{ textDecoration: 'none' }} >
-                    <Typography textAlign="center">{page}</Typography>
-                  </Link>
-                </MenuItem>
-
-              ))}
-              {!isLoggedIn ? (
-                <MenuItem onClick={handleLogin} data-cy={'login'}>
-                  <Link style={{ textDecoration: 'none' }}>
-                    Login
-                  </Link>
-                </MenuItem>
-              ) : (
-                <MenuItem onClick={handleLogout}>
-                  <Link style={{ textDecoration: 'none' }}>
-                    Logout
-                  </Link>
-                </MenuItem>
-              )}
-
-
+              {getMenuItems()}
             </Menu>
           </Box>
           <Typography
@@ -261,30 +302,7 @@ function ResponsiveAppBar() {
                 open={Boolean(anchorElUser)}
                 onClose={handleCloseUserMenu}
               >
-                {user && (user.role === 'USER' || user.role === 'PARKING_MANAGER') && (
-                  <>
-                    <MenuItem onClick={handleReservations}>
-                      <Typography textAlign="center">Reservations</Typography>
-                    </MenuItem>
-                    <MenuItem onClick={handleProfile}>
-                      <Typography textAlign="center">Profile</Typography>
-                    </MenuItem>
-                  </>
-                )}
-                {user && user.role === 'USER' && (
-                  <MenuItem onClick={handleCars}>
-                    <Typography textAlign="center">Cars</Typography>
-                  </MenuItem>
-                )}
-                {user && user.role === 'ADMIN' && (
-                  <MenuItem onClick={handleAdmin}>
-                    <Typography textAlign="center">Admin</Typography>
-                  </MenuItem>
-                )}
-                <MenuItem onClick={handleLogout}>
-                  <Typography textAlign="center">Logout</Typography>
-                </MenuItem>
-
+                {getProfileMenuItems()}
               </Menu>
             </Box>
           )}
