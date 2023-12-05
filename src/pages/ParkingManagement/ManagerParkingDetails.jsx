@@ -247,6 +247,7 @@ function ManagerParkingDetails() {
                                             views={['hours', 'minutes']}
                                             inputFormat="HH:mm"
                                             ampm={false}
+                                            minutesStep={15}
                                         />
                                     </LocalizationProvider>
                                 </Grid>
@@ -264,6 +265,7 @@ function ManagerParkingDetails() {
                                             inputFormat="HH:mm"
                                             ampm={false}
                                             minTime={startTime}
+                                            minutesStep={15}
                                         />
                                     </LocalizationProvider>
                                 </Grid>
