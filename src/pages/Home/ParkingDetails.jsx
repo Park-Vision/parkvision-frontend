@@ -549,6 +549,7 @@ export default function ParkingDetails(props) {
                                                     item xs={12} sm={8} lg={9}
                                                 >
                                                     <DateCalendar
+                                                        data-cy={'start-date'}
                                                         value={startDay}
                                                         onChange={(newStartDay) => handleAnyChangeOfTime(newStartDay, startTime, endDay, endTime)}
                                                         minDate={dayjs(parkingTime)}
@@ -560,6 +561,7 @@ export default function ParkingDetails(props) {
                                                     item xs={12} sm={4} lg={3}
                                                 >
                                                     <DigitalClock
+                                                        data-cy={'start-time'}
                                                         ampm={false}
                                                         timeStep={15}
                                                         skipDisabled
@@ -582,6 +584,7 @@ export default function ParkingDetails(props) {
                                                     item xs={12} sm={8} lg={9}
                                                 >
                                                     <DateCalendar
+                                                        data-cy={'end-date'}
                                                         value={endDay}
                                                         onChange={(newValue) => { handleAnyChangeOfTime(startDay, startTime, newValue, endTime); }}
                                                         minDate={startDay}
@@ -594,6 +597,7 @@ export default function ParkingDetails(props) {
                                                     item xs={12} sm={4} lg={3}
                                                 >
                                                     <DigitalClock
+                                                        data-cy={'end-time'}
                                                         ampm={false}
                                                         timeStep={15}
                                                         skipDisabled
@@ -606,6 +610,7 @@ export default function ParkingDetails(props) {
                                         </Grid>
                                         <Grid container>
                                             <TextField
+                                                data-cy={'parking-spot'}
                                                 sx={{ m: 1 }}
                                                 fullWidth
                                                 value={parkingSpot?.spotNumber || ""}
