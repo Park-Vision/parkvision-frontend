@@ -131,8 +131,9 @@ function ResponsiveAppBar() {
             ParkVision
           </Typography>
 
-          <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
+          <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }} >
             <IconButton
+              data-cy={'menu'}
               size="large"
               aria-label="account of current user"
               aria-controls="menu-appbar"
@@ -161,7 +162,7 @@ function ResponsiveAppBar() {
               }}
             >
               {pages.map((page, index) => (
-                <MenuItem key={page} onClick={() => handleClick(links[index])} >
+                <MenuItem key={page} onClick={() => handleClick(links[index])} data-cy={page}>
                   <Link style={{ textDecoration: 'none' }} >
                     <Typography textAlign="center">{page}</Typography>
                   </Link>
@@ -169,7 +170,7 @@ function ResponsiveAppBar() {
 
               ))}
               {!isLoggedIn ? (
-                <MenuItem onClick={handleLogin}>
+                <MenuItem onClick={handleLogin} data-cy={'login'}>
                   <Link style={{ textDecoration: 'none' }}>
                     Login
                   </Link>
@@ -201,7 +202,7 @@ function ResponsiveAppBar() {
           >
             ParkVision
           </Typography>
-          <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
+          <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }} >
             {pages.map((page, index) => (
               <Button
                 key={page}

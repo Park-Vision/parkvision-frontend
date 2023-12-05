@@ -3,7 +3,7 @@ import * as turf from '@turf/turf';
 const minmalArea = parseInt(process.env.REACT_APP_MINIMAL_AREA);
 const maximalArea = parseInt(process.env.REACT_APP_MAXIMAL_AREA);
 
-function convertToTurfPolygon(points) {
+export function convertToTurfPolygon(points) {
     const coordinates = points.map(point => [point.longitude, point.latitude]);
     coordinates.push(coordinates[0]);
     return turf.polygon([coordinates]);

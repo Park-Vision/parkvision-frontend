@@ -1,3 +1,4 @@
+
 const convertDate = (time, timezoneOffset = "0") => {
     var date = cutDate(time)
 
@@ -14,6 +15,7 @@ const convertDateToLocaleString = (time) => {
 
 const cutDate = (time) => {
     time = time.substring(0, time.length - 6);
+
     if (!time) {
         return null;
     }
