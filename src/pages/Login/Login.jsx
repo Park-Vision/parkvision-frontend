@@ -197,12 +197,13 @@ export default function Login() {
                     </Grid>
                 </Box>
                 <Dialog open={openResetPasswordDialog}>
-                    <DialogTitle>Password reset</DialogTitle>
+                    <DialogTitle data-cy={'password-reset-title'}>Password reset</DialogTitle>
                     <DialogContent>
                         <Typography>
                             Please enter your email address.<br></br> We will send you a link to reset your password.
                         </Typography>
                         <TextField
+                            data-cy={'password-reset-email-input'}
                             autoFocus
                             margin="normal"
                             id="email"
@@ -214,7 +215,7 @@ export default function Login() {
                     </DialogContent>
                     <DialogActions>
                         <Button onClick={handleCloseResetPassword}>Cancel</Button>
-                        <Button onClick={handleSendPasswordReset}>Send</Button>
+                        <Button data-cy={'send-password-reset-button'} onClick={handleSendPasswordReset} disabled={!validateEmail(emailReset)}>Send</Button>
                     </DialogActions>
                 </Dialog>
             </Container>

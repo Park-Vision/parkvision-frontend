@@ -1,5 +1,8 @@
 
-const convertDate = (time, timezoneOffset = "0") => {
+const convertDate = (time) => {
+    if (!time) {
+        return null;
+    }
     var date = cutDate(time)
 
     var adjustedTime = date.toISOString()
@@ -7,6 +10,10 @@ const convertDate = (time, timezoneOffset = "0") => {
 }
 
 const convertDateToLocaleString = (time) => {
+    if (!time) {
+        return null;
+    }
+
     var date = cutDate(time)
 
     var adjustedTime = date.toLocaleString()
@@ -14,11 +21,18 @@ const convertDateToLocaleString = (time) => {
 }
 
 const cutDate = (time) => {
-    time = time.substring(0, time.length - 6);
 
     if (!time) {
         return null;
     }
+
+    if (time[time.length - 1] === 'Z') {
+        time = time.substring(0, time.length - 1);
+    }
+    else {
+        time = time.substring(0, time.length - 6);
+    }
+
     var date = new Date(time);
     return date;
 }

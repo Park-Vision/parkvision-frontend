@@ -159,7 +159,7 @@ export default function Cars() {
                     {cars && cars.length > 0 ? (
                         <List>
                             {cars.map((car) => (
-                                <Paper key={car.id} elevation={3} style={{ padding: 20, margin: 10 }}>
+                                <Paper data-cy={'car-item'} key={car.id} elevation={3} style={{ padding: 20, margin: 10 }}>
                                     <DriveEtaIcon sx={{ fontWeight: 'bold', fontSize: '1.2rem' }} />
                                     <Typography variant="subtitle1" sx={{ fontWeight: 'bold', fontSize: '1.2rem' }}>
                                         Registration number: {car.registrationNumber}

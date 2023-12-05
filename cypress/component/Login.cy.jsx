@@ -11,6 +11,9 @@ const registerButtonSelector = '[data-cy=register-button]';
 const emailInputSelector = '[data-cy=email-input]';
 const passwordInputSelector = '[data-cy=password-input]';
 const loginTitleSelector = '[data-cy=login-title]';
+const sendPasswordResetButtonSelector = '[data-cy=send-password-reset-button]';
+const passwordResetTitleSelector = '[data-cy=password-reset-title]';
+const passwordResetEmailInputSelector = '[data-cy=password-reset-email-input]';
 
 describe('Login.cy.jsx', () => {
   beforeEach(() => {
@@ -53,6 +56,18 @@ describe('Login.cy.jsx', () => {
     cy.get(passwordInputSelector).type('Test123!');
 
     cy.get(loginButtonSelector).should('be.enabled');
+  });
+
+  it('should disable send password reset button if email is invalid', () => {
+    cy.get(passwordResetButtonSelector).click();
+    cy.get(passwordResetEmailInputSelector).type('test');
+    cy.get(sendPasswordResetButtonSelector).should('be.disabled');
+  });
+
+  it('should enable send password reset button if email is valid', () => {
+    cy.get(passwordResetButtonSelector).click();
+    cy.get(passwordResetEmailInputSelector).type('test@pv.pl');
+    cy.get(sendPasswordResetButtonSelector).should('be.enabled');
   });
 
 });
