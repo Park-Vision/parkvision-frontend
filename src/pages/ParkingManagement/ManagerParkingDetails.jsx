@@ -124,14 +124,12 @@ function ManagerParkingDetails() {
                     startTimeString = parking.startTime.slice(0, -1);
                     endTimeString = parking.endTime.slice(0, -1);
                 }
-                let startHour = parking.startTime.split(':')[0];
-                let endHour = parking.endTime.split(':')[0];
 
-                let startMinute = parking.startTime.split(':')[1].split('+')[0];
-                let endMinute = parking.endTime.split(':')[1].split('+')[0];
-
+                let [startHour, startMinute] = startTimeString.split(':');
+                let [endHour, endMinute] = endTimeString.split(':');
                 let startTimeDayJs = dayjs().hour(startHour).minute(startMinute).second(0);
                 let endTimeDayJS = dayjs().hour(endHour).minute(endMinute).second(0);
+
                 const costRate = parking.costRate.toFixed(2);
                 setName(parking.name);
                 setDescription(parking.description);
@@ -140,7 +138,7 @@ function ManagerParkingDetails() {
                 setZipCode(parking.zipCode);
                 setCostRate(costRate);
                 setStartTime(startTimeDayJs);
-                setEndTime(dayjs(endTimeDayJS));
+                setEndTime(endTimeDayJS);
                 setLatitude(parking.latitude);
                 setLongitude(parking.longitude);
                 setTimeZone(parking.timeZone);
