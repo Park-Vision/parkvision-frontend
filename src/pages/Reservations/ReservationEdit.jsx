@@ -10,7 +10,7 @@ import { GET_PARKING_SPOT, GET_RESERVATIONS, UPDATE_RESERVATION } from '../../re
 import { validateRegistraionNumber } from '../../utils/validation';
 import decodeToken from '../../utils/decodeToken';
 import { getUserReservations } from '../../redux/actions/reservationActions';
-import convertDate from '../../utils/convertDate';
+import { convertDate } from '../../utils/convertDate';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { MobileDateTimePicker } from '@mui/x-date-pickers/MobileDateTimePicker';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -37,8 +37,8 @@ export default function ReservationEdit(props) {
 
     useEffect(() => {
         dispatch(getReservation(reservationId)).then((response) => {
-            setStartDate(dayjs(response.startDate));
-            setEndDate(dayjs(response.endDate));
+            setStartDate(dayjs(convertDate(response.startDate)));
+            setEndDate(dayjs(convertDate(response.endDate)));
             setDuration(dayjs(response.endDate).diff(dayjs(response.startDate), 'minutes'));
             dispatch(getParkingSpot(response.parkingSpotDTO.id));
             setRegistrationNumber(response.registrationNumber);
@@ -90,8 +90,8 @@ export default function ReservationEdit(props) {
         dispatch(checkParkingSpotAviability(reservation.parkingSpotDTO.id, reservation.id, start, end)).then((response) => {
             if (response === false) {
                 toast.error('Parking spot is not available in this time');
-                setStartDate(dayjs(reservation.startDate));
-                setEndDate(dayjs(reservation.endDate));
+                setStartDate(dayjs(convertDate(reservation.startDate)));
+                setEndDate(dayjs(convertDate(reservation.endDate)));
             } else {
                 reservation.registrationNumber = registrationNumber;
 
@@ -197,15 +197,13 @@ export default function ReservationEdit(props) {
                             <LocalizationProvider
                                 dateAdapter={AdapterDayjs}>
                                 <MobileDateTimePicker
-
                                     label="Start date"
                                     value={startDate}
                                     slotProps={{ textField: { fullWidth: true, margin: 'normal' } }}
                                     ampm={false}
                                     minutesStep={15}
-                                    disablePast={true}
                                     onChange={(value) => handleAnyChangeOfTime(value, endDate, reservation.parkingSpotDTO?.parkingDTO)}
-                                    minDateTime={dayjs(reservation.startDate)}
+                                    minDateTime={dayjs(convertDate(reservation.startDate))}
                                 />
                             </LocalizationProvider>
                             <LocalizationProvider

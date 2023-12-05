@@ -37,7 +37,6 @@ export function isSpotAreaTooBig(parkingSpot) {
 
 export function isSpotAreaTooSmall(parkingSpot) {
     const polygon1 = convertToTurfPolygon(parkingSpot.pointsDTO);
-    debugger;
     const area = turf.area(polygon1);
     if (area < minmalArea) {
         return true;

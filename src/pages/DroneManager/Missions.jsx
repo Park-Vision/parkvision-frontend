@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { getDroneMissions } from "../../redux/actions/droneMissionActions";
 import { Box, Container } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
-import convertDate from "../../utils/convertDate";
+import { convertDateToLocaleString } from "../../utils/convertDate";
 import Home from "../Home/Home";
 
 export default function ManagerReservations() {
@@ -29,11 +29,11 @@ export default function ManagerReservations() {
         { field: 'id', headerName: 'ID', flex: 0.3, align: 'right', minWidth: 100 },
         {
             field: 'startDate', headerName: 'Start Date', flex: 0.8, minWidth: 200,
-            valueGetter: ({ row }) => convertDate(row.missionStartDate)
+            valueGetter: ({ row }) => convertDateToLocaleString(row.missionStartDate)
         },
         {
             field: 'endDate', headerName: 'End Date', flex: 0.8, minWidth: 200,
-            valueGetter: ({ row }) => convertDate(row.missionEndDate)
+            valueGetter: ({ row }) => convertDateToLocaleString(row.missionEndDate)
         },
         { field: 'status', headerName: 'Status', flex: 1, minWidth: 150 },
         {

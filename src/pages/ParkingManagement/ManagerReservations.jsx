@@ -4,7 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { deleteReservation, getReservationsByParking } from "../../redux/actions/reservationActions";
 import { Box, Container } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
-import convertDate from "../../utils/convertDate";
+import { convertDateToLocaleString } from "../../utils/convertDate";
 import Home from "../Home/Home";
 import ModeEditIcon from '@mui/icons-material/ModeEdit';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -33,11 +33,11 @@ export default function ManagerReservations(props) {
         { field: 'id', headerName: 'ID', flex: 0.3, align: 'right', minWidth: 50 },
         {
             field: 'startDate', headerName: 'Start Date', flex: 0.8, minWidth: 200,
-            valueGetter: ({ row }) => convertDate(row.startDate)
+            valueGetter: ({ row }) => convertDateToLocaleString(row.startDate)
         },
         {
             field: 'endDate', headerName: 'End Date', flex: 0.8, minWidth: 200,
-            valueGetter: ({ row }) => convertDate(row.endDate)
+            valueGetter: ({ row }) => convertDateToLocaleString(row.endDate)
         },
         { field: 'registrationNumber', headerName: 'Reg. Number', flex: 1, minWidth: 150 },
         {

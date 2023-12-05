@@ -21,7 +21,7 @@ import Button from "@mui/material/Button";
 import ModeEditIcon from '@mui/icons-material/ModeEdit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import decodeToken from "../../utils/decodeToken";
-import convertDate from "../../utils/convertDate";
+import { convertDateToLocaleString } from "../../utils/convertDate";
 import IconButton from '@mui/material/IconButton';
 import { GET_PARKING_SPOT } from "../../redux/actions/types";
 import Dialog from '@mui/material/Dialog';
@@ -155,8 +155,8 @@ export default function UserReservations() {
                                     <CardContent>
                                         <Typography variant="body1">Parking: {reservation.parkingSpotDTO.parkingDTO.name}</Typography>
                                         <Typography variant="body1">Spot Number: {reservation.parkingSpotDTO.spotNumber}</Typography>
-                                        <Typography variant="body1">Start: {convertDate(reservation.startDate)}</Typography>
-                                        <Typography variant="body1">End: {convertDate(reservation.endDate)}</Typography>
+                                        <Typography variant="body1">Start: {convertDateToLocaleString(reservation.startDate)}</Typography>
+                                        <Typography variant="body1">End: {convertDateToLocaleString(reservation.endDate)}</Typography>
                                         <Typography variant="body1">Registration Number: {reservation.registrationNumber}</Typography>
                                         <Typography variant="body1">Name: {reservation.userDTO.firstName} {reservation.userDTO.lastName}</Typography>
                                         <Typography variant="body1">Amount: {reservation.amount} {reservation.parkingSpotDTO.parkingDTO.currency}</Typography>
@@ -202,8 +202,8 @@ export default function UserReservations() {
                                 <CardContent>
                                     <Typography variant="body1">Parking: {reservation.parkingSpotDTO.parkingDTO.name}</Typography>
                                     <Typography variant="body1">Spot Number: {reservation.parkingSpotDTO.spotNumber}</Typography>
-                                    <Typography variant="body1">Start: {convertDate(reservation.startDate)}</Typography>
-                                    <Typography variant="body1">End: {convertDate(reservation.endDate)}</Typography>
+                                    <Typography variant="body1">Start: {convertDateToLocaleString(reservation.startDate)}</Typography>
+                                    <Typography variant="body1">End: {convertDateToLocaleString(reservation.endDate)}</Typography>
                                     <Typography variant="body1">Registration Number: {reservation.registrationNumber}</Typography>
                                     <Typography variant="body1">Name: {reservation.userDTO.firstName} {reservation.userDTO.lastName}</Typography>
                                     <Typography variant="body1">Amount: {reservation.amount} {reservation.parkingSpotDTO.parkingDTO.currency}</Typography>
