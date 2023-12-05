@@ -143,6 +143,7 @@ export default function Register() {
                                         <FormControl fullWidth variant="outlined" margin="normal">
                                             <InputLabel htmlFor="first-name">First name</InputLabel>
                                             <OutlinedInput
+                                                data-cy={'first-name-input'}
                                                 label="First name"
                                                 id="first-name"
                                                 variant="outlined"
@@ -154,6 +155,7 @@ export default function Register() {
                                         <FormControl fullWidth variant="outlined" margin="normal">
                                             <InputLabel htmlFor="last-name">Last name</InputLabel>
                                             <OutlinedInput
+                                                data-cy={'last-name-input'}
                                                 label="last-name"
                                                 id="first-name"
                                                 variant="outlined"
@@ -163,76 +165,76 @@ export default function Register() {
                                             />
                                         </FormControl>
 
-                                    <Tooltip title="Password must contains eight characters or more, including at least
+                                        <Tooltip title="Password must contains eight characters or more, including at least
                                     one capital letter, special character and a number." placement="top">
-                                    <FormControl fullWidth variant="outlined" margin="normal">
-                                        <InputLabel htmlFor="password">Password</InputLabel>
-                                        <OutlinedInput
-                                            data-cy={'password-input'}
-                                            label="Password"
-                                            id="password"
-                                            type={showPassword ? 'text' : 'password'}
-                                            required={true}
-                                            onChange={handlePassword}
-                                            value={password}
-                                            endAdornment={
-                                                <InputAdornment position="end">
-                                                    <IconButton
-                                                        aria-label="toggle password visibility"
-                                                        onClick={handleClickShowPassword}
-                                                        onMouseDown={handleMouseDownPassword}
-                                                        edge="end"
-                                                    >
-                                                        {showPassword ? <VisibilityOff /> : <Visibility />}
-                                                    </IconButton>
-                                                </InputAdornment>
-                                            }
-                                        />
-                                    </FormControl>
-                                    </Tooltip>
-                                    <FormControl fullWidth variant="outlined" margin="normal">
-                                        <InputLabel htmlFor="password-repeat">Repeat password</InputLabel>
-                                        <OutlinedInput
-                                            data-cy={'password-repeat-input'}
-                                            label="Repeat password"
-                                            id="password-repeat"
-                                            type={showPassword ? 'text' : 'password'}
-                                            required={true}
-                                            onChange={handlePasswordRepeat}
-                                            value={passwordRepeat}
-                                            endAdornment={
-                                                <InputAdornment position="end">
-                                                    <IconButton
-                                                        aria-label="toggle password visibility"
-                                                        onClick={handleClickShowPassword}
-                                                        onMouseDown={handleMouseDownPassword}
-                                                        edge="end"
-                                                    >
-                                                        {showPassword ? <VisibilityOff /> : <Visibility />}
-                                                    </IconButton>
-                                                </InputAdornment>
-                                            }
-                                        />
-                                    </FormControl>
-                                    <GradientButton type="submit" variant="contained" fullWidth sx={{ mt: 1 }} data-cy={'register-button'}                                        disabled={
-                                        !validateEmail(email)
-                                        || !validateName(firstName)
-                                        || !validateName(lastName)
-                                        || !validatePassword(password)
-                                        || passwordRepeat !== password
-                                    }>
-                                        Register
-                                    </GradientButton>
-                                    <Button fullWidth sx={{ mt: 1 }} onClick={() => handleLoginRedirection()}>
-                                        Login
-                                    </Button>
-                                </form>
-                            </Typography>
-                        </CardContent>
-                    </Card>
-                </Grid>
-            </Box>
-        </Container>
+                                            <FormControl fullWidth variant="outlined" margin="normal">
+                                                <InputLabel htmlFor="password">Password</InputLabel>
+                                                <OutlinedInput
+                                                    data-cy={'password-input'}
+                                                    label="Password"
+                                                    id="password"
+                                                    type={showPassword ? 'text' : 'password'}
+                                                    required={true}
+                                                    onChange={handlePassword}
+                                                    value={password}
+                                                    endAdornment={
+                                                        <InputAdornment position="end">
+                                                            <IconButton
+                                                                aria-label="toggle password visibility"
+                                                                onClick={handleClickShowPassword}
+                                                                onMouseDown={handleMouseDownPassword}
+                                                                edge="end"
+                                                            >
+                                                                {showPassword ? <VisibilityOff /> : <Visibility />}
+                                                            </IconButton>
+                                                        </InputAdornment>
+                                                    }
+                                                />
+                                            </FormControl>
+                                        </Tooltip>
+                                        <FormControl fullWidth variant="outlined" margin="normal">
+                                            <InputLabel htmlFor="password-repeat">Repeat password</InputLabel>
+                                            <OutlinedInput
+                                                data-cy={'password-repeat-input'}
+                                                label="Repeat password"
+                                                id="password-repeat"
+                                                type={showPassword ? 'text' : 'password'}
+                                                required={true}
+                                                onChange={handlePasswordRepeat}
+                                                value={passwordRepeat}
+                                                endAdornment={
+                                                    <InputAdornment position="end">
+                                                        <IconButton
+                                                            aria-label="toggle password visibility"
+                                                            onClick={handleClickShowPassword}
+                                                            onMouseDown={handleMouseDownPassword}
+                                                            edge="end"
+                                                        >
+                                                            {showPassword ? <VisibilityOff /> : <Visibility />}
+                                                        </IconButton>
+                                                    </InputAdornment>
+                                                }
+                                            />
+                                        </FormControl>
+                                        <GradientButton type="submit" variant="contained" fullWidth sx={{ mt: 1 }} data-cy={'register-button'} disabled={
+                                            !validateEmail(email)
+                                            || !validateName(firstName)
+                                            || !validateName(lastName)
+                                            || !validatePassword(password)
+                                            || passwordRepeat !== password
+                                        }>
+                                            Register
+                                        </GradientButton>
+                                        <Button fullWidth sx={{ mt: 1 }} onClick={() => handleLoginRedirection()}>
+                                            Login
+                                        </Button>
+                                    </form>
+                                </Typography>
+                            </CardContent>
+                        </Card>
+                    </Grid>
+                </Box>
+            </Container>
         </Box>
     );
 

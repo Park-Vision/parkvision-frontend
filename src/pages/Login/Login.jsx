@@ -175,10 +175,12 @@ export default function Login() {
                                             }
                                         />
                                     </FormControl>
-                                    <GradientButton type="submit" variant="contained" fullWidth sx={{ mt: 1 }} >
+                                    <GradientButton data-cy={'login-button'} type="submit" variant="contained" fullWidth sx={{ mt: 1 }}
+                                        disabled={!validateEmail(email) || !validatePassword(password)}
+                                    >
                                         Login
                                     </GradientButton>
-                                    <Button fullWidth sx={{ mt: 1 }} onClick={handleOpenResetPassword}>
+                                    <Button data-cy={'password-reset-button'} fullWidth sx={{ mt: 1 }} onClick={handleOpenResetPassword}>
                                         Password reset
                                     </Button>
                                     <GradientButton
