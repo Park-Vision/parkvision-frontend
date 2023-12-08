@@ -173,13 +173,15 @@ export default function ParkingEditor(props) {
             if (isSpotAreaTooBig(editedSpot)) {
                 inValidArea = true;
                 let area = getArea(editedSpot);
-                toast.error(`Parking spot area is too big! Area: ${area.toFixed(2)} m2. Maximal area: ${maximalArea} m2`);
+                toast.error(`Parking spot area is too big! Area:
+                 ${area.toFixed(2)} m2. Maximal area: ${maximalArea} m2`);
             }
 
             if (isSpotAreaTooSmall(editedSpot)) {
                 inValidArea = true;
                 let area = getArea(editedSpot);
-                toast.error(`Parking spot area is too small! Area: ${area.toFixed(2)} m2. Minimal area: ${minimalArea} m2`);
+                toast.error(`Parking spot area is too small! Area: 
+                ${area.toFixed(2)} m2. Minimal area: ${minimalArea} m2`);
             }
 
             uniqueSpots.forEach((otherspot) => {
