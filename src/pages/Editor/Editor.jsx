@@ -94,12 +94,22 @@ export default function ParkingEditor(props) {
         navigate(`/parking/${parking.id}`);
     };
 
+
+    const populateValidSpot = (spot, pointsDTO) => ({
+        id: spot.id,
+        spotNumber: spot.spotNumber,
+        active: spot.active,
+        parkingDTO: { id: parking.id },
+        pointsDTO,
+    });
+
+
     const _onEdited = (e) => {
-        const layers = e.layers;
-        const editedLayers = layers.getLayers();
+        const editedLayers = e.layers.getLayers();
         const allSpots = [...parkingSpots, ...stagedParkingSpots];
         const map = mapRef.current;
         const list = [];
+
         map.eachLayer((layer) => {
             if (layer instanceof L.FeatureGroup) {
                 layer.eachLayer((polyObject) => {
@@ -110,128 +120,68 @@ export default function ParkingEditor(props) {
             }
         });
 
-        debugger;
+        let isPointsValid = true;
 
-
-        const transformedSpotsLayer = [];
-        list.forEach((layer) => {
+        const transformedSpotsLayer = list.reduce((spots, layer) => {
             const spotId = layer.options.id;
-            const spot = allSpots.find((spot) => spot.id === spotId);
-            if (spot === undefined) {
-                const layerPoints = layer.toGeoJSON().geometry.coordinates[0];
-                const layerPointsMapped = layerPoints.map((point) => {
-                    return { latitude: point[1], longitude: point[0], id: point[2] };
-                });
-                layerPointsMapped.pop();
-                const pointsDTO = layerPointsMapped.map((point) => {
-                    return {
-                        id: point.id,
-                        latitude: point.latitude,
-                        longitude: point.longitude,
-                        parkingSpotDTO: {
-                            id: parkingId
-                        }
-                    }
-                });
-                const allIdsDefined = pointsDTO.every(point => point.id !== undefined);
+            const spot = allSpots.find(spot => spot.id === spotId);
 
-                if (pointsDTO.length !== 4 || !allIdsDefined) {
-                    toast.error("You must draw a 4 points with ids!");
+            if (!spot) {
+                const pointsDTO = extractPointsDTO(layer);
+
+                if (validatePointsDTO(pointsDTO)) {
+                    const newParkingSpot = populateValidSpot(spotId, pointsDTO);
+                    spots.push(newParkingSpot);
                 } else {
-                    const newParkingSpot = {
-                        id: spotId,
-                        spotNumber: "newly created spot",
-                        active: false,
-                        parkingDTO: {
-                            id: parking.id
-                        },
-                        pointsDTO: pointsDTO
-                    }
-                    transformedSpotsLayer.push(newParkingSpot);
+                    toast.error("You must draw 4 points with ids!");
+                    isPointsValid = false;
+                    return spots;
                 }
-
             }
-        });
+
+            return spots;
+        }, []);
+
+        if (!isPointsValid) {
+            dispatch(getParkingSpotsByParkingId(parkingId));
+            return;
+        }
+
         allSpots.push(...transformedSpotsLayer);
-
-        const transformedSpots = [];
-
-        editedLayers.forEach((layer) => {
-            const spotId = layer.options.id;
-            let spot = allSpots.find((spot) => spot.id === spotId);
-
-            const layerPoints = layer.toGeoJSON().geometry.coordinates[0];
-            debugger
-
-            const layerPointsMapped = layerPoints.map((point) => {
-                return { latitude: point[1], longitude: point[0], id: point[2] };
-            });
-            layerPointsMapped.pop();
-            if (layerPointsMapped.length !== 4) {
-                toast.error("You must draw a 4 points with ids!");
-                dispatch(getParkingSpotsByParkingId(parkingId));
-                return;
-            }
-            const pointsDTO = layerPointsMapped.map((point) => {
-                return {
-                    id: point.id,
-                    latitude: point.latitude,
-                    longitude: point.longitude,
-                    parkingSpotDTO: {
-                        id: parkingId
-                    }
-                }
-            });
-
-            const allIdsDefined = pointsDTO.every(point => point.id !== undefined);
-
-            if (pointsDTO.length !== 4 || !allIdsDefined) {
-                toast.error("You must draw a 4 points with ids!");
+        const transformedSpots = editedLayers.map((layer) => {
+            const pointsDTO = extractPointsDTO(layer);
+            if (validatePointsDTO(pointsDTO)) {
+                const spotId = layer.options.id;
+                const spot = allSpots.find(spot => spot.id === spotId);
+                return populateValidSpot(spot, pointsDTO);
             } else {
-                if (spot !== undefined) {
-                    spot.pointsDTO = pointsDTO;
-                } else {
-                    spot = {
-                        id: spotId,
-                        spotNumber: "newly created spot",
-                        active: false,
-                        parkingDTO: {
-                            id: parkingId
-                        },
-                        pointsDTO: pointsDTO
-                    }
-                }
+                toast.error("You must draw 4 points with ids!");
+                dispatch(getParkingSpotsByParkingId(parkingId));
+                return null;
             }
-
-            transformedSpots.push(spot);
-        });
+        }).filter(Boolean);
 
         const allUpdatedSpots = [...transformedSpots, ...allSpots];
         const uniqueSpots = allUpdatedSpots.filter((spot, index, self) =>
-            index === self.findIndex((s) => (
-                s.id === spot.id
-            ))
+            index === self.findIndex(s => s.id === spot.id)
         );
 
         let isColliding = false;
         let inValidArea = false;
+
         transformedSpots.forEach((editedSpot) => {
             if (isSpotAreaTooBig(editedSpot)) {
                 inValidArea = true;
                 let area = getArea(editedSpot);
-                toast.error("Parking spot area is too big!"
-                    + " Area: " + area.toFixed(2) + " m2. "
-                    + "Maximal area:" + maximalArea + " m2"
-                );
+                toast.error(`Parking spot area is too big! Area: ${area.toFixed(2)} m2. Maximal area: ${maximalArea} m2`);
             }
+
             if (isSpotAreaTooSmall(editedSpot)) {
                 inValidArea = true;
                 let area = getArea(editedSpot);
-                toast.error("Parking spot area is too small!"
-                    + " Area: " + area.toFixed(2) + " m2. "
-                    + "Minimal area: " + minimalArea + " m2 "
-                );
+                toast.error(`Parking spot area is too small! Area: ${area.toFixed(2)} m2. Minimal area: ${minimalArea} m2`);
             }
+
             uniqueSpots.forEach((otherspot) => {
                 if (editedSpot.id !== otherspot.id) {
                     const coliding = areParkingSpotsColliding(otherspot, editedSpot);
@@ -252,16 +202,40 @@ export default function ParkingEditor(props) {
         });
     };
 
+    const extractPointsDTO = (layer) => {
+        const layerPoints = layer.toGeoJSON().geometry.coordinates[0].map(point => ({
+            id: point[2],
+            latitude: point[1],
+            longitude: point[0],
+        }));
+        layerPoints.pop();
+        return layerPoints;
+    };
 
+    const validatePointsDTO = (pointsDTO) => {
+        const allIdsDefined = pointsDTO.every(point => point.id !== undefined);
+        return pointsDTO.length === 4 && allIdsDefined;
+    };
 
+    const createParkingSpot = (spotId, pointsDTO) => ({
+        id: spotId,
+        spotNumber: parking.name + " " + (parkingSpots.length + 1),
+        active: false,
+        parkingDTO: { id: parking.id },
+        pointsDTO,
+    });
+
+    const handleInvalidArea = (area, errorMessage) => {
+        toast.error(`${errorMessage} Area: ${area.toFixed(2)} m2. 
+        ${errorMessage === "Parking spot area is too big" ? "Maximal area: " + maximalArea + " m2" : "Minimal area: " + minimalArea + " m2"}`);
+        clearLayerWithNoIds();
+    };
 
     const _onCreated = (e) => {
-
-        //get map and its layers that are polygons
         const map = mapRef.current;
-        const list = [];
         const editedLayer = e.layer;
         const allSpots = [...parkingSpots, ...stagedParkingSpots];
+        const list = [];
 
         map.eachLayer((layer) => {
             if (layer instanceof L.FeatureGroup) {
@@ -273,113 +247,53 @@ export default function ParkingEditor(props) {
             }
         });
 
-        const transformedSpots = [];
-        list.forEach((layer) => {
+        const transformedSpots = list.reduce((spots, layer) => {
             const spotId = layer.options.id;
-            const spot = allSpots.find((spot) => spot.id === spotId);
-            if (spot === undefined) {
-                const layerPoints = layer.toGeoJSON().geometry.coordinates[0];
-                const layerPointsMapped = layerPoints.map((point) => {
-                    return { latitude: point[1], longitude: point[0], id: point[2] };
-                });
-                layerPointsMapped.pop();
-                const pointsDTO = layerPointsMapped.map((point) => {
-                    return {
-                        id: point.id,
-                        latitude: point.latitude,
-                        longitude: point.longitude,
-                        parkingSpotDTO: {
-                            id: parkingId
-                        }
-                    }
-                });
-                const allIdsDefined = pointsDTO.every(point => point.id !== undefined);
+            const spot = allSpots.find(spot => spot.id === spotId);
 
-                if (pointsDTO.length !== 4 || !allIdsDefined) {
-                    toast.error("You must draw a 4 points with ids!");
+            if (!spot) {
+                const pointsDTO = extractPointsDTO(layer);
+
+                if (validatePointsDTO(pointsDTO)) {
+                    const newParkingSpot = createParkingSpot(spotId, pointsDTO);
+                    spots.push(newParkingSpot);
                 } else {
-                    const newParkingSpot = {
-                        id: spotId,
-                        spotNumber: "newly created spot",
-                        active: false,
-                        parkingDTO: {
-                            id: parking.id
-                        },
-                        pointsDTO: pointsDTO
-                    }
-                    transformedSpots.push(newParkingSpot);
+                    toast.error("You must draw 4 points with ids!");
                 }
-
             }
-        });
+
+            return spots;
+        }, []);
+
         allSpots.push(...transformedSpots);
-        // get parking spot by id
-        // make a value copy of the spot
 
-        const layerPoints = editedLayer.toGeoJSON().geometry.coordinates[0];
+        const layerPointsMapped = extractPointsDTO(editedLayer);
 
-        // check if there are 4 points
-        if (layerPoints.length !== 5) {
-            toast.error("You must draw a 4 points!");
+        if (layerPointsMapped.length !== 4) {
+            toast.error("You must draw 4 points!");
             clearLayerWithNoIds();
             return;
         }
 
-        const layerPointsMapped = layerPoints.map((point) => {
-            return { latitude: point[1], longitude: point[0], id: point[2] };
-        });
-        layerPointsMapped.pop();
-        const pointsDTO = layerPointsMapped.map((point) => {
-            return {
-                id: point.id,
-                latitude: point.latitude,
-                longitude: point.longitude
-            }
-        });
-
-
-        const newParkingSpot = {
-            spotNumber: "newly created spot",
-            active: false,
-            parkingDTO: {
-                id: parking.id
-            },
-            pointsDTO: pointsDTO
-        }
+        const newParkingSpot = createParkingSpot(undefined, layerPointsMapped);
 
         if (isSpotAreaTooBig(newParkingSpot)) {
-            let area = getArea(newParkingSpot);
-            toast.error("Parking spot area is too big!"
-                + " Area: " + area.toFixed(2) + " m2. "
-                + "Maximal area: " + maximalArea + " m2"
-            );
-            clearLayerWithNoIds();
+            handleInvalidArea(getArea(newParkingSpot), "Parking spot area is too big");
             return;
         }
 
         if (isSpotAreaTooSmall(newParkingSpot)) {
-            let area = getArea(newParkingSpot);
-            toast.error("Parking spot area is too small!"
-                + " Area: " + area.toFixed(2) + " m2. "
-                + "Minimal area: " + minimalArea + " m2 "
-            );
-            clearLayerWithNoIds();
+            handleInvalidArea(getArea(newParkingSpot), "Parking spot area is too small");
             return;
         }
 
-        let isColliding = false;
-
-        allSpots.forEach((otherspot) => {
-            if (newParkingSpot.id !== otherspot.id) {
-                const coliding = areParkingSpotsColliding(otherspot, newParkingSpot);
-                if (coliding) {
-                    isColliding = true;
-                    // get original spot from parkingSpots
-                    toast.error("Parking spots are colliding!");
-                    clearLayerWithNoIds();
-
-                }
+        const isColliding = allSpots.some(otherspot => {
+            const coliding = areParkingSpotsColliding(otherspot, newParkingSpot);
+            if (coliding) {
+                toast.error("Parking spots are colliding!");
+                clearLayerWithNoIds();
             }
+            return coliding;
         });
 
         if (!isColliding) {
@@ -390,6 +304,8 @@ export default function ParkingEditor(props) {
             clearLayerWithNoIds();
         }
     };
+
+
 
     const mapPonitsToParkingSpot = (e, points, editedSpot) => {
         let toMuchDrag = false;
@@ -405,7 +321,6 @@ export default function ParkingEditor(props) {
         });
 
         mappedPoints.pop();
-
 
         const pointsDTO = mappedPoints.map((point) => {
             return {
