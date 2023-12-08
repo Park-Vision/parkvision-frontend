@@ -110,6 +110,9 @@ export default function ParkingEditor(props) {
             }
         });
 
+        debugger;
+
+
         const transformedSpotsLayer = [];
         list.forEach((layer) => {
             const spotId = layer.options.id;
@@ -152,17 +155,23 @@ export default function ParkingEditor(props) {
         allSpots.push(...transformedSpotsLayer);
 
         const transformedSpots = [];
+
         editedLayers.forEach((layer) => {
             const spotId = layer.options.id;
             let spot = allSpots.find((spot) => spot.id === spotId);
 
             const layerPoints = layer.toGeoJSON().geometry.coordinates[0];
-
+            debugger
 
             const layerPointsMapped = layerPoints.map((point) => {
                 return { latitude: point[1], longitude: point[0], id: point[2] };
             });
             layerPointsMapped.pop();
+            if (layerPointsMapped.length !== 4) {
+                toast.error("You must draw a 4 points with ids!");
+                dispatch(getParkingSpotsByParkingId(parkingId));
+                return;
+            }
             const pointsDTO = layerPointsMapped.map((point) => {
                 return {
                     id: point.id,
@@ -374,7 +383,8 @@ export default function ParkingEditor(props) {
         });
 
         if (!isColliding) {
-            dispatch(addParkingSpot(newParkingSpot)).then(() => {
+            dispatch(addParkingSpot(newParkingSpot)).then((data) => {
+                console.log(data);
                 dispatch(getParkingSpotsByParkingId(parseInt(parkingId)));
             });
             clearLayerWithNoIds();

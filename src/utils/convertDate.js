@@ -22,10 +22,6 @@ const convertDateToLocaleString = (time) => {
 
 const cutDate = (time) => {
 
-    if (!time) {
-        return null;
-    }
-
     if (time[time.length - 1] === 'Z') {
         time = time.substring(0, time.length - 1);
     }
