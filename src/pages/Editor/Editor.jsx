@@ -300,7 +300,6 @@ export default function ParkingEditor(props) {
 
         if (!isColliding) {
             dispatch(addParkingSpot(newParkingSpot)).then((data) => {
-                console.log(data);
                 dispatch(getParkingSpotsByParkingId(parseInt(parkingId)));
             });
             clearLayerWithNoIds();
