@@ -27,132 +27,7 @@ import LocalParkingIcon from '@mui/icons-material/LocalParking';
 import { toast } from 'react-toastify';
 import decodeToken from '../../utils/decodeToken';
 import { GradientButton } from '../../components/GradientButton';
-
-const currencies = [
-    {
-        value: 'USD',
-        label: 'USD',
-    },
-    {
-        value: 'EUR',
-        label: 'EUR',
-    },
-    {
-        value: 'BTC',
-        label: 'BTC',
-    },
-    {
-        value: 'JPY',
-        label: 'JPY',
-    },
-    {
-        value: 'PLN',
-        label: 'PLN',
-    },
-];
-
-const timeZones = [
-    {
-        value: '-12:00',
-        label: 'UTC-12:00',
-    },
-    {
-        value: '-11:00',
-        label: 'UTC-11:00',
-    },
-    {
-        value: '-10:00',
-        label: 'UTC-10:00',
-    },
-    {
-        value: '-09:00',
-        label: 'UTC-09:00',
-    },
-    {
-        value: '-08:00',
-        label: 'UTC-08:00',
-    },
-    {
-        value: '-07:00',
-        label: 'UTC-07:00',
-    },
-    {
-        value: '-06:00',
-        label: 'UTC-06:00',
-    },
-    {
-        value: '-05:00',
-        label: 'UTC-05:00',
-    },
-    {
-        value: '-04:00',
-        label: 'UTC-04:00',
-    },
-    {
-        value: '-03:00',
-        label: 'UTC-03:00',
-    },
-    {
-        value: '-02:00',
-        label: 'UTC-02:00',
-    },
-    {
-        value: '-01:00',
-        label: 'UTC-01:00',
-    },
-    {
-        value: 'Z',
-        label: 'UTC',
-    },
-    {
-        value: '+01:00',
-        label: 'UTC+01:00',
-    },
-    {
-        value: '+02:00',
-        label: 'UTC+02:00',
-    },
-    {
-        value: '+03:00',
-        label: 'UTC+03:00',
-    },
-    {
-        value: '+04:00',
-        label: 'UTC+04:00',
-    },
-    {
-        value: '+05:00',
-        label: 'UTC+05:00',
-    },
-    {
-        value: '+06:00',
-        label: 'UTC+06:00',
-    },
-    {
-        value: '+07:00',
-        label: 'UTC+07:00',
-    },
-    {
-        value: '+08:00',
-        label: 'UTC+08:00',
-    },
-    {
-        value: '+09:00',
-        label: 'UTC+09:00',
-    },
-    {
-        value: '+10:00',
-        label: 'UTC+10:00',
-    },
-    {
-        value: '+11:00',
-        label: 'UTC+11:00',
-    },
-    {
-        value: '+12:00',
-        label: 'UTC+12:00',
-    }
-];
+import { currencies, timeZones } from '../../utils/constants';
 
 const parkingIcon = new L.DivIcon({
     html: renderToString(<LocalParkingIcon style={{
@@ -238,33 +113,32 @@ function ManagerParkingDetails() {
             });
             dispatch(getParking(parkingId)).then((response) => {
                 const parking = response;
+                let startTimeString = '';
+                let endTimeString = '';
 
                 if (parking.timeZone !== 'Z') {
-                    parking.startTime = parking.startTime.slice(0, -6);
-                    parking.endTime = parking.endTime.slice(0, -6);
+                    startTimeString = parking.startTime.slice(0, -6);
+                    endTimeString = parking.endTime.slice(0, -6);
                 }
                 else {
-                    parking.startTime = parking.startTime.slice(0, -1);
-                    parking.endTime = parking.endTime.slice(0, -1);
+                    startTimeString = parking.startTime.slice(0, -1);
+                    endTimeString = parking.endTime.slice(0, -1);
                 }
-                let startHour = parking.startTime.split(':')[0];
-                let endHour = parking.endTime.split(':')[0];
 
-                let startMinute = parking.startTime.split(':')[1];
-                let endMinute = parking.endTime.split(':')[1];
+                let [startHour, startMinute] = startTimeString.split(':');
+                let [endHour, endMinute] = endTimeString.split(':');
+                let startTimeDayJs = dayjs().hour(startHour).minute(startMinute).second(0);
+                let endTimeDayJS = dayjs().hour(endHour).minute(endMinute).second(0);
 
-                parking.startTime = dayjs().hour(startHour).minute(startMinute).second(0);
-                parking.endTime = dayjs().hour(endHour).minute(endMinute).second(0);
-
-                parking.costRate = parking.costRate.toFixed(2);
+                const costRate = parking.costRate.toFixed(2);
                 setName(parking.name);
                 setDescription(parking.description);
                 setCity(parking.city);
                 setStreet(parking.street);
                 setZipCode(parking.zipCode);
-                setCostRate(parking.costRate);
-                setStartTime(dayjs(parking.startTime));
-                setEndTime(dayjs(parking.endTime));
+                setCostRate(costRate);
+                setStartTime(startTimeDayJs);
+                setEndTime(endTimeDayJS);
                 setLatitude(parking.latitude);
                 setLongitude(parking.longitude);
                 setTimeZone(parking.timeZone);
@@ -373,6 +247,7 @@ function ManagerParkingDetails() {
                                             views={['hours', 'minutes']}
                                             inputFormat="HH:mm"
                                             ampm={false}
+                                            minutesStep={15}
                                         />
                                     </LocalizationProvider>
                                 </Grid>
@@ -390,6 +265,7 @@ function ManagerParkingDetails() {
                                             inputFormat="HH:mm"
                                             ampm={false}
                                             minTime={startTime}
+                                            minutesStep={15}
                                         />
                                     </LocalizationProvider>
                                 </Grid>
