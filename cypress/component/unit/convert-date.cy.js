@@ -1,4 +1,4 @@
-import { convertDate } from '../../src/utils/convertDate'
+import { convertDate } from '../../../src/utils/convertDate';
 
 describe('convertDate Function', () => {
     it('should convert a valid date string to local date string with default timezone offset', () => {

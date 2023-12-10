@@ -1,4 +1,4 @@
-import decodeToken from '../../src/utils/decodeToken';
+import decodeToken from '../../../src/utils/decodeToken';
 
 describe('decodeToken', () => {
     it('returns null for invalid token types', () => {

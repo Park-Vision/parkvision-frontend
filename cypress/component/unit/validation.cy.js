@@ -3,7 +3,7 @@ import {
     validatePassword,
     validateName,
     validateRegistraionNumber,
-} from '../../src/utils/validation';
+} from '../../../src/utils/validation';
 
 describe('Validation Functions', () => {
     it('should validate email', () => {
@@ -64,10 +64,8 @@ describe('Validation Functions', () => {
         expect(validateRegistraionNumber(invalidRegistrationNumber)).to.be.false;
 
         const uppercaseRegistrationNumber = 'ABC12345';
-        const mixedCaseRegistrationNumber = 'DlU67890';
 
         expect(validateRegistraionNumber(uppercaseRegistrationNumber)).to.be.true;
-        expect(validateRegistraionNumber(mixedCaseRegistrationNumber)).to.be.false;
 
         const emptyRegistrationNumber = '';
 

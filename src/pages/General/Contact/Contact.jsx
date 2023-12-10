@@ -6,7 +6,7 @@ export default function Contact() {
         <Container>
             <Box>
                 <h1>CONTACT</h1>
-                <p>Email: <a href="mailto:parkvision.info@gmail.com">parkvision.info@gmail.com</a></p>
+                <p data-cy={'contact-email'}>Email: <a href="mailto:parkvision.info@gmail.com">parkvision.info@gmail.com</a></p>
                 <p>Authors:</p>
                 <ul>
                     <li>Filip Strózik</li>

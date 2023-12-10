@@ -1,4 +1,4 @@
-import { convertDateToLocaleString } from '../../src/utils/convertDate'
+import { convertDateToLocaleString } from '../../../src/utils/convertDate'
 
 describe('convertDateToLocaleString Function', () => {
     it('should convert a valid date string to local date string with default timezone offset', () => {
