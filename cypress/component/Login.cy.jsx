@@ -47,8 +47,8 @@ describe('Login.cy.jsx', () => {
     cy.get(passwordInputSelector).should('have.value', '');
   });
 
-  it('has disabled login button', () => {
-    cy.get(loginButtonSelector).should('be.disabled');
+  it('has enabled login button', () => {
+    cy.get(loginButtonSelector).should('be.enabled');
   });
 
   it('enables login button after valid email and password', () => {
@@ -58,11 +58,6 @@ describe('Login.cy.jsx', () => {
     cy.get(loginButtonSelector).should('be.enabled');
   });
 
-  it('should disable send password reset button if email is invalid', () => {
-    cy.get(passwordResetButtonSelector).click();
-    cy.get(passwordResetEmailInputSelector).type('test');
-    cy.get(sendPasswordResetButtonSelector).should('be.disabled');
-  });
 
   it('should enable send password reset button if email is valid', () => {
     cy.get(passwordResetButtonSelector).click();

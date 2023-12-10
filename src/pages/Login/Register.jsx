@@ -216,13 +216,8 @@ export default function Register() {
                                                 }
                                             />
                                         </FormControl>
-                                        <GradientButton type="submit" variant="contained" fullWidth sx={{ mt: 1 }} data-cy={'register-button'} disabled={
-                                            !validateEmail(email)
-                                            || !validateName(firstName)
-                                            || !validateName(lastName)
-                                            || !validatePassword(password)
-                                            || passwordRepeat !== password
-                                        }>
+                                        <GradientButton type="submit" variant="contained" fullWidth sx={{ mt: 1 }} data-cy={'register-button'}
+                                        >
                                             Register
                                         </GradientButton>
                                         <Button fullWidth sx={{ mt: 1 }} onClick={() => handleLoginRedirection()}>

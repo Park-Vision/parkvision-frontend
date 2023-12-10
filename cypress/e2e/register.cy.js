@@ -15,7 +15,6 @@ describe('Register e2e', () => {
     cy.get('[data-cy="password-repeat-input"]').should('be.visible');
     cy.get('[data-cy="register-button"]').scrollIntoView();
     cy.get('[data-cy="register-button"]').should('be.visible');
-    cy.get('[data-cy="register-button"]').should('be.disabled');
     /* ==== End Cypress Studio ==== */
   })
 
@@ -37,17 +36,4 @@ describe('Register e2e', () => {
     /* ==== End Cypress Studio ==== */
   });
 
-
-  // it should regitser button be disabled if passwords are not the same
-  it('should register button be disabled if passwords are not the same', function() {
-    /* ==== Generated with Cypress Studio ==== */
-    cy.get('[data-cy="email-input"]').type('testpassword@pv.pl');
-    cy.get('[data-cy="first-name-input"]').type('Test');
-    cy.get('[data-cy="last-name-input"]').type('Testowski');
-    cy.get('[data-cy="password-input"]').type('Test123!');
-    cy.get('[data-cy="password-repeat-input"]').type('Test123');
-    cy.get('[data-cy="register-button"]').should('be.visible');
-    cy.get('[data-cy="register-button"]').should('be.disabled');
-    /* ==== End Cypress Studio ==== */
-  });
 })

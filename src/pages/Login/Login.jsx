@@ -176,7 +176,6 @@ export default function Login() {
                                         />
                                     </FormControl>
                                     <GradientButton data-cy={'login-button'} type="submit" variant="contained" fullWidth sx={{ mt: 1 }}
-                                        disabled={!validateEmail(email) || !validatePassword(password)}
                                     >
                                         Login
                                     </GradientButton>

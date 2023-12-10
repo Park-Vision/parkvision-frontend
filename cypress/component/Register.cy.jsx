@@ -41,8 +41,8 @@ describe('Register.cy.jsx', () => {
     cy.get(lastNameInputSelector).should('have.value', '');
   });
 
-  it('has disabled register button', () => {
-    cy.get(registerButtonSelector).should('be.disabled');
+  it('has enabled register button', () => {
+    cy.get(registerButtonSelector).should('be.enabled');
   });
 
   it('enables register button after valid input', () => {
@@ -54,15 +54,4 @@ describe('Register.cy.jsx', () => {
 
     cy.get(registerButtonSelector).should('be.enabled');
   });
-
-  it('disables register button after invalid input', () => {
-    cy.get(emailInputSelector).type('test#pv.pl');
-    cy.get(passwordInputSelector).type('Test123!');
-    cy.get(passwordRepeatInputSelector).type('Test123!');
-    cy.get(firstNameInputSelector).type('John');
-    cy.get(lastNameInputSelector).type('Doe');
-
-    cy.get(registerButtonSelector).should('be.disabled');
-  }
-  );
 });
