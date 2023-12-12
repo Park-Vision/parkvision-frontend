@@ -62,7 +62,6 @@ export default function ParkingSpotDetails(props) {
         });
 
         mappedPoints.pop();
-        console.log(mappedPoints);
         const pointsDTO = mappedPoints.map((point) => {
             return {
                 id: point.id,
@@ -85,8 +84,6 @@ export default function ParkingSpotDetails(props) {
             },
             pointsDTO: pointsDTO
         }
-
-        console.log(editedParkingSpot);
 
         dispatch(updateParkingSpot(editedParkingSpot)).then(() => {
             dispatch(getParkingSpot(params.parkingSpotId));

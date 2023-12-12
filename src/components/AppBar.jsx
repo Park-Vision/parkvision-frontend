@@ -108,7 +108,7 @@ function ResponsiveAppBar() {
 
   const getMenuItems = () => {
     const menuItems = pages.map((page, index) => (
-      <MenuItem key={page} onClick={() => handleClick(links[index])}>
+      <MenuItem key={page} onClick={() => handleClick(links[index])} data-cy={page}>
         <Link style={{ textDecoration: 'none' }}>
           <Typography textAlign="center">{page}</Typography>
         </Link>
@@ -117,13 +117,13 @@ function ResponsiveAppBar() {
 
     if (!isLoggedIn) {
       menuItems.push(
-        <MenuItem key={'login'} onClick={handleLogin}>
+        <MenuItem key={'login'} onClick={handleLogin} data-cy={'login'}>
           <Link style={{ textDecoration: 'none' }}>Login</Link>
         </MenuItem>
       );
     } else {
       menuItems.push(
-        <MenuItem key={'logout'} onClick={handleLogout}>
+        <MenuItem key={'logout'} onClick={handleLogout} data-cy={'logout'}>
           <Link style={{ textDecoration: 'none' }}>Logout</Link>
         </MenuItem>
       );
@@ -247,6 +247,7 @@ function ResponsiveAppBar() {
             {pages.map((page, index) => (
               <Button
                 key={page}
+                data-cy={page + '-button'}
                 onClick={() => handleClick(links[index])}
                 sx={{ my: 2, color: 'white', display: 'block' }}>
                 <Link style={{ textDecoration: 'none', color: 'inherit' }}>
@@ -257,6 +258,7 @@ function ResponsiveAppBar() {
             {!isLoggedIn ? (
               <Button
                 onClick={handleLogin}
+                data-cy={'login-button'}
                 sx={{ my: 2, color: 'white', display: 'block' }}>
                 <Link style={{ textDecoration: 'none', color: 'inherit' }}>
                   Login

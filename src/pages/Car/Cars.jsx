@@ -153,24 +153,24 @@ export default function Cars() {
                     YOUR CARS
                 </Typography>
                 <Grid container justifyContent="flex-end">
-                    <GradientButton variant="contained" margin="normal" onClick={handleAdd}>NEW CAR</GradientButton>
+                    <GradientButton data-cy='new-car-button' variant="contained" margin="normal" onClick={handleAdd}>NEW CAR</GradientButton>
                 </Grid>
                 <Grid item xs={12}>
                     {cars && cars.length > 0 ? (
                         <List>
                             {cars.map((car) => (
-                                <Paper key={car.id} elevation={3} style={{ padding: 20, margin: 10 }}>
+                                <Paper data-cy={'car-item'} key={car.id} elevation={3} style={{ padding: 20, margin: 10 }}>
                                     <DriveEtaIcon sx={{ fontWeight: 'bold', fontSize: '1.2rem' }} />
-                                    <Typography variant="subtitle1" sx={{ fontWeight: 'bold', fontSize: '1.2rem' }}>
+                                    <Typography data-cy='car-registration' variant="subtitle1" sx={{ fontWeight: 'bold', fontSize: '1.2rem' }}>
                                         Registration number: {car.registrationNumber}
                                     </Typography>
-                                    <Typography variant="body1">Color: {car.color}</Typography>
-                                    <Typography variant="body1">Brand: {car.brand}</Typography>
+                                    <Typography data-cy='car-color' variant="body1">Color: {car.color}</Typography>
+                                    <Typography data-cy='car-brand' variant="body1">Brand: {car.brand}</Typography>
                                     <div style={{ textAlign: 'right' }}>
-                                        <IconButton style={{ fontSize: 30 }} color="primary" aria-label="edit" onClick={() => handleEdit(car)}>
+                                        <IconButton data-cy='car-edit-button' style={{ fontSize: 30 }} color="primary" aria-label="edit" onClick={() => handleEdit(car)}>
                                             <ModeEditIcon />
                                         </IconButton>
-                                        <IconButton style={{ fontSize: 30 }} color="primary" aria-label="cancel" onClick={() => handleDelete(car)}>
+                                        <IconButton data-cy='car-delete-button' style={{ fontSize: 30 }} color="primary" aria-label="cancel" onClick={() => handleDelete(car)}>
                                             <DeleteIcon style={{ fontSize: 30 }} />
                                         </IconButton>
                                     </div>
@@ -189,6 +189,7 @@ export default function Cars() {
                 <DialogContent>
                     <Grid>
                         <TextField
+                            data-cy='registration-number'
                             label="Registration Number"
                             variant="outlined"
                             fullWidth
@@ -198,6 +199,7 @@ export default function Cars() {
                             onChange={handleRegistrationNumber}
                         />
                         <TextField
+                            data-cy='color'
                             label="Color"
                             variant="outlined"
                             fullWidth
@@ -207,6 +209,7 @@ export default function Cars() {
                             onChange={handleColor}
                         />
                         <TextField
+                            data-cy='brand'
                             label="Brand"
                             variant="outlined"
                             margin="normal"
@@ -218,10 +221,10 @@ export default function Cars() {
                     </Grid>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleAddDialogClose} color="primary">
+                    <Button data-cy='cancel-button' onClick={handleAddDialogClose} color="primary">
                         Cancel
                     </Button>
-                    <Button onClick={handleAddSubmit} color="primary">
+                    <Button data-cy='save-button' onClick={handleAddSubmit} color="primary">
                         Save
                     </Button>
                 </DialogActions>
@@ -231,6 +234,7 @@ export default function Cars() {
                 <DialogContent>
                     <Grid>
                         <TextField
+                            data-cy='registration-number'
                             label="Registration Number"
                             variant="outlined"
                             fullWidth
@@ -240,6 +244,7 @@ export default function Cars() {
                             onChange={(e) => setEditCar({ ...editCar, registrationNumber: e.target.value })}
                         />
                         <TextField
+                            data-cy='color'
                             label="Color"
                             variant="outlined"
                             fullWidth
@@ -249,6 +254,7 @@ export default function Cars() {
                             onChange={(e) => setEditCar({ ...editCar, color: e.target.value })}
                         />
                         <TextField
+                            data-cy='brand'
                             label="Brand"
                             variant="outlined"
                             margin="normal"
@@ -260,10 +266,10 @@ export default function Cars() {
                     </Grid>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleEditDialogClose} color="primary">
+                    <Button data-cy='cancel-button' onClick={handleEditDialogClose} color="primary">
                         Cancel
                     </Button>
-                    <Button onClick={handleEditSubmit} color="primary">
+                    <Button data-cy='save-button' onClick={handleEditSubmit} color="primary">
                         Save
                     </Button>
                 </DialogActions>

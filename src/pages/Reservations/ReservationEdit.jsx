@@ -235,6 +235,7 @@ export default function ReservationEdit(props) {
                                 InputProps={{
                                     readOnly: true,
                                 }}
+                                disabled={true}
                             />
                             <TextField fullWidth
                                 margin='normal'

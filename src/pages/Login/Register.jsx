@@ -81,7 +81,6 @@ export default function Register() {
         } else {
             dispatch(register(email, firstName, lastName, password))
                 .then(response => {
-                    console.log(response);
                     if (response.status === 200) {
                         setEmail("")
                         setFirstName("")
@@ -216,13 +215,8 @@ export default function Register() {
                                                 }
                                             />
                                         </FormControl>
-                                        <GradientButton type="submit" variant="contained" fullWidth sx={{ mt: 1 }} data-cy={'register-button'} disabled={
-                                            !validateEmail(email)
-                                            || !validateName(firstName)
-                                            || !validateName(lastName)
-                                            || !validatePassword(password)
-                                            || passwordRepeat !== password
-                                        }>
+                                        <GradientButton type="submit" variant="contained" fullWidth sx={{ mt: 1 }} data-cy={'register-button'}
+                                        >
                                             Register
                                         </GradientButton>
                                         <Button fullWidth sx={{ mt: 1 }} onClick={() => handleLoginRedirection()}>

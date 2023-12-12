@@ -5,10 +5,12 @@ import Home from '../../src/pages/Home/Home';
 import { GET_PARKINGS } from '../../src/redux/actions/types';
 
 const parkingSelector = '[data-cy=parking-item]';
+const searchInputSelector = '[data-cy=search-input]';
+const searchButton = '[data-cy=search-button]';
 
 describe('Home.cy.jsx', () => {
     beforeEach(() => {
-        cy.viewport('iphone-8');
+        cy.viewport('macbook-15');
 
 
         cy.mount(
@@ -73,21 +75,6 @@ describe('Home.cy.jsx', () => {
                         "currency": "PLN"
                     },
                     {
-                        "id": 4,
-                        "name": "Parking Wrońskiego",
-                        "description": "Parking Wrońskiego to parking Politechniki Wrocławskiej dla studentów i pracowników Politechniki Wrocławskiej. Posiada 50 miejsc parkingowych, w tym 2 miejsca dla osób niepełnosprawnych.",
-                        "city": "Wrocław",
-                        "street": "Wrońskiego 1",
-                        "zipCode": "50-376",
-                        "costRate": 2,
-                        "startTime": "06:30-02:00",
-                        "endTime": "19:00-02:00",
-                        "latitude": 51.108915212046774,
-                        "longitude": 17.05562300818793,
-                        "timeZone": "-02:00",
-                        "currency": "PLN"
-                    },
-                    {
                         "id": 1,
                         "name": "Magnolia Park",
                         "description": "Parking Magnolia Park to parking znajdujący się w centrum Wrocławia. Posiada 100 miejsc parkingowych, w tym 5 miejsc dla osób niepełnosprawnych. Parking jest monitorowany przez 24 godziny na dobę.",
@@ -107,7 +94,25 @@ describe('Home.cy.jsx', () => {
             win.store.dispatch({ type: GET_PARKINGS, value: mockData });
         });
         cy.get(parkingSelector)
-            .should('have.length', 4);
+            .should('have.length', 3);
+    });
+
+    it('should render only one parking after search', () => {
+        cy.get(searchInputSelector).type('Magnolia Park');
+
+        cy.get(searchButton).click();
+        cy.get(parkingSelector)
+            .should('have.length', 1);
+
+        cy.get(parkingSelector).should('contain', 'Magnolia Park');
+
+        cy.get(searchInputSelector).clear();
+
+        cy.get(parkingSelector)
+            .should('have.length', 3);
+
+
+
     });
 
 });

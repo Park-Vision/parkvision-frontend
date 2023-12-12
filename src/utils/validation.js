@@ -1,8 +1,9 @@
 
 const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()\-_=+{};:,<.>])(?!.*\s).{8,}$/;
 const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i
-const registrationNumberRegex = /^[A-Z0-9]+$/;
-const nameRegex = /^[A-Za-z]+$/;
+const registrationNumberRegex = /^[\p{L}\d]+$/u;
+const nameRegex = /^\p{L}+$/u;
+
 
 export function validateEmail(email) {
     return emailRegex.test(email);

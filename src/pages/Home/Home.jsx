@@ -237,6 +237,7 @@ export default function Home() {
                             <Grid container spacing={2} alignItems="center" justifyContent="flex-end">
                                 <Grid item>
                                     <TextField
+                                        data-cy={'search-input'}
                                         id="input-with-icon-grid"
                                         label="Search for parking"
                                         variant="outlined"
@@ -247,6 +248,7 @@ export default function Home() {
                                 </Grid>
                                 <Grid item>
                                     <GradientButton
+                                        data-cy={'search-button'}
                                         variant="contained"
                                         color="primary"
                                         type="submit"

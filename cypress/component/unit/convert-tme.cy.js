@@ -1,4 +1,4 @@
-import convertTime from '../../src/utils/convertTime';
+import convertTime from '../../../src/utils/convertTime';
 
 describe('convertTime Function', () => {
     it('should convert a valid time string with a positive timezone offset', () => {

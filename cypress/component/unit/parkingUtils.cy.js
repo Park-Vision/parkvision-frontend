@@ -6,7 +6,7 @@ import {
     isSpotAreaTooSmall,
     getArea,
     convertToTurfPolygon  
-} from '../../src/utils/parkingUtils'; // Update with the correct path to your file
+} from '../../../src/utils/parkingUtils'; // Update with the correct path to your file
 
 describe('Geometry functions', () => {
 
