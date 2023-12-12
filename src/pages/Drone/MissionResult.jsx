@@ -14,7 +14,7 @@ import "leaflet-draw/dist/leaflet.draw.css";
 import "../Editor/Editor.css"; // Create a CSS file for styling
 import { useNavigate } from "react-router-dom";
 import { MapContainer, Polygon, Popup, TileLayer, FeatureGroup, LayersControl } from "react-leaflet";
-import { getParkingSpotsByParkingId } from "../../redux/actions/parkingSpotActions";
+import { getParkingSpotsByParkingId, getFreeParkingSpotsByParkingId } from "../../redux/actions/parkingSpotActions";
 import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
 import decodeToken from "../../utils/decodeToken";
@@ -62,6 +62,17 @@ function MissionResultComparison(props) {
     const [openDialog, setOpenDialog] = useState(false);
 
 
+    //TODO
+    // dispatch(getFreeParkingSpotsByParkingId(parkingId, start, end)); to get free parking spots for the in the given time range
+    // to get time use mission.missionStartDate and mission.missionEndDate
+    // get all parking spots for the parkingId
+    // render green and reda as before but add pink whereparking was free but drone said it was occupied
+    // add popup to the pink ones with the date when it was occupied
+    // add yellow where parking was occupied but drone said it was free
+
+
+
+
     useEffect(() => {
         const checkAuthorization = async () => {
             if (user && user.role === "PARKING_MANAGER") {
@@ -82,6 +93,7 @@ function MissionResultComparison(props) {
                 dispatch(getParkingSpotsByParkingId(parkingId));
                 dispatch(getDroneMission(missionId)).then((response) => {
                     setMission(response);
+                    dispatch(getFreeParkingSpotsByParkingId(parkingId, response.missionStartDate, response.missionEndDate));
                 });
                 unsetParkingSpot();
             } else {
@@ -92,20 +104,6 @@ function MissionResultComparison(props) {
         checkAuthorization();
     }, []);
 
-    const handleClickOnFreeParkingSpot = (event) => {
-        if (parkingSpot.id === undefined) {
-            dispatch({
-                type: GET_PARKING_SPOT,
-                value: event,
-            });
-            dispatch({
-                type: GET_FREE_PARKING_SPOTS_BY_PARKING_ID,
-                value: freeParkingSpots.filter((spot) => spot.id !== event.id),
-            });
-        } else {
-            toast.info("Click on the selected parking spot to deselect it");
-        }
-    };
 
     const unsetParkingSpot = () => {
         dispatch({
@@ -155,7 +153,7 @@ function MissionResultComparison(props) {
                                     scrollWheelZoom={true}
                                 >
                                     <FeatureGroup>
-                                        {parkingSpots.parkingSpots && parkingSpots.parkingSpots
+                                        {parkingSpots.parkingSpots && mission.missionSpotResultList && parkingSpots.parkingSpots
                                             .filter(
                                                 (spot) => !freeParkingSpots.map((spot) => spot.id).includes(spot.id)
                                             )
@@ -166,7 +164,7 @@ function MissionResultComparison(props) {
                                                         point.latitude,
                                                         point.longitude,
                                                     ])}
-                                                    color={parkingSpot.active ? "red" : "#474747"}
+                                                    color={(mission.missionSpotResultList.find(x => x.parkingSpotDTO.id === parkingSpot.id)).occupied ? "red" : "yellow"}
                                                     interactive>
                                                     {occupiedParkingSpotsMap && occupiedParkingSpotsMap[parkingSpot.id] && (
                                                         <Popup>
@@ -187,7 +185,8 @@ function MissionResultComparison(props) {
                                                     )}
                                                 </Polygon>
                                             ))}
-                                        {freeParkingSpots.map((spot, index) => (
+                                        //wolne miejsca
+                                        {mission.missionSpotResultList && freeParkingSpots.map((spot, index) => (
                                             spot.id !== parkingSpots.parkingSpot.id && (
                                                 <Polygon
                                                     key={index}
@@ -195,25 +194,18 @@ function MissionResultComparison(props) {
                                                         point.latitude,
                                                         point.longitude,
                                                     ])}
-                                                    color="green"
-                                                    eventHandlers={{
-                                                        click: () => {
-                                                            handleClickOnFreeParkingSpot(spot);
-                                                        },
-                                                    }}
+                                                    color={(mission.missionSpotResultList.find(x => x.parkingSpotDTO.id === spot.id)).occupied ? "yellow" : "green"}
                                                 />
                                             )
                                         ))}
                                     </FeatureGroup>
                                     <LayersControl position="topright">
-                                        <LayersControl.BaseLayer checked name="OpenStreetMap">
-                                            <TileLayer
-                                                maxNativeZoom={22}
-                                                maxZoom={22}
-                                                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                                                url='http://mt0.google.com/vt/lyrs=s&x={x}&y={y}&z={z}'
-                                            />
-                                        </LayersControl.BaseLayer>
+                                        <TileLayer
+                                            maxNativeZoom={22}
+                                            maxZoom={22}
+                                            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                                            url='http://mt0.google.com/vt/lyrs=s&x={x}&y={y}&z={z}'
+                                        />
                                     </LayersControl>
                                     {parkingSpot && parkingSpot.id && (
                                         <Polygon
@@ -235,7 +227,7 @@ function MissionResultComparison(props) {
                                             }}
                                             interactive
                                         >
-                                            <Popup>{`Selected spot number: ${parkingSpot.spotNumber}`} <br></br> Click to deselect</Popup>
+                                            {/* <Popup>{`Selected spot number: ${parkingSpot.spotNumber}`} <br></br> Click to deselect</Popup> */}
                                         </Polygon>
                                     )}
                                 </MapContainer>
@@ -264,8 +256,8 @@ function MissionResultComparison(props) {
                             <CardContent>
                                 <Typography variant='h4' fontWeight='bold'>Browsing mission #{mission.id}</Typography>
                                 <Typography>Status - {mission.status}</Typography>
-                                <Typography>Started - {mission.missionStartDate.replace('T', ' ').substr(0, 19)}</Typography>
-                                <Typography>Finished - {mission.missionEndDate.replace('T', ' ').substr(0, 19)}</Typography>
+                                <Typography>Started - {mission.missionStartDate}</Typography>
+                                <Typography>Finished - {mission.missionEndDate}</Typography>
                             </CardContent>
                             <Grid container>
                                 <Button
