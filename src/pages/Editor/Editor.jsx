@@ -130,7 +130,7 @@ export default function ParkingEditor(props) {
                 const pointsDTO = extractPointsDTO(layer);
 
                 if (validatePointsDTO(pointsDTO)) {
-                    const newParkingSpot = populateValidSpot(spotId, pointsDTO);
+                    const newParkingSpot = populateValidSpot(layer.options, pointsDTO);
                     spots.push(newParkingSpot);
                 } else {
                     toast.error("You must draw 4 points with ids!");
@@ -221,7 +221,6 @@ export default function ParkingEditor(props) {
 
     const createParkingSpot = (spotId, pointsDTO) => ({
         id: spotId,
-        spotNumber: parking.name + " " + (parkingSpots.length + 1),
         active: false,
         parkingDTO: { id: parking.id },
         pointsDTO,
@@ -442,6 +441,8 @@ export default function ParkingEditor(props) {
                                             .map((spot) => (
                                                 <Polygon
                                                     id={spot.id}
+                                                    active={spot.active}
+                                                    spotNumber={spot.spotNumber}
                                                     key={Math.random()}
                                                     positions={spot.pointsDTO.map((point) => [
                                                         point.latitude,
