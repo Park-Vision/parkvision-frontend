@@ -81,7 +81,6 @@ export default function Register() {
         } else {
             dispatch(register(email, firstName, lastName, password))
                 .then(response => {
-                    console.log(response);
                     if (response.status === 200) {
                         setEmail("")
                         setFirstName("")
