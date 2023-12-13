@@ -3,7 +3,7 @@ import Home from "./pages/Home/Home";
 import Login from "./pages/Login/Login";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import AppBar from "./components/AppBar";
-import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
+import {BrowserRouter, Route, Routes, Navigate} from "react-router-dom";
 import About from "./pages/General/About/About";
 import Contact from "./pages/General/Contact/Contact";
 import Cars from "./pages/Car/Cars";
