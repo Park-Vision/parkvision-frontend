@@ -6,6 +6,8 @@ import { Box, Container } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { convertDateToLocaleString } from "../../utils/convertDate";
 import Home from "../Home/Home";
+import Button from "@mui/material/Button";
+
 
 export default function ManagerReservations() {
     const authenticationReducer = useSelector((state) => state.authenticationReducer);
@@ -13,6 +15,9 @@ export default function ManagerReservations() {
     const missions = useSelector((state) => state.droneMissionReducer.droneMissions);
     const navigate = useNavigate();
     const dispatch = useDispatch();
+
+    const parking = useSelector((state) => state.parkingReducer.parking);
+
 
     useEffect(() => {
         if (authenticationReducer.decodedUser && authenticationReducer.decodedUser.role === "PARKING_MANAGER") {
@@ -23,6 +28,21 @@ export default function ManagerReservations() {
     if (!authenticationReducer.decodedUser && authenticationReducer.decodedUser.role === "PARKING_MANAGER") {
         navigate('/');
         return <Home />;
+    }
+
+    const renderDetailsButton = (params) => {
+        return (
+            <Button
+                variant="contained"
+                color="primary"
+                size="small"
+                onClick={() => {
+                    navigate(`/parking/${parking.id}/missions/${params.row.id}`);
+                }}
+            >
+                Results
+            </Button>
+        )
     }
 
     const columns = [
@@ -37,13 +57,13 @@ export default function ManagerReservations() {
         },
         { field: 'status', headerName: 'Status', flex: 1, minWidth: 150 },
         {
-            field: 'occupiedSpotsCount', headerName: 'Occupied', flex: 0.4, align: 'right', minWidth: 150,
+            field: 'occupiedSpotsCount', headerName: 'Occupied', flex: 0.4, align: 'right', minWidth: 100,
             valueGetter: (params) => {
                 return params.row.missionSpotResultList.filter(spot => spot.occupied).length;
             },
         },
         {
-            field: 'visitedSpotsCount', headerName: 'Visited', flex: 0.4, align: 'right', minWidth: 150,
+            field: 'visitedSpotsCount', headerName: 'Visited', flex: 0.4, align: 'right', minWidth: 100,
             valueGetter: (params) => {
                 return params.row.missionSpotResultList.length;
             },
@@ -59,6 +79,10 @@ export default function ManagerReservations() {
         {
             field: 'droneModel', headerName: 'Drone Model', flex: 1, minWidth: 150,
             valueGetter: ({ row }) => row.droneDTO.model
+        },
+        {
+            field: 'decision', headerName: 'See results', flex: 0.5, minWidth: 150,
+            renderCell: renderDetailsButton
         },
     ];
 
