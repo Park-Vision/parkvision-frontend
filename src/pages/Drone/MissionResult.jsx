@@ -164,25 +164,19 @@ function MissionResultComparison(props) {
                                                         point.latitude,
                                                         point.longitude,
                                                     ])}
-                                                    color={(mission.missionSpotResultList.find(x => x.parkingSpotDTO.id === parkingSpot.id)).occupied ? "red" : "yellow"}
+                                                    color={(mission.missionSpotResultList.find(x => x.parkingSpotDTO.id === parkingSpot.id)).occupied ? "red" : "orange"}
                                                     interactive>
-                                                    {occupiedParkingSpotsMap && occupiedParkingSpotsMap[parkingSpot.id] && (
-                                                        <Popup>
-                                                            Available from: <br />
-                                                            {`${convertDate(occupiedParkingSpotsMap[parkingSpot.id].earliestStart)}`}
-                                                            {occupiedParkingSpotsMap[parkingSpot.id].earliestEnd && (
-                                                                <div>
-                                                                    Available to: <br />
-                                                                    {convertDate(occupiedParkingSpotsMap[parkingSpot.id].earliestEnd)}
-                                                                </div>
-                                                            )}
-                                                        </Popup>
-                                                    )}
-                                                    {occupiedParkingSpotsMap && occupiedParkingSpotsMap[parkingSpot.id] == null && (
-                                                        <Popup>
-                                                            {`Will not be available for the rest of the day.`}
-                                                        </Popup>
-                                                    )}
+                                                    <Popup>
+                                                        {(() => {
+                                                            const spotResult = mission.missionSpotResultList.find(x => x.parkingSpotDTO.id === parkingSpot.id);
+                                                            const droneDetectedOccupied = spotResult.occupied;
+                                                            if (!droneDetectedOccupied) {
+                                                                return `Spot ${parkingSpot.id} was supposed to be occupied, but drone detected it as free.`;
+                                                            } else {
+                                                                return `Spot ${parkingSpot.id} was occupied according to reservation history.`;
+                                                            }
+                                                        })()}
+                                                    </Popup>
                                                 </Polygon>
                                             ))}
                                         //wolne miejsca
@@ -195,7 +189,19 @@ function MissionResultComparison(props) {
                                                         point.longitude,
                                                     ])}
                                                     color={(mission.missionSpotResultList.find(x => x.parkingSpotDTO.id === spot.id)).occupied ? "yellow" : "green"}
-                                                />
+                                                >
+                                                    <Popup>
+                                                        {(() => {
+                                                            const spotResult = mission.missionSpotResultList.find(x => x.parkingSpotDTO.id === spot.id);
+                                                            const droneDetectedOccupied = spotResult.occupied;
+                                                            if (droneDetectedOccupied) {
+                                                                return `Spot ${spot.id} was supposed to be free, but drone detected it as occupied.`;
+                                                            } else {
+                                                                return `Spot ${spot.id} was free according to reservation history.`;
+                                                            }
+                                                        })()}
+                                                    </Popup>
+                                                </Polygon>
                                             )
                                         ))}
                                     </FeatureGroup>
@@ -281,7 +287,7 @@ function MissionResultComparison(props) {
                                         sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                                     >
                                         <TableCell component="th" scope="row">Spot id</TableCell>
-                                        <TableCell align="right">Current</TableCell>
+                                        <TableCell align="right">Reservation</TableCell>
                                         <TableCell align="right">Mission result</TableCell>
                                     </TableHead>
                                     <TableBody>
@@ -290,7 +296,9 @@ function MissionResultComparison(props) {
                                                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                                             >
                                                 <TableCell component="th" scope="row">{spot.id}</TableCell>
-                                                <TableCell align="right">{(occupiedParkingSpotsMap && occupiedParkingSpotsMap[spot.id]) ? "Occupied" : "Free"}</TableCell>
+                                                <TableCell align="right">
+                                                    {(freeParkingSpots && freeParkingSpots.some(freeSpot => freeSpot.id === spot.id)) ? "Free" : "Occupied"}
+                                                </TableCell>
                                                 <TableCell align="right">{mission ? ((mission.missionSpotResultList.find(x => x.parkingSpotDTO.id === spot.id) ? (mission.missionSpotResultList.find(x => x.parkingSpotDTO.id === spot.id).occupied ? "Occupied" : "Free") : "Unavailable id")) : "Unknown"}</TableCell>
                                             </TableRow>)}
                                     </TableBody>
