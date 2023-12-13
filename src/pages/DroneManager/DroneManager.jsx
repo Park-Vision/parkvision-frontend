@@ -72,6 +72,8 @@ function ParkingEditor(props) {
     const [availableDrones, setAvailableDrones] = useState([])
 
     const [selectedDroneId, setSelectedDroneId] = useState(0)
+    const [selectedDroneKey, setSelectedDroneKey] = useState("")
+
     const [dronePosition, setDronePosition] = useState([0, 0, 0])
     const [droneStage, setDroneStage] = useState(0)
     const [droneBatteryPercentage, setDroneBatteryPercentage] = useState(0)
@@ -209,11 +211,17 @@ function ParkingEditor(props) {
 
     const handleSelectDrone = (event) => {
         setSelectedDroneId(event.target.value);
+        setSelectedDroneKey(availableDrones.find(drone => drone.id === event.target.value).droneKey)
         setDronePosition([0, 0, 0])
         setDroneStage(0)
 
         subscribeToDifferentSocket(event.target.value)
     };
+
+    const copyKeyToClipboard = (key) => {
+        navigator.clipboard.writeText(key)
+        toast.info('Copied drone key to clipboard');
+    }
 
     const handleStart = (event) => {
         dispatch(commandDrone(selectedDroneId, "start"))
@@ -356,6 +364,18 @@ function ParkingEditor(props) {
                                 <TableContainer component={Paper}>
                                     <Table size="small" aria-label="a dense table">
                                         <TableBody>
+                                            <TableRow
+                                                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                            >
+                                                <TableCell component="th" scope="row">{"Drone ID"}</TableCell>
+                                                <TableCell align="right">{selectedDroneId}</TableCell>
+                                            </TableRow>
+                                            <TableRow
+                                                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                            >
+                                                <TableCell component="th" scope="row">{"Drone Key"}</TableCell>
+                                                <TableCell align="right" onClick={() => {copyKeyToClipboard(selectedDroneKey)}}>{selectedDroneKey}</TableCell>
+                                            </TableRow>
                                             <TableRow
                                                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                                             >
