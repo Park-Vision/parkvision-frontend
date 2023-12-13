@@ -4,7 +4,6 @@ import Login from "./pages/Login/Login";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import AppBar from "./components/AppBar";
 import {BrowserRouter, Route, Routes, Navigate} from "react-router-dom";
-import Reservations from "./pages/Reservations/Reservations";
 import About from "./pages/General/About/About";
 import Contact from "./pages/General/Contact/Contact";
 import Cars from "./pages/Car/Cars";
@@ -108,10 +107,6 @@ function App() {
                             <Route
                                 path={"/register"}
                                 element={<Register />}
-                            />
-                            <Route
-                                path={"/reservations"}
-                                element={<Reservations />}
                             />
                             <Route
                                 path={"/about"}

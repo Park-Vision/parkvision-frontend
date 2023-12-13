@@ -55,7 +55,7 @@ export default function UserReservations() {
     useEffect(() => {
         dispatch({
             type: GET_PARKING_SPOT,
-            value: null
+            value: {}
         });
         if (user) {
             dispatch(getUserReservations())
