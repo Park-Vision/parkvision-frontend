@@ -215,6 +215,11 @@ function ParkingEditor(props) {
         subscribeToDifferentSocket(event.target.value)
     };
 
+    const copyKeyToClipboard = (key) => {
+        navigator.clipboard.writeText(key)
+        toast.info('Copied drone key to clipboard');
+    }
+
     const handleStart = (event) => {
         dispatch(commandDrone(selectedDroneId, "start"))
             .catch((error) => {
@@ -335,7 +340,7 @@ function ParkingEditor(props) {
                                                 label="Drone"
                                                 onChange={handleSelectDrone}
                                             >
-                                                {availableDrones.map(drone => <MenuItem value={drone.id}>{drone.id} - {drone.name}</MenuItem>)}
+                                                {availableDrones.map(drone => <MenuItem value={drone.id} onClick={() => {copyKeyToClipboard(drone.droneKey)}}>{drone.id} - {drone.name} - {drone.droneKey}</MenuItem>)}
                                             </Select>
                                         </FormControl>
                                     </Grid>
