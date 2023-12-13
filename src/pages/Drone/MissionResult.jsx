@@ -265,22 +265,6 @@ function MissionResultComparison(props) {
                                 <Typography>Started - {mission.missionStartDate}</Typography>
                                 <Typography>Finished - {mission.missionEndDate}</Typography>
                             </CardContent>
-                            <Grid container>
-                                <Button
-                                    sx={{ m: "5%", width: "40%" }}
-                                    variant='contained'
-                                    color="secondary"
-                                >
-                                    Make changes
-                                </Button>
-                                <Button
-                                    sx={{ m: "5%", width: "40%" }}
-                                    variant='contained'
-                                    color="error"
-                                >
-                                    Discard changes
-                                </Button>
-                            </Grid>
                             <TableContainer component={Paper}>
                                 <Table size="small" aria-label="a dense table">
                                     <TableHead
