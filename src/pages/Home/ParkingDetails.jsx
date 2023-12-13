@@ -256,8 +256,9 @@ export default function ParkingDetails(props) {
         setStartTime(localTimeDayjs.set("minute", localTimeDayjs.minute() - (localTimeDayjs.minute() % 15)).set("second", 0).set("millisecond", 0));
         setEndTime(localTimeDayjs.set("minute", localTimeDayjs.minute() - (localTimeDayjs.minute() % 15)).set("second", 0).set("millisecond", 0).add(15, "minute"));
         setEndDay(localTimeDayjs);
-        setStart(startTime);
-        setEnd(endTime);
+        setStart(localTimeDayjs.set("minute", localTimeDayjs.minute() - (localTimeDayjs.minute() % 15)).set("second", 0).set("millisecond", 0));
+        setEnd(localTimeDayjs.set("minute", localTimeDayjs.minute() - (localTimeDayjs.minute() % 15)).set("second", 0).set("millisecond", 0).add(15, "minute"));
+
         const start = startTime.toDate().toISOString()
         const end = endTime.toDate().toISOString()
 
