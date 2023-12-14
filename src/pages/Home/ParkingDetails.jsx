@@ -138,7 +138,7 @@ export default function ParkingDetails(props) {
         let now = dayjs(time);
         now = now.set("minute", now.minute() - (now.minute() % 15)).set("second", 0).set("millisecond", 0);
 
-        if (value.day() === now.day()
+        if (value.date() === now.date()
             && (value.hour() < now.hour()
                 || (value.hour() === now.hour()
                     && value.minute() < now.minute()))) {
