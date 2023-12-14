@@ -20,6 +20,7 @@ import { getParkingSpotsByParkingId } from "../../redux/actions/parkingSpotActio
 import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
 import AddIcon from '@mui/icons-material/Add';
+import QrCodeIcon from '@mui/icons-material/QrCode';
 import CircularProgress from "@mui/material/CircularProgress";
 import {
     GET_PARKING_SPOT,
@@ -35,6 +36,7 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import DroneTimeline from "../../components/DroneTimeline";
 import CreateDronePopup from "../../components/CreateDronePopup";
+import QRPopup from "../../components/QRPopup";
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -79,7 +81,8 @@ function ParkingEditor(props) {
     const [droneBatteryPercentage, setDroneBatteryPercentage] = useState(0)
     const [droneSatellites, setDroneSatellites] = useState(0)
 
-    const [openDialog, setOpenDialog] = useState(false);
+    const [openAddDialog, setOpenAddDialog] = useState(false);
+    const [openQRDialog, setOpenQRDialog] = useState(false);
 
     const calculateBatteryPercentage = (voltage) => {
         return ((voltage / BATTERY_CELL_COUNT - MINIMUM_CELL_VOLTAGE) / MILIVOLT_TO_PERCENT).toFixed(DISPLAY_DECIMAL_DIGITS)
@@ -236,8 +239,11 @@ function ParkingEditor(props) {
                 console.log(error);
             });
     }
-    const handleOpenPopup = (event) => {
-        setOpenDialog(true);
+    const handleOpenAddPopup = (event) => {
+        setOpenAddDialog(true);
+    }
+    const handleOpenQRPopup = (event) => {
+        setOpenQRDialog(true);
     }
 
     return (
@@ -353,9 +359,17 @@ function ParkingEditor(props) {
                                                 size="large"
                                                 variant="outlined"
                                                 color="secondary"
-                                                onClick={handleOpenPopup}
+                                                onClick={handleOpenAddPopup}
                                             >
                                                 <AddIcon />
+                                            </IconButton>
+                                            <IconButton
+                                                size="large"
+                                                variant="outlined"
+                                                color="secondary"
+                                                onClick={handleOpenQRPopup}
+                                            >
+                                                <QrCodeIcon />
                                             </IconButton>
                                         </Box>
                                     </Grid>
@@ -374,7 +388,7 @@ function ParkingEditor(props) {
                                                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                                             >
                                                 <TableCell component="th" scope="row">{"Drone Key"}</TableCell>
-                                                <TableCell align="right" onClick={() => {copyKeyToClipboard(selectedDroneKey)}}>{selectedDroneKey}</TableCell>
+                                                <TableCell align="right" onClick={() => { copyKeyToClipboard(selectedDroneKey) }}>{selectedDroneKey}</TableCell>
                                             </TableRow>
                                             <TableRow
                                                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
@@ -420,10 +434,17 @@ function ParkingEditor(props) {
                     </Grid>
                 </Grid>
             </Box>
-            <CreateDronePopup open={openDialog}
-                setOpen={setOpenDialog}
+            <CreateDronePopup open={openAddDialog}
+                setOpen={setOpenAddDialog}
                 refreshDrones={refreshDrones}
                 parkingId={parkingId} />
+            <QRPopup open={openQRDialog}
+                setOpen={setOpenQRDialog}
+                connectionData={JSON.stringify({
+                    id: selectedDroneId,
+                    key: selectedDroneKey
+                })}
+            />
         </Container>
     );
 }
