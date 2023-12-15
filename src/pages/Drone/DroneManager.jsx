@@ -374,7 +374,7 @@ function ParkingEditor(props) {
                                                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                                             >
                                                 <TableCell component="th" scope="row">{"Drone Key"}</TableCell>
-                                                <TableCell align="right" onClick={() => {copyKeyToClipboard(selectedDroneKey)}}>{selectedDroneKey}</TableCell>
+                                                <TableCell align="right" onClick={() => { copyKeyToClipboard(selectedDroneKey) }}>{selectedDroneKey}</TableCell>
                                             </TableRow>
                                             <TableRow
                                                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}

@@ -138,7 +138,7 @@ export default function ParkingDetails(props) {
         let now = dayjs(time);
         now = now.set("minute", now.minute() - (now.minute() % 15)).set("second", 0).set("millisecond", 0);
 
-        if (value.date() === now.date()
+        if (value.date() === now.date() && value.month() === now.month() && value.year() === now.year()
             && (value.hour() < now.hour()
                 || (value.hour() === now.hour()
                     && value.minute() < now.minute()))) {
@@ -656,7 +656,7 @@ export default function ParkingDetails(props) {
                                                                 key={index}
                                                                 value={car}
                                                             >
-                                                                {car.brand},{car.registrationNumber}
+                                                                {car.color}, {car.brand} ,{car.registrationNumber}
                                                             </MenuItem>
                                                         ))}
                                                     </Select>

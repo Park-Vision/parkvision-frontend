@@ -27,7 +27,7 @@ import TableHead from "@mui/material/TableHead";
 import TableContainer from '@mui/material/TableContainer';
 import TableRow from '@mui/material/TableRow';
 import { getDroneMission } from "../../redux/actions/droneMissionActions";
-import convertDate from "../../utils/convertDate";
+import { convertDate, convertDateToLocaleString } from "../../utils/convertDate";
 import {
     GET_PARKING_SPOT,
     GET_FREE_PARKING_SPOTS_BY_PARKING_ID,
@@ -60,16 +60,6 @@ function MissionResultComparison(props) {
     const [mission, setMission] = useState(0)
 
     const [openDialog, setOpenDialog] = useState(false);
-
-
-    //TODO
-    // dispatch(getFreeParkingSpotsByParkingId(parkingId, start, end)); to get free parking spots for the in the given time range
-    // to get time use mission.missionStartDate and mission.missionEndDate
-    // get all parking spots for the parkingId
-    // render green and reda as before but add pink whereparking was free but drone said it was occupied
-    // add popup to the pink ones with the date when it was occupied
-    // add yellow where parking was occupied but drone said it was free
-
 
 
 
@@ -216,14 +206,12 @@ function MissionResultComparison(props) {
                                             )
                                         ))}
                                     </FeatureGroup>
-                                    <LayersControl position="topright">
-                                        <TileLayer
-                                            maxNativeZoom={22}
-                                            maxZoom={22}
-                                            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                                            url='http://mt0.google.com/vt/lyrs=s&x={x}&y={y}&z={z}'
-                                        />
-                                    </LayersControl>
+                                    <TileLayer
+                                        maxNativeZoom={22}
+                                        maxZoom={22}
+                                        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                                        url='http://mt0.google.com/vt/lyrs=s&x={x}&y={y}&z={z}'
+                                    />
                                     {parkingSpot && parkingSpot.id && (
                                         <Polygon
                                             positions={parkingSpot.pointsDTO.map((point) => [
@@ -244,7 +232,6 @@ function MissionResultComparison(props) {
                                             }}
                                             interactive
                                         >
-                                            {/* <Popup>{`Selected spot number: ${parkingSpot.spotNumber}`} <br></br> Click to deselect</Popup> */}
                                         </Polygon>
                                     )}
                                 </MapContainer>
@@ -273,8 +260,8 @@ function MissionResultComparison(props) {
                             <CardContent>
                                 <Typography variant='h4' fontWeight='bold'>Browsing mission #{mission.id}</Typography>
                                 <Typography>Status - {mission.status}</Typography>
-                                <Typography>Started - {mission.missionStartDate}</Typography>
-                                <Typography>Finished - {mission.missionEndDate}</Typography>
+                                <Typography>Started - {convertDateToLocaleString(mission.missionStartDate)}</Typography>
+                                <Typography>Finished - {convertDateToLocaleString(mission.missionEndDate)}</Typography>
                             </CardContent>
                             <TableContainer component={Paper}>
                                 <Table size="small" aria-label="a dense table">
